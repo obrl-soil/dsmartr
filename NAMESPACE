@@ -1,1 +1,9 @@
-exportPattern("^[[:alpha:]]+")
+import("rgdal") 
+import("sp")
+importFrom("raster", beginCluster, endCluster, clusterR, predict, extract, calc, nlayers, writeRaster, stack)
+importFrom("gtools", rdirichlet)
+importFrom("C50", C5.0 )
+importFrom("sp", spsample, coordinates)
+
+export(dsmart)
+export(dsmartR)

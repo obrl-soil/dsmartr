@@ -1,11 +1,13 @@
-Package: dsmartr
+Package: dsmart
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
-Encoding: UTF-8
-LazyData: true
+Title: Disaggregation and harmonisation of soil map units through resampled classification trees
+Version: 1.0
+Date: 2015-13-05
+Author: Nathan Odgers <nathan.odgers@sydney.edu.au> and Brendan Malone <brendan.malone@sydney.edu.au> 
+Maintainer: Brendan Malone <brendan.malone@sydney.edu.au>
+Description: Disaggregate and harmonise of soil map units
+Depends: R (>= 3.0.1)
+Imports: raster, rgdal, sp, C50, gtools
+Suggests: rasterVis, snow
+License: GPL-2
+LazyData: no
