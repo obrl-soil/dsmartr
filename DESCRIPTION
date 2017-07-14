@@ -1,13 +1,37 @@
-Package: dsmart
+Package: dsmartr
 Type: Package
-Title: Disaggregation and harmonisation of soil map units through resampled classification trees
-Version: 1.0
-Date: 2015-13-05
-Author: Nathan Odgers <nathan.odgers@sydney.edu.au> and Brendan Malone <brendan.malone@sydney.edu.au> 
-Maintainer: Brendan Malone <brendan.malone@sydney.edu.au>
-Description: Disaggregate and harmonise of soil map units
-Depends: R (>= 3.0.1)
-Imports: raster, rgdal, sp, C50, gtools
-Suggests: rasterVis, snow
+Title: dsmartr: An R implementation of the DSMART algorithm
+Version: 0.0.0.9000
+Date: 2017-07-02
+Authors@R: c(
+    person("Lauren", "O'Brien", email = "obrl_soil@gmail.com",          role = c('aut', 'cre')),
+    person("Nathan", "Odgers",  email = "nathan.odgers@sydney.edu.au",  role = 'aut'),
+	person("Brendan", "Malone", email = "brendan.malone@sydney.edu.au", role = 'aut'))
+Description: This package reinterprets legacy soil mapping by correlating existing map information with higher-density environmental data.
+URL: https://github.com/obrl-soil/dsmartr
+BugReports: https://github.com/obrl-soil/dsmartr/issues
+Depends: R (>= 3.3.0)
+Imports:
+    C50,
+	bindrcpp,
+	dplyr (>= 0.5),
+    gtools,
+	magrittr,
+	purrr,
+	raster,
+	rgdal,
+	rlang,
+	sf (>= 0.5),
+	snow,
+	sp,
+	stats,
+	tidyr,
+	utils
+Suggests:
+    tidyverse,
+    knitr,
+    rmarkdown
 License: GPL-2
 LazyData: no
+RoxygenNote: 6.0.1
+VignetteBuilder: knitr
