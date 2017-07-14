@@ -61,21 +61,19 @@ dsmartr_iterate <- function(prepped_map    = NULL,
   strm   <- file.path(getwd(), 'iterations', 'models')
 
   # set consistent factoring across model runs
-  prepped_map <- mutate_if(prepped_map, is.factor, as.character)
-  if(!is.null(prepped_points)) {
+  prepped_map  <- mutate_if(prepped_map, is.factor, as.character)
+  class_levels <- prepped_map[, c(grep('CLASS_', names(prepped_map)))]
+  class_levels <- st_set_geometry(class_levels, NULL)
+  class_levels <- gather(data = class_levels, na.rm = TRUE)
+  class_levels <- na.omit(unique(class_levels$value))
+
+  class_levels <- if(!is.null(prepped_points)) {
     # sometimes known points have soil classes that have not been mapped
-    class_levels <- prepped_map[, c(grep('CLASS_', names(prepped_map)))]
-    class_levels <- gather(data = class_levels, na.rm = TRUE)
-    class_levels <- na.omit(distinct(class_levels, value))
-    class_levels <- unlist(class_levels, use.names = FALSE)
-    point_levels <- as.character(unique(unlist(prepped_points$CLASS)))
-    class_levels <- as.factor(sort(union(class_levels, point_levels)))
+    pl <- na.omit(as.character(unique(unlist(prepped_points$CLASS))))
+    cl <- union(cl, pl)
+    as.factor(sort(cl))
   } else {
-    class_levels <- prepped_map[, c(grep('CLASS_', names(prepped_map)))]
-    class_levels <- gather(data = class_levels, na.rm = TRUE)
-    class_levels <- na.omit(distinct(class_levels, value))
-    class_levels <- unlist(class_levels, use.names = FALSE)
-    class_levels <- as.factor(sort(class_levels))
+    as.factor(sort(class_levels))
   }
 
   message(paste0(Sys.time(), ': dsmartr iteration in progress...'))

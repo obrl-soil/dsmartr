@@ -25,6 +25,6 @@ heronvale_known_sites
 A dataset containing the locations of described soil profiles within the Heronvale 1:10000
 topographic key map sheet. Sites are from a soil and land resource survey conducted in the early
 2000s. Full profile descriptions can be viewed in the
-\href{https://qldglobe.information.qld.gov.au/}{Queensland Globe.}
+\href{https://qldglobe.information.qld.gov.au/}{Queensland Globe}.
 }
 \keyword{datasets}

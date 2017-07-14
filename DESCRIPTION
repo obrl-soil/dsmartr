@@ -1,7 +1,7 @@
 Package: dsmartr
 Type: Package
 Title: dsmartr: An R implementation of the DSMART algorithm
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Date: 2017-07-02
 Authors@R: c(
     person("Lauren", "O'Brien", email = "obrl_soil@gmail.com",          role = c('aut', 'cre')),
