@@ -63,7 +63,6 @@ dsmartr_iterate <- function(prepped_map    = NULL,
   # set consistent factoring across model runs
   prepped_map  <- mutate_if(prepped_map, is.factor, as.character)
   class_levels <- prepped_map[, c(grep('CLASS_', names(prepped_map)))]
-  class_levels <- st_set_geometry(class_levels, NULL)
   class_levels <- gather(data = class_levels, na.rm = TRUE)
   class_levels <- na.omit(unique(class_levels$value))
 
