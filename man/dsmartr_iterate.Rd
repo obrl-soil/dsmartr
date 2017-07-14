@@ -39,7 +39,7 @@ iteration number (prevents overwriting existing model iterations in output direc
 }
 \value{
 RasterStack; \code{n_iterations} layers. As a side effect, for each model run, outputs
-written to disk include the predicted soils map, the C5 model summary, and optionally, the
+written to disk include the predicted soils map, the C5.0 model summary, and optionally, the
 covariate sample points in spatial data format.
 }
 \description{
@@ -51,7 +51,7 @@ This function writes a large number of files to disk.
 \examples{
 \dontrun{
 ## Polygons only:
-# run dsmartr_prep_polygons() and then
+# run dsmartr_prep_polygons() per the example code for that function, then
 dsmartr_iterate(prepped_map = prepped_polygons, covariates = heronvale_covariates,
  id_field = 'POLY_NO', n_iterations = 20,
  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'all', write_samples = TRUE)

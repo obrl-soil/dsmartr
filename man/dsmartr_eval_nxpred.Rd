@@ -8,11 +8,11 @@ dsmartr_eval_nxpred(tallied_preds = NULL, cpus = 1, n_iterations = NULL,
   noise_cutoff = 0.1)
 }
 \arguments{
-\item{tallied_preds}{RasterBrick; 'tallied_predictions' output by \code{\link{dsmartr_collate()}}.}
+\item{tallied_preds}{RasterBrick; 'tallied_predictions' output by \code{\link{dsmartr_collate}}.}
 
 \item{cpus}{Integer; number of processors to use in parallel.}
 
-\item{n_iterations}{Integer; the number of iterations supplied to \code{\link{dsmartr_iterate()}}.}
+\item{n_iterations}{Integer; the number of iterations supplied to \code{\link{dsmartr_iterate}}.}
 
 \item{noise_cutoff}{Decimal; proportion of predictions to be considered 'noise' and ignored.}
 }
@@ -23,7 +23,7 @@ being assigned to the global environment.
 }
 \description{
 Calculates and maps the number of distinct soil classes predicted in more than a
-given proportion of iterations. Requires outputs of \code{\link{dsmartr_collate()}} (with option
+given proportion of iterations. Requires outputs of \code{\link{dsmartr_collate}} (with option
 \code{keep_tallies = TRUE}).
 }
 \note{
@@ -33,6 +33,7 @@ that location.
 \examples{
 \dontrun{
 # run dsmartr_collate() with the example data then:
-dsmartr_eval_nxpred(tallied_preds = tallied_predictions, max(1, (parallel::detectCores() - 1)),
+dsmartr_eval_nxpred(tallied_preds = tallied_predictions,
+cpus = max(1, (parallel::detectCores() - 1)),
 n_iterations = nlayers(iteration_maps), noise_cutoff = 0.1)}
 }

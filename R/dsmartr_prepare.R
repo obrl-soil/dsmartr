@@ -1,7 +1,7 @@
 #' Prepare dsmartr polygons
 #'
-#' Prepares dsmartr polygon inputs for use in \code{\link{dsmartr_iterate}}.
-#' @param src_map An sfc_POLYGON, sfc_MULTIPOLYGON, or SpatialPolygonsDataFrame object representing
+#' Prepares soil map inputs for use in \code{\link{dsmartr_iterate}}.
+#' @param src_map An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object representing
 #' the soil map to be disaggregated. Format requirements:
 #' \itemize{
 #' \item{one row per polygon (data is wide-formatted)}
@@ -22,7 +22,7 @@
 #' @return A data frame holding polygon input attributes and four new attribute columns:
 #' \itemize{
 #'   \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf]{st_area}}.}
-#'   \item{\code{n_classes}: The number of soil classes within the map unit.}
+#'   \item{\code{n_soils}: The number of soil classes within the map unit.}
 #'   \item{\code{n_samples}: The number of environmental covariate point samples that will be taken
 #'   on each model iteration.}
 #'   \item{\code{intersecting_cells}: Raster cell index numbers for any cell whose center falls
@@ -37,18 +37,20 @@
 #' cannot be written to e.g. csv format.}
 #' \item{This function runs faster with a RasterBrick than a Stack.}}
 #' @examples \dontrun{
-#' load("heronvale_soilmap")
-#' load("heronvale_covariates")
+#' data('heronvale_soilmap')
+#' data('heronvale_covariates')
 #'
 #' # flat rate
 #' dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-#' id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 20)
+#' id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 5)
 #'
 #' # area_proportional rate with floor
 #' dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-#' id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 10)}
+#' id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 5)}
 #' @importFrom dplyr filter mutate mutate_if
+#' @importFrom methods is as
 #' @importFrom purrr map map_int
+#' @importFrom sf st_area st_set_geometry
 #' @importFrom stats setNames
 #' @importFrom raster crs cellFromPolygon
 #' @export
@@ -166,9 +168,10 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
 #' dsmartr_prep_points(src_map = heronvale_soilmap, known_points = heronvale_known_sites,
 #' soil_id = 'CLASS', x_coords = 'x', y_coords = 'y', covariates = heronvale_covariates) }
 #' @importFrom dplyr mutate_if
+#' @importFrom methods is as
 #' @importFrom raster cellFromXY crs extract
 #' @importFrom sp spTransform
-#' @importFrom sf st_as_sf st_set_crs st_transform
+#' @importFrom sf st_as_sf st_set_crs st_set_geometry st_transform
 #' @export
 dsmartr_prep_points <- function(known_points = NULL, soil_id  = NULL,
                                 x_coords     = NULL, y_coords = NULL,
@@ -198,7 +201,7 @@ dsmartr_prep_points <- function(known_points = NULL, soil_id  = NULL,
 
        } else if (is(known_points, 'data.frame')) {
          known_points <- st_as_sf(known_points, coords = c(x_coords, y_coords))
-         known_points <- st_set_crs(known_points, crs = crs(covariates, asText = TRUE))
+         known_points <- st_set_crs(known_points, value = crs(covariates, asText = TRUE))
          cellnos   <- cellFromXY(covariates, xy = as(known_points, 'Spatial'))
          names(known_points)[names(known_points) == soil_id]  <- 'CLASS'
          known_points$CELL  <- cellnos

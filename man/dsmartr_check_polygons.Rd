@@ -7,7 +7,7 @@
 dsmartr_check_polygons(src_map = NULL, id_field = NULL)
 }
 \arguments{
-\item{src_map}{An sfc_POLYGON, sfc_MULTIPOLYGON, or SpatialPolygonsDataFrame object.}
+\item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object.}
 
 \item{id_field}{String; name of unique identifier field.}
 }
@@ -26,6 +26,8 @@ missing (e.g. a polygon class without a matching percentage), whether a percenta
 whether total percentage is not 100%.
 }
 \examples{
-load("dst_sf_polygons")
-checked_map <- dsmartr_check_polygons(src_map = dst_sf_polygons, id_field = 'NUID')
+\dontrun{
+load("heronvale_soilmap")
+checked_map <- dsmartr_check_polygons(src_map = heronvale_soilmap,
+id_field = 'POLY_NO')}
 }

@@ -17,6 +17,7 @@ Imports:
 	dplyr (>= 0.5),
     gtools,
 	magrittr,
+	methods,
 	purrr,
 	raster,
 	rgdal,
@@ -26,12 +27,13 @@ Imports:
 	sp,
 	stats,
 	tidyr,
+	units,
 	utils
 Suggests:
     tidyverse,
     knitr,
     rmarkdown
 License: GPL-2
-LazyData: no
+LazyData: true
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr

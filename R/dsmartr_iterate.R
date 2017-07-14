@@ -18,11 +18,11 @@
 #' iteration number (prevents overwriting existing model iterations in output directory).
 #' @note This function writes a large number of files to disk.
 #' @return RasterStack; \code{n_iterations} layers. As a side effect, for each model run, outputs
-#' written to disk include the predicted soils map, the C5 model summary, and optionally, the
+#' written to disk include the predicted soils map, the C5.0 model summary, and optionally, the
 #' covariate sample points in spatial data format.
 #' @examples \dontrun{
 #' ## Polygons only:
-#' # run dsmartr_prep_polygons() and then
+#' # run dsmartr_prep_polygons() per the example code for that function, then
 #' dsmartr_iterate(prepped_map = prepped_polygons, covariates = heronvale_covariates,
 #'  id_field = 'POLY_NO', n_iterations = 20,
 #'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'all', write_samples = TRUE)
@@ -31,12 +31,15 @@
 #' dsmartr_iterate(prepped_map = prepped_polygons, covariates = heronvale_covariates,
 #' id_field = 'POLY_NO', n_iterations = 6, cpus = max(1, (parallel::detectCores() - 1)),
 #' write_files = 'all', write_samples = TRUE, resume_from = 14)}
-#' @importFrom tidyr gather
-#' @importFrom dplyr distinct filter
-#' @importFrom purrr map
-#' @importFrom gtools rdirichlet
-#' @importFrom raster extract
 #' @importFrom C50 C5.0
+#' @importFrom dplyr distinct filter
+#' @importFrom gtools rdirichlet
+#' @importFrom purrr map
+#' @importFrom raster beginCluster clusterR endCluster extract inMemory readAll writeRaster xyFromCell
+#' @importFrom sf st_point st_sfc write_sf
+#' @importFrom stats complete.cases na.omit
+#' @importFrom tidyr gather
+#' @importFrom utils capture.output setTxtProgressBar txtProgressBar write.table
 #' @export
 dsmartr_iterate <- function(prepped_map    = NULL,
                             covariates     = NULL,
@@ -127,7 +130,7 @@ dsmartr_iterate <- function(prepped_map    = NULL,
 
     # make sure known cells haven't been randomly sampled in this iteration
     # if so, drop the randomly generated row in favour of the known class
-    asp <- filter(all_samplepoints, !(CELL %in% c(prepped_points$CELL)))
+    asp <- dplyr::filter(all_samplepoints, !(CELL %in% c(prepped_points$CELL)))
     asp <- rbind(asp, prepped_points)
     asp
     } else {

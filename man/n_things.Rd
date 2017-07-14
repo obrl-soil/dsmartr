@@ -7,8 +7,8 @@
 n_things(input = NULL, selector = NULL)
 }
 \arguments{
-\item{input}{An object of class sfc_POLYGON or sfc_MULTIPOLYGON, see
-\code{\link{dsmartr_prepare}}.}
+\item{input}{An object of class sfc_POLYGON/MULTIPOLYGON, see
+\code{\link{dsmartr_prep_polygons}}.}
 
 \item{selector}{String; a column name or name stub.}
 }
@@ -24,10 +24,8 @@ This is a helper function and not widely applicable. It is expected to be
 used by-row on wide-formatted sf attribute data.
 }
 \examples{
-library(dplyr)
-library(tibble)
-ex <- tribble( ~ID, ~CLASS_1, ~CLASS_2, ~PERC_1, ~PERC_2,
-                 1,      'A',      'B',      60,      40)
-n_things(ex, 'PERC')
+\dontrun{
+load('heronvale_soilmap')
+n_things(heronvale_soilmap[1, ], 'PERC')}
 }
 \keyword{internal}

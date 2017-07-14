@@ -21,29 +21,51 @@ The package is essentially a domain-specific wrapper around the C5.0 model, so u
 
 The core of dsmartr is a three-step sequence - prepare input data, iteratively generate soil prediction maps, collate the outputs and map the most likely soil. Some evaluation functions are also available, but they can only help inform the user of the model's confidence in itself. External validation will still be required, either by using known points that weren't included in the model, or by further sampling within the project area.
 
-### 1. Prepare data for repeated sampling
+## 1. Prepare data for iterative sampling
 
-Extract soils mapping data and format its attributes as for the demonstration dataset 'heronvale_soilmap'. Data can be stored on disk in any GDAL-readable format that R can turn into an sf or sp polygon object. Presence of multipolygons won't cause the model to fail, but the sample number chosen for a multipolygon will be spread across all subgeometries.
+### Soil Map
 
-Assemble a set of raster covariates. These should all have the same extent, cell size, and CRS, and  underlie the input mapping. The covariates can have no-data areas, but if a polygon is 100% over a no-data area it will not be sampled. The covariates can have a larger extent than the input mapping, but bear in mind that the output model will likely become less reliable further away from the input data. Covariates should have a much smaller cell size than the input mapping polygons - anything larger than about 1/1000 the median polygon size will probably not produce useful outputs.
+Format soil mapping data as for the demonstration dataset 'heronvale_soilmap' - as an sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object representing the soil map to be disaggregated. Layout requirements are:
 
-Optionally, assemble a set of points where the soil is known (described sites). A location and soil class that fits the mapping schema is all that is required. Data can be stored as spatial points or as a table with coordinates.
+  * one row per polygon (data is wide-formatted)
+  * A numeric unique ID field for polygons
+  * `1-n` character columns for soil classes named CLASS_1 to CLASS_n
+  * `1-n` numeric columns for soil class percentages named PERC_1 to PERC_n. PERC_1 must relate to CLASS_1, etc.
 
-Use `dsmartr_prep_polygons()` on the input mapping data. This function takes the input mapping and adds four new fields - polygon area, number of soil types within each map unit, number of sample points desired, and a list-column containing all the raster cells whose centers intersect each polygon. At this stage, the polygon geometry is no longer required and is dropped. 
+Other attribute columns may exist in the dataset; they will be ignored.
+
+Presence of multipolygons (or mixed multi/not polygons) won't cause the model to fail, but the sample number chosen for a multipolygon will be spread across all subgeometries.
+
+### Environmental covariate rasters
+
+Covariates should be chosen for their relationship to soil forming factors. They should all have the same extent, cell size, and CRS, and underlie the input mapping. The covariates can have no-data areas, but if a polygon is 100% over a no-data area it will not be sampled. The covariates can have a larger extent than the input mapping, but bear in mind that the output model will likely become less reliable further away from the input data. Covariates should have a much smaller cell size than the input mapping polygons - anything larger than about 1/1000 the median polygon size will probably not produce useful outputs.
+
+### Points where soil class is known
+
+Optionally, assemble a set of points where the soil is known (described sites). A location and soil class that fits the mapping schema is all that is required, and the soil classes do not have to occur on the polygon they intersect. Data can be stored as spatial points (sf or sp style), or as a table with coordinates.
+
+Run `dsmartr_prep_polygons()` on the input mapping data. This function takes the input mapping and adds four new fields:
+
+  * area_sqkm: Polygon area in square kilometers
+  * n_soils: The number of soil classes within the map unit.
+  * n_samples: The number of environmental covariate point samples that will be taken on each model iteration.
+  * intersecting_cells: Raster cell index numbers for any cell whose center falls within the polygon boundary.
+  
+At this stage, the polygon geometry is no longer required and is dropped. 
 
 Note: dsmartr uses raster cell indexes to boost the speed of sample extraction from covariate rasters. This increases sampling rigour as well, because it effectively prevents multiple points from being sampled from the same raster cell and then randomly assigned to different soil classes. The downside is an inability to sample the covariates with a buffer around the points (e.g. getting the median value within x metres, but that approach is likely to be too computationally intensive to be a realistic option at present. This method can still be approximated by simply using covariates that have been smoothed with a moving window function.
 
 Optionally, run `dsmartr_prep_points()` as well. This function takes in point data (spatialised or not) and finds the raster cell index for each point. Again, vector geometries are replaced with raster cell index values.
 
-```{r 'prep_eg', collapse=TRUE, warning=FALSE,message=FALSE}
+```{r 'prep_eg', collapse=TRUE, warning=FALSE, message=FALSE}
 library(sf)
 library(raster)
 library(dsmartr)
 library(tidyverse)
 
-load(system.file('data/heronvale_soilmap.rda',     package='dsmartr'))
-load(system.file('data/heronvale_covariates.rda',  package='dsmartr'))
-load(system.file('data/heronvale_known_sites.rda', package='dsmartr'))
+data('heronvale_soilmap',     package = 'dsmartr')
+data('heronvale_covariates',  package = 'dsmartr')
+data('heronvale_known_sites', package = 'dsmartr')
 
 # flat rate
 prepped_flat <- dsmartr_prep_polygons(src_map       = heronvale_soilmap, 
@@ -67,9 +89,7 @@ str(prepped_ap[1:5, ])
 # known_points
 prepped_points <- dsmartr_prep_points(known_points = heronvale_known_sites,
                                       covariates   = heronvale_covariates, 
-                                      soil_id      = 'CLASS', 
-                                      x_coords     = 'LONGITUDE',
-                                      y_coords     = 'LATITUDE')
+                                      soil_id      = 'CLASS')
 str(prepped_points)
 ```
 

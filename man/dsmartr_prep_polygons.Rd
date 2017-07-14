@@ -9,7 +9,7 @@ dsmartr_prep_polygons(src_map = NULL, covariates = NULL, id_field = NULL,
   floor = NULL)
 }
 \arguments{
-\item{src_map}{An sfc_POLYGON, sfc_MULTIPOLYGON, or SpatialPolygonsDataFrame object representing
+\item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object representing
 the soil map to be disaggregated. Format requirements:
 \itemize{
 \item{one row per polygon (data is wide-formatted)}
@@ -38,7 +38,7 @@ Other columns may exist in the object; they will be ignored.}
 A data frame holding polygon input attributes and four new attribute columns:
 \itemize{
   \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf]{st_area}}.}
-  \item{\code{n_classes}: The number of soil classes within the map unit.}
+  \item{\code{n_soils}: The number of soil classes within the map unit.}
   \item{\code{n_samples}: The number of environmental covariate point samples that will be taken
   on each model iteration.}
   \item{\code{intersecting_cells}: Raster cell index numbers for any cell whose center falls
@@ -47,7 +47,7 @@ A data frame holding polygon input attributes and four new attribute columns:
 Outputs are also written to disk.
 }
 \description{
-Prepares dsmartr polygon inputs for use in \code{\link{dsmartr_iterate}}.
+Prepares soil map inputs for use in \code{\link{dsmartr_iterate}}.
 }
 \note{
 \itemize{
@@ -60,14 +60,14 @@ cannot be written to e.g. csv format.}
 }
 \examples{
 \dontrun{
-load("heronvale_soilmap")
-load("heronvale_covariates")
+data('heronvale_soilmap')
+data('heronvale_covariates')
 
 # flat rate
 dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 20)
+id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 5)
 
 # area_proportional rate with floor
 dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 10)}
+id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 5)}
 }

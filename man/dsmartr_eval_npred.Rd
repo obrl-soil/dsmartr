@@ -31,6 +31,7 @@ that location.
 \examples{
 \dontrun{
 # run dsmartr_collate() with the example data then:
-dsmartr_eval_npred(tallied_preds = tallied_predictions, max(1, (parallel::detectCores() - 1)),
+dsmartr_eval_npred(tallied_preds = tallied_predictions,
+cpus = max(1, (parallel::detectCores() - 1)),
 n_iterations = nlayers(iteration_maps))}
 }

@@ -30,7 +30,9 @@
 #' LUT <- LUT[!(LUT$ID == 0), ]
 #' dsmartr_collate(iteration_stack = iteration_maps, lookup = LUT,
 #' cpus = max(1, (parallel::detectCores() - 1)))}
-#' @importFrom raster stack
+#' @importFrom raster beginCluster calc clusterR endCluster nlayers stack
+#' @importFrom stats na.omit
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #' @export
 dsmartr_collate <- function(iteration_stack = NULL,
                             lookup          = NULL,

@@ -18,7 +18,7 @@
 #' # run dsmartr_collate() with the example data and then:
 #' dsmartr_most_probable(dsmart_preds = dsmart_predictions, dsmart_probs = dsmart_probabilities,
 #' n_maps = 2)}
-#' @importFrom raster unstack ratify
+#' @importFrom raster unstack ratify writeRaster
 #' @export
 dsmartr_most_probable <- function(dsmart_preds = NULL,
                                   dsmart_probs = NULL,
@@ -78,6 +78,7 @@ dsmartr_most_probable <- function(dsmart_preds = NULL,
 #' @param soil_class String; Soil class(es) of interest, if only particular maps are desired.
 #' @param lookup Data Frame; contains raster values and corresponding soil class labels. See
 #' \code{\link{dsmartr_collate}}.
+#' @param cpus Integer; number of processors to use in parallel.
 #' @return \code{class_maps}: List of RasterLayers; probability surfaces for each soil class.
 #'
 #' All outputs are written to disk as GeoTIFFs before being assigned to the global environment.
@@ -90,7 +91,7 @@ dsmartr_most_probable <- function(dsmart_preds = NULL,
 #' # just map two classes of interest:
 #' dsmartr_class_maps(tallied_probs = tallied_probabilities,
 #' soil_class = c('BL', 'CO'), lookup = LUT)}
-#' @importFrom raster unstack
+#' @importFrom raster unstack writeRaster
 #' @export
 dsmartr_class_maps <- function(tallied_probs = NULL,
                                soil_class    = NULL,

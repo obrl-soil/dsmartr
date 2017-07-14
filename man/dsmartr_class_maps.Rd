@@ -15,6 +15,8 @@ dsmartr_class_maps(tallied_probs = NULL, soil_class = NULL, lookup = NULL,
 
 \item{lookup}{Data Frame; contains raster values and corresponding soil class labels. See
 \code{\link{dsmartr_collate}}.}
+
+\item{cpus}{Integer; number of processors to use in parallel.}
 }
 \value{
 \code{class_maps}: List of RasterLayers; probability surfaces for each soil class.
