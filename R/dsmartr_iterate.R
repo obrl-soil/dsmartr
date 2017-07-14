@@ -63,14 +63,13 @@ dsmartr_iterate <- function(prepped_map    = NULL,
   # set consistent factoring across model runs
   prepped_map  <- mutate_if(prepped_map, is.factor, as.character)
   class_levels <- prepped_map[, c(grep('CLASS_', names(prepped_map)))]
-  class_levels <- st_set_geometry(class_levels, NULL)
   class_levels <- gather(data = class_levels, na.rm = TRUE)
   class_levels <- na.omit(unique(class_levels$value))
 
   class_levels <- if(!is.null(prepped_points)) {
     # sometimes known points have soil classes that have not been mapped
     pl <- na.omit(as.character(unique(unlist(prepped_points$CLASS))))
-    cl <- union(cl, pl)
+    cl <- union(class_levels, pl)
     as.factor(sort(cl))
   } else {
     as.factor(sort(class_levels))
