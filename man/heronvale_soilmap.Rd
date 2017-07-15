@@ -4,7 +4,7 @@
 \name{heronvale_soilmap}
 \alias{heronvale_soilmap}
 \title{Broadscale soil map of the Heronvale area}
-\format{An object of class \code{sf} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 105 rows and 10 columns.}
+\format{An object of class \code{sf} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 100 rows and 10 columns.}
 \source{
 \itemize{
 \item{\url{https://publications.qld.gov.au/dataset/soils-whitsunday-coast-wcs}}
