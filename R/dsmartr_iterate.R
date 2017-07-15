@@ -63,12 +63,11 @@ dsmartr_iterate <- function(prepped_map    = NULL,
   # set consistent factoring across model runs
   prepped_map  <- mutate_if(prepped_map, is.factor, as.character)
   class_levels <- prepped_map[, c(grep('CLASS_', names(prepped_map)))]
-  class_levels <- gather(data = class_levels, na.rm = TRUE)
-  class_levels <- na.omit(unique(class_levels$value))
+  class_levels <- as.vector(na.omit(unique(unlist(class_levels, use.names = FALSE))))
 
   class_levels <- if(!is.null(prepped_points)) {
     # sometimes known points have soil classes that have not been mapped
-    pl <- na.omit(as.character(unique(unlist(prepped_points$CLASS))))
+    pl <- na.omit(as.character(unique(unlist(prepped_points$CLASS, use.names = FALSE))))
     cl <- union(class_levels, pl)
     as.factor(sort(cl))
   } else {
@@ -103,13 +102,14 @@ dsmartr_iterate <- function(prepped_map    = NULL,
         class = poly_classes,
         dpn   = ceiling(poly_dirprops * length(poly_cellsamp))
         )
-        poly_alloc <- unlist(poly_alloc)
+        poly_alloc <- unlist(poly_alloc, use.names = FALSE)
         # shuffle randomly and make sure n is what it should be:
         #(sometimes you get n + 1 above)
         poly_alloc <- sample(poly_alloc, size = length(poly_cellsamp), replace = FALSE)
         # tried using a matrix here - speed boost insignificant and code harder to read
         poly_spoints  <- data.frame('CLASS' = poly_alloc,
-                                    'CELL'  = poly_cellsamp)
+                                    'CELL'  = poly_cellsamp,
+                                    stringsAsFactors = FALSE)
       })
 
     # get all the sampling data for all the polygons for this iteration into one object
@@ -199,7 +199,7 @@ dsmartr_iterate <- function(prepped_map    = NULL,
       dir.create('iterations/samples', showWarnings = F)
       strd <- file.path(getwd(), 'iterations', 'samples')
       # spatialise (sf point object)
-      allsamp_sf <- all_samplepoints
+      allsamp_sf <- model_input
       allsamp_sf$geometry <- st_sfc(lapply(allsamp_sf$CELL, function(x) {
         st_point(as.vector(xyFromCell(covariates, x)))
         }))
@@ -217,14 +217,15 @@ dsmartr_iterate <- function(prepped_map    = NULL,
         # make a lookup table for all_samplepoints covariate column names, because they're about
         # to get severely abbreviated for writing to shp
         cov_LUT_nm   <- file.path(strd, 'covariate_LUT.csv')
-        cov_names    <- names(all_samplepoints[5:ncol(all_samplepoints)])
+        cov_names    <- names(as.data.frame(allsamp_sf)[3:(ncol(allsamp_sf)-1)])
         cov_shpnames <- paste0('COV_', 1:length(cov_names))
         if (!file.exists(cov_LUT_nm)) {
-          cov_LUT <- data.frame("COV_NAMES" = cov_names, "SHPCOL_NAMES" = cov_shpnames)
+          cov_LUT <- data.frame("COV_NAMES" = cov_names, "SHPCOL_NAMES" = cov_shpnames,
+                                stringsAsFactors = FALSE)
           write.table(cov_LUT, file = cov_LUT_nm, sep = ', ',
                       quote = FALSE, col.names = TRUE, row.names = FALSE) }
 
-        names(allsamp_sf)[5:(ncol(allsamp_sf) - 1)] <- cov_shpnames
+        names(allsamp_sf)[3:(ncol(allsamp_sf) - 1)] <- cov_shpnames
         sf_name    <- paste0('samples_', j, '.shp')
         # see https://trac.osgeo.org/gdal/ticket/6803,
         # and https://github.com/edzer/sfr/issues/306:
