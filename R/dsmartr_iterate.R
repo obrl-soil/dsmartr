@@ -7,9 +7,9 @@
 #' @param soilpoints Data Frame; Returned by \code{\link{dsmartr_prep_points}}; optional.
 #' @param stub String; Common column name or name stub holding soil class data.
 #' @return A factor holding the set of soil classes occurring in both datasets, sorted
-#' alphabetically. Internal to \code{\link{dsmartr_iterate}}.
+#'   alphabetically. Internal to \code{\link{dsmartr_iterate}}.
 #' @note It is up to the user to make sure the classification schema in both datasets matches/is
-#' compatible.
+#'   compatible.
 #' @examples \dontrun{
 #' # run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
 #' class_levels <- dsmartr_get_all_classes(soilmap = pr_ap, soilpoints = pr_points, stub = 'CLASS')}
@@ -33,20 +33,20 @@ dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, stub = NULL) 
 
 }
 
-#' sample a polygon for dsmartr_iterate
+#' Sample a polygon for [dsmartr_iterate()]
 #'
 #' Randomly selects n cells for sampling and assigns them a soil class based on the overlying
 #' map polygon's components
 #' @keywords internal
 #' @param pd A single-row sf object containing soil attributes and geometry. Usually output of
-#' running split(x, 1:nrow(x)) on a polygon sf dataframe.
+#'   running split(x, 1:nrow(x)) on a polygon sf dataframe.
 #' @param cs String; stub of attribute column names holding soil class data
 #' @param ps String; stub of attribute column names folding soil percentage data
 #' @param nscol String; name of attribute holding number of samples needed
 #' @param cellcol String; name of attriute holding list of raster cells to sample from
 #' @param t_factor Integer; dirichlet dampener, supplied by parent function
 #' @return A data frame containing two columns: weighted random allocation of soil classes,
-#' and cell numbers
+#'   and cell numbers
 #' @examples \dontrun{
 #' # run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
 #' sample_points <- iter_sample_poly(pd = pr_ap[1, ], cs = 'CLASS', ps = 'PERC',
@@ -87,7 +87,7 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
 
 
 utils::globalVariables(names = c("CELL"), package = 'dsmartr')
-#' generate disaggregated soil maps
+#' Generate disaggregated soil maps
 #'
 #' Disaggregates an input soil map a given number of times.
 #' @param prepped_map Data Frame; Returned by \code{\link{dsmartr_prep_polygons}}.
@@ -96,30 +96,38 @@ utils::globalVariables(names = c("CELL"), package = 'dsmartr')
 #' @param id_field String; name of unique polygon identifier field.
 #' @param n_iterations Integer; desired number of model runs.
 #' @param t_factor Integer; dirichlet distribution modifier. Where map units have >1 soil class
-#' component, larger values of \code{t_factor} dampen variation away from the input proportions.
+#'   component, larger values of \code{t_factor} dampen variation away from the input proportions.
 #' @param c5_ctrl List; output of \code{\link[C50]{C5.0Control}}; optional.
 #' @param cpus Integer; number of processors to use in parallel.
 #' @param write_files String; choose 'all' to write outputs in both rds and 'normal' files (GeoTIFF,
-#'  ESRI shapefile, csv, txt as appropriate).
+#'   ESRI shapefile, csv, txt as appropriate).
 #' @param write_samples Logical; whether to retain the covariate samples taken during each
-#' iteration. If \code{TRUE}, each set of samples is written to disk as rds and/or ESRI Shapefile.
+#'   iteration. If \code{TRUE}, each set of samples is written to disk as rds and/or ESRI Shapefile.
 #' @param resume_from Integer; If this function is interrupted, it can be resumed from a specified
-#' iteration number (prevents overwriting existing model iterations in output directory).
+#'   iteration number (prevents overwriting existing model iterations in output directory).
 #' @note This function writes a large number of files to disk.
 #' @return RasterStack; \code{n_iterations} layers. As a side effect, for each model run, outputs
-#' written to disk include the predicted soils map, the C5.0 model summary, and optionally, the
-#' covariate sample points in spatial data format.
+#'   written to disk include the predicted soils map, the C5.0 model summary, and optionally, the
+#'   covariate sample points in spatial data format.
 #' @examples \dontrun{
-#' ## Polygons only:
+#' # Polygons only:
 #' # run dsmartr_prep_polygons() per the example code for that function, then
 #' iteration_maps <- dsmartr_iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
 #'  id_field = 'POLY_NO', n_iterations = 20,
 #'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'all', write_samples = TRUE)
 #'
+#'  # Polygons, points and a C50 model tweak. run dsmartr_prep_polygons() and dsmartr_prep_points(),
+#'  # then:
+#'  win_on <- C50::C5.0Control(winnow = TRUE)
+#'  iteration_maps <- dsmartr_iterate(prepped_map = prepped_ap, covariates = heronvale_covariates,
+#'  id_field = 'POLY_NO', prepped_points = pr_pts, n_iterations = 20, c5_ctrl = win_on,
+#'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'all', write_samples = TRUE)
+#'
 #' ## Oh no, there was a blackout halfway through my model run:
 #' iteration_maps_2 <- dsmartr_iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
 #' id_field = 'POLY_NO', n_iterations = 6, cpus = max(1, (parallel::detectCores() - 1)),
-#' write_files = 'all', write_samples = TRUE, resume_from = 14)}
+#' write_files = 'all', write_samples = TRUE, resume_from = 14)
+#' }
 #' @importFrom C50 C5.0
 #' @importFrom dplyr distinct filter
 #' @importFrom gtools rdirichlet

@@ -8,7 +8,7 @@
 #' @param selector String; a column name or name stub.
 #' @return An atomic vector of non-NA values in the selected columns, by order of occurrence.
 #' @note This is a helper function and not widely applicable. It is expected to be
-#' used by-row on wide-formatted sf attribute data.
+#'   used by-row on wide-formatted sf attribute data.
 #' @examples \dontrun{
 #' load('heronvale_soilmap')
 #' percs_1 <- n_things(heronvale_soilmap[1, ], 'PERC')}
@@ -23,11 +23,11 @@ n_things <- function(input = NULL, selector = NULL) {
 #' @param src_map An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object.
 #' @param id_field String; name of unique identifier field.
 #' @details This function highlights some issues that may cause dsmartr to either fail or behave
-#' unpredictably. Usually these are side-effects of prepration work carried out in other software.
-#' Sometimes they are the result of errors in the source data. Note that polygon geometry is not
-#' explicitly checked, only attributes. At present, three problems are checked - whether data is
-#' missing (e.g. a polygon class without a matching percentage), whether a percentage is 0%, and
-#' whether total percentage (by polygon) is not 100%.
+#'   unpredictably. Usually these are side-effects of prepration work carried out in other software.
+#'   Sometimes they are the result of errors in the source data. Note that polygon geometry is not
+#'   explicitly checked, only attributes. At present, three problems are checked - whether data is
+#'   missing (e.g. a polygon class without a matching percentage), whether a percentage is 0%, and
+#'   whether total percentage (by polygon) is not 100%.
 #' @return An sf object with appended logical columns indicating presence of possible data faults.
 #' @examples \dontrun{
 #' load("heronvale_soilmap")

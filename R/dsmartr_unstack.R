@@ -3,9 +3,9 @@
 #' This function takes the outputs of \code{\link{dsmartr_collate}} and extracts the top \code{n}
 #' most-likely soil maps. Optionally, their respective probability surfaces are also extracted.
 #' @param dsmart_preds RasterBrick; output \code{dsmart_predictions} from
-#'  \code{\link{dsmartr_collate}}.
-#' @param dsmart_probs RasterBrick; output \code{dsmart_probabilities} from \code{\link{dsmartr_collate}};
-#'  optional.
+#'   \code{\link{dsmartr_collate}}.
+#' @param dsmart_probs RasterBrick; output \code{dsmart_probabilities} from
+#'   \code{\link{dsmartr_collate}}; optional.
 #' @param n_maps integer; the number of most-probable maps desired.
 #' @return A list containing:
 #' \itemize{
@@ -78,13 +78,13 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
 #' Generates a soil class probability map for any or all input soil classes. Requires output of
 #' \code{\link{dsmartr_collate}}.
 #' @param tallied_probs RasterBrick; \code{tallied_probabilities} output by
-#' \code{\link{dsmartr_collate}}.
+#'   \code{\link{dsmartr_collate}}.
 #' @param soil_class String; Soil class(es) of interest, if only particular maps are desired.
 #' @param lookup Data Frame; contains raster values and corresponding soil class labels. See
-#' \code{\link{dsmartr_collate}}.
+#'   \code{\link{dsmartr_collate}}.
 #' @param cpus Integer; number of processors to use in parallel.
 #' @return \code{class_maps}: List of RasterLayers; probability surfaces for each soil class. All
-#' outputs are written to disk as GeoTIFF.
+#'   outputs are written to disk as GeoTIFF.
 #' @examples \dontrun{
 #' # run dsmartr_collate() with the example data and then
 #'

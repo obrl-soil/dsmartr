@@ -185,14 +185,14 @@ t_prep <- proc.time() - t
 # backup: NB can't write to shp or gpkg bc of list-column
 saveRDS(polygons_prepped, file.path(polygon_dir, 'polygons_prepped.rds'))
 #polygons_prepped <- readRDS(file.path(polygon_dir, 'polygons_prepped.rds'))
-#
-#```
-#
-#### Generate n model realisations
-#
-#Note that this function doesn't return anything to the workspace as the volume of data would max out the RAM on most machines. Outputs are all written to #disk.
-#
-#```{r 'dsmart_gen_reals'}
+
+```
+
+### Generate n model realisations
+
+Note that this function doesn't return anything to the workspace as the volume of data would max out the RAM on most machines. Outputs are all written to #disk.
+
+```{r 'dsmart_gen_reals'}
 dsmart_gen_reals <- function (covariates    = NULL, indata = NULL, obsdat = NULL,
                               id_field      = NULL, reals  = NULL, t_factor = 10000,
                               cpus = 1, write_files   = c('rds_only', 'all'), 
@@ -392,14 +392,14 @@ dsmart_gen_reals(covariates = covariate_brick, indata = polygons_prepped, id_fie
 t_gr <- proc.time() - t
 
 print(paste0('This run took ', round(t_gr[3] / 60 / 60 , 2), ' hours to complete.'))
-#
-#```
-#
-#### Process Model Realisations
-#
-#Now that the run is complete, output files must be read in and collated.
-#
-#```{r 'output_processing'}
+
+```
+
+### Process Model Realisations
+
+Now that the run is complete, output files must be read in and collated.
+
+```{r 'output_processing'}
 
 save.image(file.path(getwd(), 'run_results.RData'))
 
@@ -415,12 +415,12 @@ LUT <- levels(reals[[1]])[[1]]
 LUT$category <- as.character(LUT$category)
 LUT <- LUT[-c(1) , ]
 names(LUT) <- c("ID", "CLASS")
-#
-#```
-#
-#This next function takes the `r desired_runs` model realisations and stacks them, then tallies how many times each #soil was predicted on a given pixel. It then reorders those tallies so that the most-probable soil is in layer 1, #second most probable in layer 2, etc. It also outputs a stack of the probabilities associated with each of those #most-probable surfaces (i.e. a strong model has a lot of values close to 1 in layer 1). Optionally, it can output the #intermediate files that lead to these stacks. Outputs are written to file as multiband GeoTiffs, which can be large.
-#
-#```{r 'dsmart_tally_reals', eval=FALSE}
+
+```
+
+This next function takes the `r desired_runs` model realisations and stacks them, then tallies how many times each #soil was predicted on a given pixel. It then reorders those tallies so that the most-probable soil is in layer 1, #second most probable in layer 2, etc. It also outputs a stack of the probabilities associated with each of those #most-probable surfaces (i.e. a strong model has a lot of values close to 1 in layer 1). Optionally, it can output the #intermediate files that lead to these stacks. Outputs are written to file as multiband GeoTiffs, which can be large.
+
+```{r 'dsmart_tally_reals', eval=FALSE}
 dsmart_tally_reals <- function(realstack = NULL, lookup = NULL, cpus = 1, keep_tallies = TRUE) {
   if (!dir.exists("dsmartOuts/summaries")) {
       dir.create("dsmartOuts/summaries", showWarnings = F)
@@ -565,14 +565,14 @@ dsmart_tally_reals <- function(realstack = NULL, lookup = NULL, cpus = 1, keep_t
 t       <- proc.time()
 dsmart_tally_reals(realstack = reals, lookup = LUT, cpus = 6, keep_tallies = TRUE)
 t_tally <- proc.time() - t
-#
-#```
-#
-#### Most-likely Soils Maps 
-#
-#The outputs produced above can be split into individual files. The following function creates `n` most-probable soil #class maps,and (optionally) a probability surface for each.
-#
-#```{r 'dsmart_nmp', eval=FALSE}
+
+```
+
+### Most-likely Soils Maps 
+
+The outputs produced above can be split into individual files. The following function creates `n` most-probable soil #class maps,and (optionally) a probability surface for each.
+
+```{r 'dsmart_nmp', eval=FALSE}
 dsmart_nmp <- function(class_predictions = NULL, class_probabilities = NULL, lookup = NULL, nmaps = 1) {
   if (!dir.exists('dsmartOuts/summaries/most_probable_maps/')) { 
     dir.create('dsmartOuts/summaries/most_probable_maps/', showWarnings = F)
@@ -627,50 +627,50 @@ dsmart_nmp <- function(class_predictions = NULL, class_probabilities = NULL, loo
 t     <- proc.time()
 dsmart_nmp(class_predictions = ordered, class_probabilities = sorted, lookup = LUT, nmaps = 3)
 t_nmp <- proc.time() - t
-#
-#```
-#
-#### Class Probability Surfaces
-#
-#Probability surfaces for each soil class can also be produced. This function requires a 'probs' output from #tally_reals (using option `keep_tallies = TRUE`).
-#
-#```{r 'classmaps', eval=FALSE}
-#dsmart_classmaps <- function(probstack = NULL, lookup = NULL, cpus = 1) {
-#  if (!dir.exists('dsmartOuts/summaries/class_maps/')) {
-#    dir.create('dsmartOuts/summaries/class_maps/', showWarnings = F)
-#  }
-#  class_dir <- file.path(getwd(), 'dsmartOuts', 'summaries', 'class_maps')
-#
-#  beginCluster(cpus)
-#  suppressWarnings(probs_list <- unstack(probs))
-#    
-#  lapply(seq_along(probs_list), function(i) {
-#    names(probs_list[[i]]) <- as.character(lookup[i, 2])
-#  })
-#  #for (i in 1:length(probs_list)) {
-#  #  names(probs_list[[i]]) <- as.character(lookup[i, 2])
-#  #}
-#    
-#  prob_tifs <- lapply(probs_list, function(x) {
-#    writeRaster(x, 
-#                filename  = file.path(class_dir, paste0(names(x), "_probability.tif")),
-#                format    = "GTiff",
-#                NAflag    = -9999,
-#                datatype  = 'FLT4S',
-#                overwrite = TRUE)
-#  })
-#  endCluster()
-#}
-#t    <- proc.time() 
-#dsmart_classmaps(probstack = probs, lookup = LUT, cpus = 6)
-#t_cm <- proc.time() - t
-#```  
-#
-#### Confusion Index
-#
-#To help evaluate DSMART's performance, some additional rasters can be generated. The first is called the 'confusion #index', which is a measure of the probability gap between the first and second most probable soils. Ideally, the gap #is large, implying that the most-probable soil is far more probable than any other. 
-#
-#```{r 'dsmart_confind', eval=FALSE}
+
+```
+
+### Class Probability Surfaces
+
+Probability surfaces for each soil class can also be produced. This function requires a 'probs' output from #tally_reals (using option `keep_tallies = TRUE`).
+
+```{r 'classmaps', eval=FALSE}
+dsmart_classmaps <- function(probstack = NULL, lookup = NULL, cpus = 1) {
+  if (!dir.exists('dsmartOuts/summaries/class_maps/')) {
+    dir.create('dsmartOuts/summaries/class_maps/', showWarnings = F)
+  }
+  class_dir <- file.path(getwd(), 'dsmartOuts', 'summaries', 'class_maps')
+
+  beginCluster(cpus)
+  suppressWarnings(probs_list <- unstack(probs))
+    
+  lapply(seq_along(probs_list), function(i) {
+    names(probs_list[[i]]) <- as.character(lookup[i, 2])
+  })
+  #for (i in 1:length(probs_list)) {
+  #  names(probs_list[[i]]) <- as.character(lookup[i, 2])
+  #}
+    
+  prob_tifs <- lapply(probs_list, function(x) {
+    writeRaster(x, 
+                filename  = file.path(class_dir, paste0(names(x), "_probability.tif")),
+                format    = "GTiff",
+                NAflag    = -9999,
+                datatype  = 'FLT4S',
+                overwrite = TRUE)
+  })
+  endCluster()
+}
+t    <- proc.time() 
+dsmart_classmaps(probstack = probs, lookup = LUT, cpus = 6)
+t_cm <- proc.time() - t
+```  
+
+### Confusion Index
+
+To help evaluate DSMART's performance, some additional rasters can be generated. The first is called the 'confusion #index', which is a measure of the probability gap between the first and second most probable soils. Ideally, the gap #is large, implying that the most-probable soil is far more probable than any other. 
+
+```{r 'dsmart_confind', eval=FALSE}
 dsmart_ci <- function(class_probabilities = NULL, cpus = 1) {
   
   conf_index  <- function(x) {1 - (x[[1]] - x[[2]])}
@@ -695,16 +695,16 @@ dsmart_ci <- function(class_probabilities = NULL, cpus = 1) {
 t    <- proc.time()
 dsmart_ci(class_probabilities = sorted, cpus = 6) 
 t_ci <- proc.time() - t
-#
-#```
-#
-#### Number of soils predicted
-#
-#In practice, for many pixels the most probable soil is often a close race between two or even more possible classes. #This can happen when a number of soil classes are very similar, or where DSMART is having trouble making effective #predictions.
-#
-#A second measure of DSMART's certainty is the number of different soils predicted on a given pixel - ideally, this #number is low. DSMART outputs also have a certain amount of 'noise' - soils predicted only a few times on a given #pixel during the `n` model runs, which can safely be disregarded. This means we can set a cutoff level below which #`counts` is ignored.
-#
-#```{r 'dsmart_npreds', eval=FALSE}  
+
+```
+
+### Number of soils predicted
+
+In practice, for many pixels the most probable soil is often a close race between two or even more possible classes. #This can happen when a number of soil classes are very similar, or where DSMART is having trouble making effective #predictions.
+
+A second measure of DSMART's certainty is the number of different soils predicted on a given pixel - ideally, this #number is low. DSMART outputs also have a certain amount of 'noise' - soils predicted only a few times on a given #pixel during the `n` model runs, which can safely be disregarded. This means we can set a cutoff level below which #`counts` is ignored.
+
+```{r 'dsmart_npreds', eval=FALSE}  
 dsmart_npred <- function(class_counts = NULL, cpus = 1, noise_cutoff = 0.1, nreals = NULL) {
   if (is.null(nreals)) {
     stop('total number of DSMART model runs must be supplied.')
@@ -771,14 +771,14 @@ dsmart_npred <- function(class_counts = NULL, cpus = 1, noise_cutoff = 0.1, nrea
 t     <- proc.time()
 dsmart_npred(class_counts = counts, cpus = 6, noise_cutoff = 0.1, nreals = 100)
 t_ncl <- proc.time() - t
-#
-#
-#```
-#
-#The DSMART run is now complete.
-#
-#***
-#```{r 'bkup'}
+
+
+```
+
+The DSMART run is now complete.
+
+***
+```{r 'bkup'}
 save.image(file.path(getwd(), 'run_results.RData'))
 
 ```

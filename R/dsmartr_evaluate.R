@@ -3,13 +3,13 @@
 #' Calculates and maps the difference between the first and second most-probable
 #' dsmartr probability surfaces. Requires outputs of \code{\link{dsmartr_collate}}.
 #' @param dsmartr_probs RasterBrick; 'dsmartr_probabilities' output by
-#'  \code{\link{dsmartr_collate}}. Alternatively, probability maps output by
-#'  \code{\link{dsmartr_most_likely}} can be used, or a list of two rasters read from disk.
+#'   \code{\link{dsmartr_collate}}. Alternatively, probability maps output by
+#'   \code{\link{dsmartr_most_likely}} can be used, or a list of two rasters read from disk.
 #' @param cpus Integer; number of processors to use in parallel.
 #' @return \code{probability_gap}: RasterLayer depicting the probability gap. Written to disk as
-#' GeoTIFF.
+#'   GeoTIFF.
 #' @note This function is often called the 'confusion index', but has been renamed as that term is
-#' used in multiple contexts within the scientific literature.
+#'   used in multiple contexts within the scientific literature.
 #' @examples \dontrun{
 #' # run dsmartr_collate() with the example data then:'
 #' pgap1 <- dsmartr_eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][[1:2]],
@@ -57,14 +57,14 @@ dsmartr_eval_pgap <- function(dsmartr_probs = NULL, cpus = 1) {
 #' iterations. Requires outputs of \code{\link{dsmartr_collate}} (with option
 #' \code{keep_tallies = TRUE}).
 #' @param tallied_preds RasterBrick; \code{tallied_predictions} output by
-#' \code{\link{dsmartr_collate}}.
+#'   \code{\link{dsmartr_collate}}.
 #' @param cpus Integer; number of processors to use in parallel.
 #' @param n_iterations Integer; the number of iterations that weresupplied to
-#' \code{\link{dsmartr_iterate}}.
+#'   \code{\link{dsmartr_iterate}}.
 #' @return \code{n_classes_predicted}: RasterLayer depicting the number of distinct soils predicted
-#' per pixel. Written to disk as GeoTIFF.
+#'   per pixel. Written to disk as GeoTIFF.
 #' @note Fewer classes predicted on a pixel generally indicates higher internal model confidence at
-#' that location.
+#'   that location.
 #' @examples \dontrun{
 #' # run dsmartr_iterate() and dsmartr_collate() with the example data then:
 #' npred <- dsmartr_eval_npred(tallied_preds = collated[['tallied_predictions']],
@@ -114,11 +114,11 @@ dsmartr_eval_npred <- function(tallied_preds = NULL,
 #' @param n_iterations Integer; the number of iterations supplied to \code{\link{dsmartr_iterate}}.
 #' @param noise_cutoff Decimal; proportion of predictions to be considered 'noise' and ignored.
 #' @return \code{n_classes_predicted}: RasterLayer depicting the number of distinct soils predicted
-#' per pixel more than \code{n_iterations * noise_cutoff} times. Written to disk as GeoTIFF.
+#'   per pixel more than \code{n_iterations * noise_cutoff} times. Written to disk as GeoTIFF.
 #' @note Fewer classes predicted on a pixel generally indicates higher internal model confidence at
-#' that location.
+#'   that location.
 #' @examples \dontrun{
-#' # run dsamrtr_iterate() and dsmartr_collate() with the example data then:
+#' # run dsmartr_iterate() and dsmartr_collate() with the example data then:
 #' nxpred <- dsmartr_eval_nxpred(tallied_preds = collated[['tallied_predictions']],
 #' cpus = max(1, (parallel::detectCores() - 1)),
 #' n_iterations = nlayers(iteration_maps), noise_cutoff = 0.1)}

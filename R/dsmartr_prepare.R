@@ -2,23 +2,23 @@
 #'
 #' Prepares soil map inputs for use in \code{\link{dsmartr_iterate}}.
 #' @param src_map An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object representing
-#' the soil map to be disaggregated. Format requirements:
+#'   the soil map to be disaggregated. Format requirements:
 #' \itemize{
 #' \item{one row per polygon (data is wide-formatted)}
 #' \item{A numeric unique ID field for polygons}
 #' \item{1-n character columns for soil classes named CLASS_1 to CLASS_n}
 #' \item{1-n numeric columns for soil class percentages named PERC_1 to PERC_n. PERC_1 must relate
-#' to CLASS_1, etc.}
-#' }
+#'   to CLASS_1, etc.}}
+#'
 #' Other columns may exist in the object; they will be ignored.
 #' @param covariates RasterStack or RasterBrick; environmental covariate data.
 #' @param id_field String; name of unique identifier field in \code{src_map}.
 #' @param sample_method String; choice of flat rate per polygon or area-proportional rate.
 #' @param flat_rate Integer; Number of samples per polygon; use with \code{sample_method = 'flat'}.
 #' @param area_rate Integer; desired number of samples per square kilometre; use with
-#' \code{sample_method = 'area_p'}.
+#'   \code{sample_method = 'area_p'}.
 #' @param floor Integer; desired minimum number of samples per polygon. Optional; use with
-#' \code{sample_method = 'area_p'}. Defaults to 2x the number of soil classes on a polygon.
+#'   \code{sample_method = 'area_p'}. Defaults to 2x the number of soil classes on a polygon.
 #' @return A data frame holding polygon input attributes and four new attribute columns:
 #' \itemize{
 #'   \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf]{st_area}}.}
@@ -30,12 +30,12 @@
 #'   }
 #' Outputs are also written to disk.
 #' @note \itemize{
-#' \item{The output of this function is a required input for \code{\link{dsmartr_iterate}}}.
-#' \item{Covariate data should be in a projected CRS with defined units. While the function will run
-#'  with lat/long data, polygon area calculations may be dangerously inaccurate. Vector inputs
-#' will be transformed to match the covariate CRS.}
-#' \item{The \code{intersecting_cells} attribute field is a list-column, so the returned  object
-#' cannot be written to e.g. csv format.}
+#'   \item{The output of this function is a required input for \code{\link{dsmartr_iterate}}}.
+#'   \item{Covariate data should be in a projected CRS with defined units. While the function will
+#'     run with lat/long data, polygon area calculations may be dangerously inaccurate. Vector
+#'     inputs will be transformed to match the covariate CRS.}
+#'   \item{The \code{intersecting_cells} attribute field is a list-column, so the returned  object
+#'     cannot be written to e.g. csv format.}
 #' \item{This function runs faster with a RasterBrick than a Stack.}}
 #' @examples \dontrun{
 #' data('heronvale_soilmap')
@@ -43,11 +43,11 @@
 #'
 #' # flat rate
 #' pr_flat <- dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-#' id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 5)
+#' id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 6)
 #'
 #' # area_proportional rate with floor
 #' pr_ap <- dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-#' id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 5)}
+#' id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 6)}
 #' @importFrom dplyr filter mutate mutate_if
 #' @importFrom methods is as
 #' @importFrom purrr map map_int
@@ -145,19 +145,19 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
 #'
 #' Prepares dsmartr point inputs for use in \code{\link{dsmartr_iterate}}.
 #' @param known_points sfc_POINT, SpatialPointsDataFrame or Data Frame object; represents locations
-#'  where the soil class has been directly observed. Supply with spatial location (spatial data or
-#'  x and y attributes), unique numeric ID, and soil class.
+#'   where the soil class has been directly observed. Supply with spatial location (spatial data or
+#'   x and y attributes), unique numeric ID, and soil class.
 #' @param soil_id String; name of column in \code{known_points} holding soil class data.
 #' @param x_coords String; name of column in \code{known_points} holding x-coordinate data.
-#' Only needed for non-spatial inputs.
+#'   Only needed for non-spatial inputs.
 #' @param y_coords String; name of column holding y-coordinate data. Only needed for non-spatial
-#' inputs.
+#'   inputs.
 #' @param covariates RasterStack or RasterBrick; environmental covariate data.
 #' @return A data frame with two attributes: soil class code and corresponding raster cell index
-#' number.
+#'   number.
 #' @note The output of this function is an optional input for \code{\link{dsmartr_iterate}}. If
-#' \code{known_points} is supplied as a data frame, the x and y coordinates must match the covariate
-#' crs.
+#'   \code{known_points} is supplied as a data frame, the x and y coordinates must match the
+#'   covariate crs.
 #' @examples \dontrun{
 #' load('heronvale_known_sites')
 #' load('heronvale_soilmap')
