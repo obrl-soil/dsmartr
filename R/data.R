@@ -1,4 +1,4 @@
-#' Demonstration covariates for dsmartr
+#' Data: Demonstration covariates for dsmartr
 #'
 #' A dataset containing a variety of environmental parameters that may correlate with mapped soil
 #' concepts.
@@ -44,13 +44,13 @@
 #' appropriate resampling (bilinear for continuous data, nearest-neighbour for categorical).
 'heronvale_covariates'
 
-#' Points where soil class is known
+#' Data: Points where soil class is known
 #'
 #' A dataset containing the locations of described soil profiles within the Heronvale 1:10000
 #' topographic key map sheet. Sites are from a soil and land resource survey conducted in the early
 #' 2000s. Full profile descriptions can be viewed in the
 #' \href{https://qldglobe.information.qld.gov.au/}{Queensland Globe}.
-#' @format An tbl/sf_POINT object in EPSG:3577 with 36 rows and 6 columns:
+#' @format A tbl/sf_POINT object in EPSG:3577 with 36 rows and 6 columns:
 #' \describe{
 #'  \item{PROJECT_CODE}{Three-letter code identifying the soil survey}
 #'  \item{SITE_ID}{Within-project unique site identifier}
@@ -64,14 +64,15 @@
 #' \item{\url{https://www.qld.gov.au/environment/land/soil/soil-data/survey-types/}}}
 'heronvale_known_sites'
 
-#' Broadscale soil map of the Heronvale area
+#' Data: Broadscale soil map of the Heronvale area
 #'
 #' A dataset containing an extract of 1:100,000 scale soils mapping from the Whitsunday coast area.
 #' The complete dataset can be viewed in the \href{https://qldglobe.information.qld.gov.au/}{Queensland
 #'  Globe.} Data was extracted from the Queensland Soil and Land Information (SALI) database in 2017
 #'  and formatted for dsmartr in R 3.3.
-#'  @format An tbl/sf dataframe of mixed POLYGON/MULTIPOLYGON types in EPSG:3577, with 105 rows and
-#'  10 variables:
+#'
+#'  @format A tbl/sf dataframe of mixed POLYGON/MULTIPOLYGON types in EPSG:3577, with 105 rows
+#'  and 10 variables:
 #'  \describe{
 #'  \item{PROJECT_CODE}{Three-letter code identifying the soil survey}
 #'  \item{POLY_NO}{Within-project Unique Map Area identifier}
@@ -88,14 +89,14 @@
 #' \item{\url{https://www.qld.gov.au/environment/land/soil/soil-data/survey-types/}}}
 'heronvale_soilmap'
 
-#' Decoded soil class names
+#' Data: Decoded soil class names
 #'
 #' A table of soil class labels found in 'heronvale_soilmap' and 'heronvale_known_sites', along with
 #' their full names. Explanations of the concept associated with each soil name are available in the
 #'  report associated with this mapping project.
 #' @format A tibble with 38 rows and 2 columns:
 #' \describe{
-#' \item{CLASS}{Two-letter soil class label}
+#' \item{CLASS}{Soil class label}
 #' \item{NAME}{Soil class name}}
 #' @source \itemize{
 #' \item{\url{https://publications.qld.gov.au/dataset/soils-whitsunday-coast-wcs}}

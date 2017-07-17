@@ -41,6 +41,6 @@ load('heronvale_soilmap')
 load('heronvale_covariates')
 
 # data frame input:
-dsmartr_prep_points(src_map = heronvale_soilmap, known_points = heronvale_known_sites,
+pr_pts <- dsmartr_prep_points(src_map = heronvale_soilmap, known_points = heronvale_known_sites,
 soil_id = 'CLASS', x_coords = 'x', y_coords = 'y', covariates = heronvale_covariates) }
 }

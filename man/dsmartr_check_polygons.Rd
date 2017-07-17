@@ -23,7 +23,7 @@ unpredictably. Usually these are side-effects of prepration work carried out in 
 Sometimes they are the result of errors in the source data. Note that polygon geometry is not
 explicitly checked, only attributes. At present, three problems are checked - whether data is
 missing (e.g. a polygon class without a matching percentage), whether a percentage is 0%, and
-whether total percentage is not 100%.
+whether total percentage (by polygon) is not 100%.
 }
 \examples{
 \dontrun{

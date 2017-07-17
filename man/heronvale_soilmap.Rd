@@ -3,7 +3,7 @@
 \docType{data}
 \name{heronvale_soilmap}
 \alias{heronvale_soilmap}
-\title{Broadscale soil map of the Heronvale area}
+\title{Data: Broadscale soil map of the Heronvale area}
 \format{An object of class \code{sf} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 100 rows and 10 columns.}
 \source{
 \itemize{
@@ -18,8 +18,10 @@ A dataset containing an extract of 1:100,000 scale soils mapping from the Whitsu
 The complete dataset can be viewed in the \href{https://qldglobe.information.qld.gov.au/}{Queensland
  Globe.} Data was extracted from the Queensland Soil and Land Information (SALI) database in 2017
  and formatted for dsmartr in R 3.3.
- @format An tbl/sf dataframe of mixed POLYGON/MULTIPOLYGON types in EPSG:3577, with 105 rows and
- 10 variables:
+}
+\details{
+@format A tbl/sf dataframe of mixed POLYGON/MULTIPOLYGON types in EPSG:3577, with 105 rows
+ and 10 variables:
  \describe{
  \item{PROJECT_CODE}{Three-letter code identifying the soil survey}
  \item{POLY_NO}{Within-project Unique Map Area identifier}

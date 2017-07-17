@@ -10,17 +10,15 @@ dsmartr_collate(iteration_stack = NULL, lookup = NULL, cpus = 1)
 \item{iteration_stack}{RasterStack or Brick; output \code{iteration_maps} from
 \code{\link{dsmartr_iterate}}.}
 
-\item{lookup}{Data Frame; contains raster values and corresponding soil class labels. Example
-\code{str(heronvale_soilnames)}:
- \preformatted{'data.frame':    36 obs. of  3 variables:
-$ ID   : int  1 2 3 4 5 6 7 8 9 10 ...
-$ CLASS: chr  "Ad" "An" "Bb" "Bh" ...
-$ NAME : chr  "Andromache" "Andergrove" "Balberra" "Benholme" ...}
-There's no need to have both CLASS and NAME fields but it can come in handy for map-making etc.}
+\item{lookup}{Data Frame; contains raster values and corresponding soil class labels. Example:
+ \preformatted{'data.frame':    38 obs. of  2 variables:
+$ VALUE: int  1 2 3 4 5 6 7 8 9 10 ...
+$ CLASS: chr  "Ad" "An" "Bb" "Bh" ...}}
 
 \item{cpus}{Integer; number of processors to use in parallel.}
 }
 \value{
+A list of four RasterStacks:
 \itemize{
 \item{\code{dsmartr_predictions}: RasterStack, soil class prediction maps in order of most to
 least-probable}
@@ -44,7 +42,6 @@ requirement is \code{n} iterations * \code{n} covariate cells * 8 bytes * 2.
 \dontrun{
 # run dsmartr_iterate() with the example data, then:
 LUT <- levels(iteration_maps[[1]])[[1]]
-LUT <- LUT[!(LUT$ID == 0), ]
-dsmartr_collate(iteration_stack = iteration_maps, lookup = LUT,
+collated <- dsmartr_collate(iteration_stack = iteration_maps, lookup = LUT,
 cpus = max(1, (parallel::detectCores() - 1)))}
 }

@@ -9,13 +9,13 @@ dsmartr_eval_pgap(dsmartr_probs = NULL, cpus = 1)
 \arguments{
 \item{dsmartr_probs}{RasterBrick; 'dsmartr_probabilities' output by
 \code{\link{dsmartr_collate}}. Alternatively, probability maps output by
-\code{\link{dsmartr_most_probable}} can be used, or a list of two rasters read from disk.}
+\code{\link{dsmartr_most_likely}} can be used, or a list of two rasters read from disk.}
 
 \item{cpus}{Integer; number of processors to use in parallel.}
 }
 \value{
 \code{probability_gap}: RasterLayer depicting the probability gap. Written to disk as
-GeoTIFF before being assigned to the global environment.
+GeoTIFF.
 }
 \description{
 Calculates and maps the difference between the first and second most-probable
@@ -27,18 +27,18 @@ used in multiple contexts within the scientific literature.
 }
 \examples{
 \dontrun{
-# run dsmartr_collate() with the example data then:
-dsmartr_eval_pgap(dsmartr_probs = dsmartr_probabilities,
+# run dsmartr_collate() with the example data then:'
+pgap1 <- dsmartr_eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][[1:2]],
 cpus = max(1, (parallel::detectCores() - 1)))
 
-# or supply unstacked maps
-dsmartr_eval_pgap(dsmartr_probs = most_prob_prob_maps[1:2],
+# or supply unstacked maps (slightly faster)
+pgap2 <- dsmartr_eval_pgap(dsmartr_probs = most_likely[['most_likely_ps']][[1:2]],
 cpus = max(1, (parallel::detectCores() - 1)))
 
 # or read from file
 mpp_1 <- raster(file.path(getwd(), 'most_probable_maps', 'mostlikely_1.tif'))
 mpp_2 <- raster(file.path(getwd(), 'most_probable_maps', 'mostlikely_2.tif'))
-dsmartr_eval_pgap(dsmartr_probs = list(mpp_1, mpp_2),
+pgap3 <- dsmartr_eval_pgap(dsmartr_probs = list(mpp_1, mpp_2),
 cpus = max(1, (parallel::detectCores() - 1)))
 }
 }

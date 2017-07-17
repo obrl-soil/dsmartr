@@ -11,7 +11,7 @@
 #' used by-row on wide-formatted sf attribute data.
 #' @examples \dontrun{
 #' load('heronvale_soilmap')
-#' n_things(heronvale_soilmap[1, ], 'PERC')}
+#' percs_1 <- n_things(heronvale_soilmap[1, ], 'PERC')}
 #' @importFrom stats na.omit
 n_things <- function(input = NULL, selector = NULL) {
   as.vector(na.omit(unlist(as.data.frame(input)[, c(grep(selector, names(input)))])))
@@ -27,7 +27,7 @@ n_things <- function(input = NULL, selector = NULL) {
 #' Sometimes they are the result of errors in the source data. Note that polygon geometry is not
 #' explicitly checked, only attributes. At present, three problems are checked - whether data is
 #' missing (e.g. a polygon class without a matching percentage), whether a percentage is 0%, and
-#' whether total percentage is not 100%.
+#' whether total percentage (by polygon) is not 100%.
 #' @return An sf object with appended logical columns indicating presence of possible data faults.
 #' @examples \dontrun{
 #' load("heronvale_soilmap")

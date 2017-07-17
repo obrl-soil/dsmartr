@@ -19,21 +19,22 @@ dsmartr_class_maps(tallied_probs = NULL, soil_class = NULL, lookup = NULL,
 \item{cpus}{Integer; number of processors to use in parallel.}
 }
 \value{
-\code{class_maps}: List of RasterLayers; probability surfaces for each soil class.
-
-All outputs are written to disk as GeoTIFFs before being assigned to the global environment.
+\code{class_maps}: List of RasterLayers; probability surfaces for each soil class. All
+outputs are written to disk as GeoTIFF.
 }
 \description{
-Produce soil class probability surfaces
+Generates a soil class probability map for any or all input soil classes. Requires output of
+\code{\link{dsmartr_collate}}.
 }
 \examples{
 \dontrun{
 # run dsmartr_collate() with the example data and then
 
 # all classes:
-dsmartr_class_maps(tallied_probs = tallied_probabilities, lookup = LUT)
+classmaps <- dsmartr_class_maps(tallied_probs = collated[['tallied_probabilities']],
+ lookup = LUT)
 
 # just map two classes of interest:
-dsmartr_class_maps(tallied_probs = tallied_probabilities,
-soil_class = c('BL', 'CO'), lookup = LUT)}
+classmaps <- dsmartr_class_maps(tallied_probs = collated[['tallied_probabilities']],
+soil_class = c('An', 'Wr'), lookup = LUT)}
 }

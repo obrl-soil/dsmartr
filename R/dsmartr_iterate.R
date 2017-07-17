@@ -2,6 +2,7 @@
 #'
 #' Returns the set of unique soil classes that occur in an input soil map, and, optionally,
 #' a set of known points.
+#' @keywords internal
 #' @param soilmap Data Frame; Returned by \code{\link{dsmartr_prep_polygons}}.
 #' @param soilpoints Data Frame; Returned by \code{\link{dsmartr_prep_points}}; optional.
 #' @param stub String; Common column name or name stub holding soil class data.
@@ -10,7 +11,8 @@
 #' @note It is up to the user to make sure the classification schema in both datasets matches/is
 #' compatible.
 #' @examples \dontrun{
-#' dsmartr_get_all_classes(soilmap = prepped_map, soilpoints = prepped_points, stub = 'CLASS')}
+#' # run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
+#' class_levels <- dsmartr_get_all_classes(soilmap = pr_ap, soilpoints = pr_points, stub = 'CLASS')}
 #' @importFrom stats na.omit
 dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, stub = NULL) {
 
@@ -35,6 +37,7 @@ dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, stub = NULL) 
 #'
 #' Randomly selects n cells for sampling and assigns them a soil class based on the overlying
 #' map polygon's components
+#' @keywords internal
 #' @param pd A single-row sf object containing soil attributes and geometry. Usually output of
 #' running split(x, 1:nrow(x)) on a polygon sf dataframe.
 #' @param cs String; stub of attribute column names holding soil class data
@@ -45,8 +48,9 @@ dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, stub = NULL) 
 #' @return A data frame containing two columns: weighted random allocation of soil classes,
 #' and cell numbers
 #' @examples \dontrun{
-#' iter_sample_poly(pd = z, cs = 'CLASS', ps = 'PERC', nscol = 'n_samples',
-#' cellcol = 'intersecting_cells', t_factor = t_factor)}
+#' # run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
+#' sample_points <- iter_sample_poly(pd = pr_ap[1, ], cs = 'CLASS', ps = 'PERC',
+#' nscol = 'n_samples', cellcol = 'intersecting_cells', t_factor = t_factor)}
 #' @importFrom gtools rdirichlet
 #' @importFrom stats na.omit
 iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
@@ -81,7 +85,9 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
                               stringsAsFactors = FALSE)
 }
 
-#' dsmartr model iterator
+
+utils::globalVariables(names = c("CELL"), package = 'dsmartr')
+#' generate disaggregated soil maps
 #'
 #' Disaggregates an input soil map a given number of times.
 #' @param prepped_map Data Frame; Returned by \code{\link{dsmartr_prep_polygons}}.
@@ -106,12 +112,12 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
 #' @examples \dontrun{
 #' ## Polygons only:
 #' # run dsmartr_prep_polygons() per the example code for that function, then
-#' dsmartr_iterate(prepped_map = prepped_polygons, covariates = heronvale_covariates,
+#' iteration_maps <- dsmartr_iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
 #'  id_field = 'POLY_NO', n_iterations = 20,
 #'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'all', write_samples = TRUE)
 #'
 #' ## Oh no, there was a blackout halfway through my model run:
-#' dsmartr_iterate(prepped_map = prepped_polygons, covariates = heronvale_covariates,
+#' iteration_maps_2 <- dsmartr_iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
 #' id_field = 'POLY_NO', n_iterations = 6, cpus = max(1, (parallel::detectCores() - 1)),
 #' write_files = 'all', write_samples = TRUE, resume_from = 14)}
 #' @importFrom C50 C5.0
@@ -143,6 +149,10 @@ dsmartr_iterate <- function(prepped_map    = NULL,
   strr   <- file.path(getwd(), 'iterations', 'maps')
   strm   <- file.path(getwd(), 'iterations', 'models')
 
+  class_levels <- dsmartr_get_classes(soilmap    = prepped_map,
+                                      soilpoints = prepped_points,
+                                      stub       = 'CLASS')
+
   message(paste0(Sys.time(), ': dsmartr iteration in progress...'))
   pb <- txtProgressBar(min = 0, max = n_iterations, style = 3)
 
@@ -157,7 +167,6 @@ dsmartr_iterate <- function(prepped_map    = NULL,
     sample_points <- map(.x = src_split, .f = function(z) {
       iter_sample_poly(pd = z, cs = 'CLASS', ps = 'PERC', nscol = 'n_samples',
                        cellcol = 'intersecting_cells', t_factor = t_factor)})
-    # get all the sampling data for all the polygons for this iteration into one object
     all_samplepoints <- do.call('rbind', sample_points)
 
     # sample covariates
@@ -181,9 +190,7 @@ dsmartr_iterate <- function(prepped_map    = NULL,
 
     # force all outputs to be on the same scale eg. output map value 1 always equals factor level 1
     all_samplepoints$CLASS         <- as.factor(all_samplepoints$CLASS)
-    levels(all_samplepoints$CLASS) <- dsmartr_get_classes(soilmap    = prepped_map,
-                                                          soilpoints = prepped_points,
-                                                          stub       = 'CLASS')
+    levels(all_samplepoints$CLASS) <- class_levels
 
     # set up model input
     model_input <- all_samplepoints[complete.cases(all_samplepoints), ]
@@ -206,6 +213,7 @@ dsmartr_iterate <- function(prepped_map    = NULL,
                          "CLASS" = as.factor(res$levels))
     levels(iter_map) <- lookup
 
+    # save outputs for this iteration
     if (write_files == 'rds_only') {
 
       saveRDS(res, file.path(strm, paste0('C5_model_', j, '.rds')))
@@ -232,7 +240,7 @@ dsmartr_iterate <- function(prepped_map    = NULL,
                   NAflag = -9999)
 
       # may as well write lookup to csv as aux.xml files aren't read by QGIS :(
-      if (j == 1) {
+      if (j == start) {
         # NB Excel is the default csv viewer for many people but it doesn't like csv files
         # where column 1 is called 'ID'
         names(lookup) <- c('VALUE', 'CLASS')
@@ -287,14 +295,16 @@ dsmartr_iterate <- function(prepped_map    = NULL,
     setTxtProgressBar(pb, j)
   } )
 
-  # send maps to global env for dsmartr_collate
+  # return maps to for dsmartr_collate
   map_rds  <- list.files(strr, pattern = '\\.rds$', full.names = TRUE)
   map_list <- lapply(map_rds, function(x) readRDS(x))
   names(map_list) <- paste0('iter_', 1:length(map_list)) # still a list
-  assign('iteration_maps', raster::stack(map_list), envir = .GlobalEnv)
+  iteration_maps <- raster::stack(map_list)
 
   close(pb)
   message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
                  file.path(getwd(), 'iterations')))
+
+  iteration_maps
 
 }

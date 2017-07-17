@@ -18,8 +18,7 @@ dsmartr_eval_nxpred(tallied_preds = NULL, cpus = 1, n_iterations = NULL,
 }
 \value{
 \code{n_classes_predicted}: RasterLayer depicting the number of distinct soils predicted
-per pixel more than \code{n_iterations * noise_cutoff} times. Written to disk as GeoTIFF before
-being assigned to the global environment.
+per pixel more than \code{n_iterations * noise_cutoff} times. Written to disk as GeoTIFF.
 }
 \description{
 Calculates and maps the number of distinct soil classes predicted in more than a
@@ -32,8 +31,8 @@ that location.
 }
 \examples{
 \dontrun{
-# run dsmartr_collate() with the example data then:
-dsmartr_eval_nxpred(tallied_preds = tallied_predictions,
+# run dsamrtr_iterate() and dsmartr_collate() with the example data then:
+nxpred <- dsmartr_eval_nxpred(tallied_preds = collated[['tallied_predictions']],
 cpus = max(1, (parallel::detectCores() - 1)),
 n_iterations = nlayers(iteration_maps), noise_cutoff = 0.1)}
 }

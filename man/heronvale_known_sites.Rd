@@ -3,8 +3,8 @@
 \docType{data}
 \name{heronvale_known_sites}
 \alias{heronvale_known_sites}
-\title{Points where soil class is known}
-\format{An tbl/sf_POINT object in EPSG:3577 with 36 rows and 6 columns:
+\title{Data: Points where soil class is known}
+\format{A tbl/sf_POINT object in EPSG:3577 with 36 rows and 6 columns:
 \describe{
  \item{PROJECT_CODE}{Three-letter code identifying the soil survey}
  \item{SITE_ID}{Within-project unique site identifier}

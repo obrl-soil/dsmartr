@@ -31,6 +31,8 @@ map polygon's components
 }
 \examples{
 \dontrun{
-iter_sample_poly(pd = z, cs = 'CLASS', ps = 'PERC', nscol = 'n_samples',
-cellcol = 'intersecting_cells', t_factor = t_factor)}
+# run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
+sample_points <- iter_sample_poly(pd = pr_ap[1, ], cs = 'CLASS', ps = 'PERC',
+nscol = 'n_samples', cellcol = 'intersecting_cells', t_factor = t_factor)}
 }
+\keyword{internal}

@@ -3,10 +3,10 @@
 \docType{data}
 \name{heronvale_soilnames}
 \alias{heronvale_soilnames}
-\title{Decoded soil class names}
+\title{Data: Decoded soil class names}
 \format{A tibble with 38 rows and 2 columns:
 \describe{
-\item{CLASS}{Two-letter soil class label}
+\item{CLASS}{Soil class label}
 \item{NAME}{Soil class name}}}
 \source{
 \itemize{

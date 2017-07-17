@@ -32,7 +32,7 @@ Other columns may exist in the object; they will be ignored.}
 \code{sample_method = 'area_p'}.}
 
 \item{floor}{Integer; desired minimum number of samples per polygon. Optional; use with
-\code{sample_method = 'area_p'}. Defaults to the number of soil classes on a polygon.}
+\code{sample_method = 'area_p'}. Defaults to 2x the number of soil classes on a polygon.}
 }
 \value{
 A data frame holding polygon input attributes and four new attribute columns:
@@ -52,7 +52,8 @@ Prepares soil map inputs for use in \code{\link{dsmartr_iterate}}.
 \note{
 \itemize{
 \item{The output of this function is a required input for \code{\link{dsmartr_iterate}}}.
-\item{Covariate data must be in a projected CRS with defined units (not lat/long). Vector inputs
+\item{Covariate data should be in a projected CRS with defined units. While the function will run
+ with lat/long data, polygon area calculations may be dangerously inaccurate. Vector inputs
 will be transformed to match the covariate CRS.}
 \item{The \code{intersecting_cells} attribute field is a list-column, so the returned  object
 cannot be written to e.g. csv format.}
@@ -64,10 +65,10 @@ data('heronvale_soilmap')
 data('heronvale_covariates')
 
 # flat rate
-dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
+pr_flat <- dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
 id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 5)
 
 # area_proportional rate with floor
-dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
+pr_ap <- dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
 id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 5)}
 }

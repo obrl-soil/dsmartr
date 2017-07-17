@@ -26,6 +26,6 @@ used by-row on wide-formatted sf attribute data.
 \examples{
 \dontrun{
 load('heronvale_soilmap')
-n_things(heronvale_soilmap[1, ], 'PERC')}
+percs_1 <- n_things(heronvale_soilmap[1, ], 'PERC')}
 }
 \keyword{internal}

@@ -11,15 +11,17 @@ vignette: >
 
 # Background
 
-dsmartr is an R-based approach to the DSMART model (Odgers, 2014), which attempts to...
+Traditional soils mapping involves defining a set of soil types for a landscape, based on soil-forming factors (parent material, terrain, vegetation, climate, physical and chemical properties) and often importance for a particular use, e.g. agriculture. Soil changes in space on a continuum, so these types will vary internally, but within-group variation should be less than between-group variation.
 
-The model works like...
+Once soil types are defined, their occurrence is mapped across the landscape. Occurrence is represented with a set of interlocking polygons. At a fine scale, each polygon can delineate a single soil type, but many soil mapping projects only have the resources to produce a broader-scale overview map. In this kind of map, each polygon is attributed with multiple soil types and the expected proportion of each polygon occupied by each component soil. The user is left to interpret the landscape manually, with the aid of descriptive information accompanying the map.
 
-The package is essentially a domain-specific wrapper around the C5.0 model, so users should be familiar with C50's capabilities. Most of C50's control parameters are accessible in dsmartr, so model tuning is possible - however, this functionality is untested.
+dsmartr is an R-based approach to the DSMART model (Odgers, 2014), which attempts to 'crack apart' broadscale soil maps and make the polygon components spatially explicit. Relationships between the soil information and various environmental datasets are used to build a classification tree model. The model is used to map the polygon components as a fine-scaled raster. This process is repeated multiple times, with variation introduced around sample location and soil class proportions to vary the outputs somewhat. The realisations are then processed to give a 'most likely' soils map.
+
+dsmartr is essentially a domain-specific wrapper around the See5 (Quinlan, 1993) model's existing R implementation (package 'C50'), so users should be familiar with the model's capabilities. Many of C50's parameters are accessible in dsmartr, so model tuning is possible - however, this functionality is largely untested.
 
 # How to use this package
 
-The core of dsmartr is a three-step sequence - prepare input data, iteratively generate soil prediction maps, collate the outputs and map the most likely soil. Some evaluation functions are also available, but they can only help inform the user of the model's confidence in itself. External validation will still be required, either by using known points that weren't included in the model, or by further sampling within the project area.
+The core of dsmartr is a three-step sequence - prepare input data, iteratively generate soil prediction maps, and collate the outputs to obtain a most-likely-soil map. Some evaluation functions are also available, but they can only help inform the user of the model's confidence in itself. External validation will still be required, either by using known points that weren't included in the model, or by further sampling within the project area.
 
 ## 1. Prepare data for iterative sampling
 
@@ -38,11 +40,11 @@ Presence of multipolygons (or mixed multi/not polygons) won't cause the model to
 
 ### Environmental covariate rasters
 
-Covariates should be chosen for their relationship to soil forming factors. They should all have the same extent, cell size, and CRS, and underlie the input mapping. The covariates can have no-data areas, but if a polygon is 100% over a no-data area it will not be sampled. The covariates can have a larger extent than the input mapping, but bear in mind that the output model will likely become less reliable further away from the input data. Covariates should have a much smaller cell size than the input mapping polygons - anything larger than about 1/1000 the median polygon size will probably not produce useful outputs.
+Covariates should be chosen for their relationship to soil forming factors. They should all have the same extent, cell size, and CRS, and underlie the input mapping. The covariates can have no-data areas, but if a polygon is 100% over a no-data area it will not be sampled. The covariates can have a larger extent than the input mapping, but bear in mind that the output model will likely become less reliable further away from the input data. Covariates should have a much smaller cell size than the input mapping polygons - anything larger than about 1/100 the median polygon size will probably not produce useful outputs.
 
 ### Points where soil class is known
 
-Optionally, assemble a set of points where the soil is known (described sites). A location and soil class that fits the mapping schema is all that is required, and the soil classes do not have to occur on the polygon they intersect. Data can be stored as spatial points (sf or sp style), or as a table with coordinates.
+Optionally, assemble a set of points where the soil is known (described sites). A location and soil class that fits the mapping schema is all that is required, and the soil classes do not have to reocrded against the polygon they intersect. Data can be stored as spatial points (sf or sp style), or as a table with coordinates.
 
 Run `dsmartr_prep_polygons()` on the input mapping data. This function takes the input mapping and adds four new fields:
 
@@ -53,7 +55,7 @@ Run `dsmartr_prep_polygons()` on the input mapping data. This function takes the
   
 At this stage, the polygon geometry is no longer required and is dropped. 
 
-Note: dsmartr uses raster cell indexes to boost the speed of sample extraction from covariate rasters. This increases sampling rigour as well, because it effectively prevents multiple points from being sampled from the same raster cell and then randomly assigned to different soil classes. The downside is an inability to sample the covariates with a buffer around the points (e.g. getting the median value within x metres, but that approach is likely to be too computationally intensive to be a realistic option at present. This method can still be approximated by simply using covariates that have been smoothed with a moving window function.
+Note: dsmartr uses raster cell indexes to boost the speed of sample extraction from covariate rasters. This increases sampling rigour as well, because it effectively prevents multiple points from being sampled from the same raster cell and then randomly assigned to different soil classes. The downside is an inability to sample the covariates with a buffer around the points (e.g. getting the median value within x metres), but that approach is likely to be too computationally intensive to be a realistic option at present. This method can still be approximated by simply using covariates that have been smoothed with a moving window function.
 
 Optionally, run `dsmartr_prep_points()` as well. This function takes in point data (spatialised or not) and finds the raster cell index for each point. Again, vector geometries are replaced with raster cell index values.
 
@@ -93,9 +95,11 @@ prepped_points <- dsmartr_prep_points(known_points = heronvale_known_sites,
 str(prepped_points)
 ```
 
-# 2. Iteratively predict soil classes
+## 2. Iteratively predict soil classes
 
-The `dsmartr_iterate()` generates `n` realisations of soil class distribution, with variation introduced in three ways. Firstly, sample locations are randomised in each run by sampling from each list of raster cell indexes. Secondly, soil classes are assigned to each sample in a weighted random manner. Thirdly, the Dirichlet distribution is used to vary the weighted random allocation slightly away from the soil class input percentages. For example, a polygon that is 70% Soil A, 30% Soil B might be 68%/32% on one run and 71%/29% on another. In practice, this third source of variation only has a noticeable effect when sample number is quite high, or the T-factor is quite low. The T-factor is a multiplier applied to the soil class proportions, which effectively dampens how far the dirichlet-altered proportions can stray from their source data.
+`dsmartr_iterate()` generates `n` realisations of soil class distribution, with variation introduced in three ways. Firstly, sample locations are randomised in each iteration by sampling from the lists of raster cell indexes. Secondly, soil classes are assigned to each polygon sample set in a weighted random manner. Thirdly, the Dirichlet distribution is used to vary the weighted random allocation around the stated soil class input percentages. For example, a polygon that is 70% Soil A, 30% Soil B might be 68%/32% on one run and 71%/29% on another. This is important, because input percentages are usually thought of as having a range of up to +/- 10%. 
+
+In practice though, this third source of variation only has a noticeable effect when sample number is quite high (perhaps 1/minimum proportion on a polygon), or the T-factor is quite low. The T-factor is a multiplier applied to the soil class proportions, which effectively dampens how far the dirichlet-altered proportions can stray from their source data.
 
 Note that if the soil class percentages are input as proportions (0.7/0.3 instead of 70/30), T-factor must be boosted to at least ~10000 to prevent the dirichlet-altered proportions from losing all connection to their source e.g.:
 
@@ -110,22 +114,23 @@ gtools::rdirichlet(1, prop_in * 10000)
 
 ```
 
-# 3. Collate the model iterations
+## 3. Collate the model iterations
 
 `dsmartr_collate()` takes the maps output by `dsmartr_iterate()`, stacks them up, and tallies how often each different soil class was predicted on each pixel. The outputs are then rearranged in order of most-to-least probable.
 
-`dsmartr_most_probable()` will pull `n` most probable soil maps from the raster stacks produced by `dsmartr_collate()` and write them to file as singleband GeoTIFFs. Optionally, the probability surfaces associated with each map are also exported. These are the first evaluation surfaces available to the user.
+`dsmartr_most_probable()` will pull `n` most probable soil maps from the raster stacks produced by `dsmartr_collate()` and write them to file as single-band GeoTIFFs. Optionally, the probability surfaces associated with each map are also exported. These are the first evaluation surfaces available to the user.
 
-# 4. Evaluate the most probable maps
+Another optional extra, `dsmartr_class_maps()` will output a probability surface for each predicted soil class.
 
-`dsmartr_eval_pgap()` produces what is commonly called a 'confusion index' (renamed for clarity since this term is used in a range of contexts). The output map depicts the drop in probability between the most likely soil class and the next most likely soil class. A larger value at a given location equates to more consistent model predictions.
+## 4. Evaluate the most probable maps
 
-`dsmartr_eval_npred()` and `dsmartr_eval_nxpred()` take a slightly different approach to assessing consistency of model predictions, by tallying up the number of different soils predicted on each pixel. Smaller numbers imply that the model is behaving more consistently. `nxpred` discards predictions made less often a user-chosen threshold, treating them as 'noise'.
+`dsmartr_eval_pgap()` produces what is commonly called a 'confusion index' (renamed for clarity since this term is used in a range of contexts). The output map depicts the drop in probability between the most likely soil class and the next most likely soil class. A larger value at a given location equates to more consistent model predictions across multiple iterations.
+
+`dsmartr_eval_npred()` and `dsmartr_eval_nxpred()` take a slightly different approach to assessing consistency of model predictions, by tallying up the number of different soils predicted on each pixel. Smaller numbers imply that the model is behaving more consistently across multiple iterations. `nxpred` ignores soils that are predicted less often a user-chosen threshold, treating them as 'noise'.
 
 ***
 
 ## References
 
   * Odgers, N.P., Sun, W., McBratney, A.B., Minasny, B., Clifford, D., (2014) [Disaggregating and harmonising soil map units through resampled classification trees](http://dx.doi.org/10.1016/j.geoderma.2013.09.024). Geoderma, 214-215: 91-100.
-  * Odgers, N.P., Sun, McBratney, A.B., Minasny, B., (2015) [Digital soil property mapping and uncertainty estimation using soil class probability rasters](http://dx.doi.org/10.1016/j.geoderma.2014.09.009). Geoderma, 237:238 190-198.
-  
+  * Quinlan R (1993). C4.5: Programs for Machine Learning. Morgan Kaufmann Publishers, http://www.rulequest.com/see5-unix.html

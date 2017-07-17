@@ -27,5 +27,7 @@ compatible.
 }
 \examples{
 \dontrun{
-dsmartr_get_all_classes(soilmap = prepped_map, soilpoints = prepped_points, stub = 'CLASS')}
+# run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
+class_levels <- dsmartr_get_all_classes(soilmap = pr_ap, soilpoints = pr_points, stub = 'CLASS')}
 }
+\keyword{internal}

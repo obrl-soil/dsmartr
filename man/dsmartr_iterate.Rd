@@ -2,7 +2,7 @@
 % Please edit documentation in R/dsmartr_iterate.R
 \name{dsmartr_iterate}
 \alias{dsmartr_iterate}
-\title{dsmartr model iterator}
+\title{generate disaggregated soil maps}
 \usage{
 dsmartr_iterate(prepped_map = NULL, covariates = NULL,
   prepped_points = NULL, id_field = NULL, n_iterations = NULL,
@@ -52,12 +52,12 @@ This function writes a large number of files to disk.
 \dontrun{
 ## Polygons only:
 # run dsmartr_prep_polygons() per the example code for that function, then
-dsmartr_iterate(prepped_map = prepped_polygons, covariates = heronvale_covariates,
+iteration_maps <- dsmartr_iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
  id_field = 'POLY_NO', n_iterations = 20,
  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'all', write_samples = TRUE)
 
 ## Oh no, there was a blackout halfway through my model run:
-dsmartr_iterate(prepped_map = prepped_polygons, covariates = heronvale_covariates,
+iteration_maps_2 <- dsmartr_iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
 id_field = 'POLY_NO', n_iterations = 6, cpus = max(1, (parallel::detectCores() - 1)),
 write_files = 'all', write_samples = TRUE, resume_from = 14)}
 }

@@ -18,7 +18,7 @@
 #' @param area_rate Integer; desired number of samples per square kilometre; use with
 #' \code{sample_method = 'area_p'}.
 #' @param floor Integer; desired minimum number of samples per polygon. Optional; use with
-#' \code{sample_method = 'area_p'}. Defaults to the number of soil classes on a polygon.
+#' \code{sample_method = 'area_p'}. Defaults to 2x the number of soil classes on a polygon.
 #' @return A data frame holding polygon input attributes and four new attribute columns:
 #' \itemize{
 #'   \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf]{st_area}}.}
@@ -31,7 +31,8 @@
 #' Outputs are also written to disk.
 #' @note \itemize{
 #' \item{The output of this function is a required input for \code{\link{dsmartr_iterate}}}.
-#' \item{Covariate data must be in a projected CRS with defined units (not lat/long). Vector inputs
+#' \item{Covariate data should be in a projected CRS with defined units. While the function will run
+#'  with lat/long data, polygon area calculations may be dangerously inaccurate. Vector inputs
 #' will be transformed to match the covariate CRS.}
 #' \item{The \code{intersecting_cells} attribute field is a list-column, so the returned  object
 #' cannot be written to e.g. csv format.}
@@ -41,11 +42,11 @@
 #' data('heronvale_covariates')
 #'
 #' # flat rate
-#' dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
+#' pr_flat <- dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
 #' id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 5)
 #'
 #' # area_proportional rate with floor
-#' dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
+#' pr_ap <- dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
 #' id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 5)}
 #' @importFrom dplyr filter mutate mutate_if
 #' @importFrom methods is as
@@ -98,11 +99,9 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
                p_percs   <- as.numeric(n_things(ns, 'PERC'))
                p_nsoils  <- as.integer(as.data.frame(ns)[, 'n_soils'])
                p_area    <- as.numeric(as.data.frame(ns)[, 'area_sqkm'])
-               gap       <- max(p_percs) / min(p_percs)
-               samp_min  <- ceiling(max(1, gap * p_nsoils))
                samp_area <- ceiling(p_area * area_rate)
-               floor     <- if(is.null(floor)) { p_nsoils } else { floor }
-               samp_n    <- as.integer(max(samp_min, samp_area, floor))
+               floor     <- if(is.null(floor)) { p_nsoils * 2 } else { floor }
+               samp_n    <- as.integer(max(samp_area, floor))
              } )
     } else {
       stop('Please provide a valid sample_method parameter. Options are \'flat\', \'area_p\'.')
@@ -165,7 +164,7 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
 #' load('heronvale_covariates')
 #'
 #' # data frame input:
-#' dsmartr_prep_points(src_map = heronvale_soilmap, known_points = heronvale_known_sites,
+#' pr_pts <- dsmartr_prep_points(src_map = heronvale_soilmap, known_points = heronvale_known_sites,
 #' soil_id = 'CLASS', x_coords = 'x', y_coords = 'y', covariates = heronvale_covariates) }
 #' @importFrom dplyr mutate_if
 #' @importFrom methods is as

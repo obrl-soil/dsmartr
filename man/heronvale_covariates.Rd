@@ -3,7 +3,7 @@
 \docType{data}
 \name{heronvale_covariates}
 \alias{heronvale_covariates}
-\title{Demonstration covariates for dsmartr}
+\title{Data: Demonstration covariates for dsmartr}
 \format{A RasterBrick with dimensions 299, 285, 85215, 13  (nrow, ncol, ncell, nlayers) and
 resolution of 26.6 m, projected in Albers Equal Area (EPSG:3577). The dataset is clipped to
 the extent of the \href{https://data.qld.gov.au/dataset/queensland-map-sheet-key-maps-series}{Heronvale 1:10000 topographic key map sheet}, located on the coast of Northern Queensland
