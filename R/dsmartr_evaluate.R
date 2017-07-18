@@ -54,8 +54,7 @@ dsmartr_eval_pgap <- function(dsmartr_probs = NULL, cpus = 1) {
 #' Calculate soil classes per pixel
 #'
 #' Calculates and maps the number of distinct soil classes predicted by dsmartr across \code{n}
-#' iterations. Requires outputs of \code{\link{dsmartr_collate}} (with option
-#' \code{keep_tallies = TRUE}).
+#' iterations. Requires output from \code{\link{dsmartr_collate}}.
 #' @param tallied_preds RasterBrick; \code{tallied_predictions} output by
 #'   \code{\link{dsmartr_collate}}.
 #' @param cpus Integer; number of processors to use in parallel.
