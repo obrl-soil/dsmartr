@@ -30,7 +30,6 @@ dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, stub = NULL) 
   } else {
     as.factor(sort(map_levels))
   }
-
 }
 
 #' Sample a polygon for [dsmartr_iterate()]
@@ -99,10 +98,11 @@ utils::globalVariables(names = c("CELL"), package = 'dsmartr')
 #'   component, larger values of \code{t_factor} dampen variation away from the input proportions.
 #' @param c5_ctrl List; output of \code{\link[C50]{C5.0Control}}; optional.
 #' @param cpus Integer; number of processors to use in parallel.
-#' @param write_files String; choose 'all' to write outputs in both rds and 'normal' files (GeoTIFF,
-#'   ESRI shapefile, csv, txt as appropriate).
+#' @param write_files String; choose 'native' to write outputs in GeoTIFF, ESRI shapefile, csv, or
+#'   txt as appropriate, or 'rds' for outputs in RDS format. Note that map rasters are always written
+#'   as GeoTIFF.
 #' @param write_samples Logical; whether to retain the covariate samples taken during each
-#'   iteration. If \code{TRUE}, each set of samples is written to disk as rds and/or ESRI Shapefile.
+#'   iteration. If \code{TRUE}, each set of samples is written to disk as ESRI Shapefile or RDS.
 #' @param resume_from Integer; If this function is interrupted, it can be resumed from a specified
 #'   iteration number (prevents overwriting existing model iterations in output directory).
 #' @note This function writes a large number of files to disk.
@@ -114,14 +114,13 @@ utils::globalVariables(names = c("CELL"), package = 'dsmartr')
 #' # run dsmartr_prep_polygons() per the example code for that function, then
 #' iteration_maps <- dsmartr_iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
 #'  id_field = 'POLY_NO', n_iterations = 20,
-#'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'all', write_samples = TRUE)
+#'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'native', write_samples = TRUE)
 #'
-#'  # Polygons, points and a C50 model tweak. run dsmartr_prep_polygons() and dsmartr_prep_points(),
-#'  # then:
+#'  # Polygons, points and a C50 model tweak, no samples, rds output:
 #'  win_on <- C50::C5.0Control(winnow = TRUE)
 #'  iteration_maps <- dsmartr_iterate(prepped_map = prepped_ap, covariates = heronvale_covariates,
 #'  id_field = 'POLY_NO', prepped_points = pr_pts, n_iterations = 20, c5_ctrl = win_on,
-#'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'all', write_samples = TRUE)
+#'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'rds')
 #'
 #' ## Oh no, there was a blackout halfway through my model run:
 #' iteration_maps_2 <- dsmartr_iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
@@ -146,7 +145,7 @@ dsmartr_iterate <- function(prepped_map    = NULL,
                             t_factor       = 10000,
                             c5_ctrl        = NULL,
                             cpus           = 1,
-                            write_files    = c('rds_only', 'all'),
+                            write_files    = c('native', 'rds'),
                             write_samples  = FALSE,
                             resume_from    = NULL) {
 
@@ -216,67 +215,57 @@ dsmartr_iterate <- function(prepped_map    = NULL,
     # make prediction map
     iter_map <- clusterR(covariates, raster::predict, args = list(res), datatype = 'INT2S')
 
-    # factorise iter_map
+    # factorise prediction map
     lookup <- data.frame("ID"    = as.integer(as.factor(res$levels)),
                          "CLASS" = as.factor(res$levels))
     levels(iter_map) <- lookup
 
-    # save outputs for this iteration
-    if (write_files == 'rds_only') {
+    # write probability map from this realisation to GeoTIFF
+    # (lookup values are in accompanying aux file)
+    writeRaster(iter_map,
+                filename  = file.path(strr, paste0('map_', j, '.tif')),
+                format    = "GTiff",
+                datatype  = "INT2S",
+                NAflag    = -9999,
+                overwrite = TRUE)
 
+    # may as well write lookup to csv as aux.xml files aren't read by QGIS :(
+    if (j == start) {
+      # NB Excel is the default csv viewer for many people but it doesn't like csv files
+      # where column 1 is called 'ID'
+      names(lookup) <- c('VALUE', 'CLASS')
+      write.table(lookup, file.path(strr, 'class_lookup.csv'),
+                  col.names = TRUE,  row.names = FALSE,
+                  quote     = FALSE, sep       = ",")
+    }
+
+    # write model from this realisation to file (summary only in txt)
+    if (write_files == 'rds') {
       saveRDS(res, file.path(strm, paste0('C5_model_', j, '.rds')))
-      # stop file reference pointing at tempdir gri/grd as they don't persist
-      mout <- if(inMemory(iter_map) == FALSE) { readAll(iter_map) } else { iter_map }
-      mout@file@name <- file.path(strr, paste0('map_', j, '.rds'))
-      suppressWarnings(saveRDS(mout, file.path(strr, paste0('map_', j, '.rds'))))
-
     } else {
-
-      saveRDS(res, file.path(strm, paste0('C5_model_', j, '.rds')))
-      mout <- if(inMemory(iter_map) == FALSE) { readAll(iter_map) } else { iter_map }
-      mout@file@name <- file.path(strr, paste0('map_', j, '.rds'))
-      suppressWarnings(saveRDS(mout, file.path(strr, paste0('map_', j, '.rds'))))
-
-      # write decision tree from this realisation to text
       out <- capture.output(summary(res))
       f2  <- file.path(strm, paste0('C5_model_', j, '.txt'))
       cat(out, file = f2, sep = "\n", append = TRUE)
-
-      # write probability map from this realisation to GeoTIFF (lookup values are embedded)
-      nme <- file.path(strr, paste0('map_', j, '.tif'))
-      writeRaster(iter_map, filename = nme, format = "GTiff", overwrite = T, datatype = "INT2S",
-                  NAflag = -9999)
-
-      # may as well write lookup to csv as aux.xml files aren't read by QGIS :(
-      if (j == start) {
-        # NB Excel is the default csv viewer for many people but it doesn't like csv files
-        # where column 1 is called 'ID'
-        names(lookup) <- c('VALUE', 'CLASS')
-        write.table(lookup, file.path(strr, 'class_lookup.csv'),
-                    col.names = TRUE,  row.names = FALSE,
-                    quote     = FALSE, sep       = ",")
       }
-    }
 
     if (write_samples == TRUE) {
-      dir.create('iterations/samples', showWarnings = F)
+
+      if (!dir.exists('iterations/samples')) {
+        dir.create('iterations/samples', showWarnings = F)
+      }
       strd <- file.path(getwd(), 'iterations', 'samples')
+
       # spatialise (sf point object)
-      allsamp_sf <- model_input
-      allsamp_sf$geometry <- st_sfc(lapply(allsamp_sf$CELL, function(x) {
+      model_input$geometry <- st_sfc(lapply(model_input$CELL, function(x) {
         st_point(as.vector(xyFromCell(covariates, x)))
       }))
-      allsamp_sf <- st_as_sf(allsamp_sf, crs = covariates@crs@projargs, agr = 'contstant')
+      model_input <- st_as_sf(model_input,
+                              crs = covariates@crs@projargs, agr = 'contstant')
 
-      if (write_files == 'rds_only') {
-        saveRDS(allsamp_sf, file.path(strd, paste0('samples_',  j, '.rds')))
-
+      if (write_files == 'rds') {
+        saveRDS(model_input, file.path(strd, paste0('samples_',  j, '.rds')))
       } else {
-
-        saveRDS(allsamp_sf, file.path(strd, paste0('samples_',  j, '.rds')))
-
         ### NB Don't change this to GPKG format yet - disk write time is crazy slow
-
         # make a lookup table for all_samplepoints covariate column names, because they're about
         # to get severely abbreviated for writing to shp
         cov_LUT_nm   <- file.path(strd, 'covariate_LUT.csv')
@@ -304,10 +293,10 @@ dsmartr_iterate <- function(prepped_map    = NULL,
   } )
 
   # return maps to for dsmartr_collate
-  map_rds  <- list.files(strr, pattern = '\\.rds$', full.names = TRUE)
-  map_list <- lapply(map_rds, function(x) readRDS(x))
-  names(map_list) <- paste0('iter_', 1:length(map_list)) # still a list
+  map_list  <- list.files(strr, pattern = '\\.tif$', full.names = TRUE)
   iteration_maps <- raster::stack(map_list)
+  names(iteration_maps) <- paste0('iter_', 1:length(map_list))
+
 
   close(pb)
   message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
