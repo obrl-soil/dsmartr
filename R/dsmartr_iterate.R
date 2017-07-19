@@ -269,7 +269,7 @@ dsmartr_iterate <- function(prepped_map    = NULL,
         # make a lookup table for all_samplepoints covariate column names, because they're about
         # to get severely abbreviated for writing to shp
         cov_LUT_nm   <- file.path(strd, 'covariate_LUT.csv')
-        cov_names    <- names(as.data.frame(allsamp_sf)[3:(ncol(allsamp_sf)-1)])
+        cov_names    <- names(as.data.frame(model_input)[3:(ncol(model_input)-1)])
         cov_shpnames <- paste0('COV_', 1:length(cov_names))
         if (!file.exists(cov_LUT_nm)) {
           cov_LUT <- data.frame("COV_NAMES" = cov_names, "SHPCOL_NAMES" = cov_shpnames,
@@ -277,11 +277,11 @@ dsmartr_iterate <- function(prepped_map    = NULL,
           write.table(cov_LUT, file = cov_LUT_nm, sep = ', ',
                       quote = FALSE, col.names = TRUE, row.names = FALSE) }
 
-        names(allsamp_sf)[3:(ncol(allsamp_sf) - 1)] <- cov_shpnames
+        names(model_input)[3:(ncol(model_input) - 1)] <- cov_shpnames
         sf_name    <- paste0('samples_', j, '.shp')
         # see https://trac.osgeo.org/gdal/ticket/6803,
         # and https://github.com/edzer/sfr/issues/306:
-        suppressWarnings(write_sf(allsamp_sf,
+        suppressWarnings(write_sf(model_input,
                                   file.path(strd, sf_name),
                                   driver = 'ESRI Shapefile',
                                   delete_layer = TRUE))
