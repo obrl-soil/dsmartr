@@ -36,35 +36,40 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
     stop('dsmart_preds raster stack has not been specified')
   }
 
-  lapply(map_list, function(i) ratify(i))
-
+  pb <- txtProgressBar(min = 0, max = n_maps, style = 3)
   most_likely_maps <- mapply(FUN = function(x, i) {
-    writeRaster(x,
+    ml <- writeRaster(x,
                 filename  = file.path(mp_dir, paste0('mostlikely_', i ,'.tif')),
                 format    = 'GTiff',
                 NAflag    = -9999,
                 datatype  = 'INT2S',
                 overwrite = TRUE)
+    setTxtProgressBar(pb, i)
+    ml
   },
   x = map_list, i = seq_along(1:n_maps)
   )
+  close(pb)
 
   ### optional probability surfaces
   if(!is.null(dsmart_probs)) {
     message(paste0(Sys.time(), ': dsmartr probability surface unstacking in progress...'))
     suppressWarnings(probmap_list <- raster::unstack(dsmart_probs[[1:n_maps]]))
-
+    pb <- txtProgressBar(min = 0, max = n_maps, style = 3)
     most_likely_ps <- mapply(FUN = function(x, i) {
-      writeRaster(x,
+      mp <- writeRaster(x,
                   filename  = file.path(mp_dir, paste0('mostlikely_prob_', i, '.tif')),
                   format    = 'GTiff',
                   datatype  = 'FLT4S',
                   NAflag    = -9999,
                   overwrite = TRUE)
+      setTxtProgressBar(pb, i)
+      mp
     },
     x = probmap_list,
     i = seq_along(1:n_maps)
     )
+    close(pb)
     message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
                    file.path(getwd(), 'most_probable_maps')))
   } else {
@@ -131,15 +136,19 @@ dsmartr_class_maps <- function(tallied_probs = NULL,
      names(probs_list) <- soil_class
     }
 
-  class_ps <- lapply(probs_list, function(x) {
-    writeRaster(x,
-                filename  = file.path(class_dir, paste0(names(x), "_probability.tif")),
-                format    = "GTiff",
-                NAflag    = -9999,
-                datatype  = 'FLT4S',
-                overwrite = TRUE)
+  pb <- txtProgressBar(min = 0, max = length(probs_list), style = 3)
+  class_ps <- lapply(seq_along(probs_list), function(x) {
+    cm <- writeRaster(probs_list[[x]],
+                      filename  = file.path(class_dir,
+                                            paste0(names(probs_list)[x], "_probability.tif")),
+                      format    = "GTiff",
+                      NAflag    = -9999,
+                      datatype  = 'FLT4S',
+                      overwrite = TRUE)
+    setTxtProgressBar(pb, x)
+    cm
   })
-
+  close(pb)
   message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
                  file.path(getwd(), 'class_maps')))
   class_ps
