@@ -28,6 +28,8 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
   }
   mp_dir <- file.path(getwd(), 'most_probable_maps')
 
+  message(paste0(Sys.time(), ': dsmartr prediction map unstacking in progress...'))
+
   if (!is.null(dsmart_preds)) {
     suppressWarnings(map_list <- raster::unstack(dsmart_preds[[1:n_maps]]))
   } else {
@@ -49,20 +51,26 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
 
   ### optional probability surfaces
   if(!is.null(dsmart_probs)) {
+    message(paste0(Sys.time(), ': dsmartr probability surface unstacking in progress...'))
     suppressWarnings(probmap_list <- raster::unstack(dsmart_probs[[1:n_maps]]))
-  }
 
-  most_likely_ps <- mapply(FUN = function(x, i) {
-    writeRaster(x,
-                filename  = file.path(mp_dir, paste0('mostlikely_prob_', i, '.tif')),
-                format    = 'GTiff',
-                datatype  = 'FLT4S',
-                NAflag    = -9999,
-                overwrite = TRUE)
-  },
-  x = probmap_list,
-  i = seq_along(1:n_maps)
-  )
+    most_likely_ps <- mapply(FUN = function(x, i) {
+      writeRaster(x,
+                  filename  = file.path(mp_dir, paste0('mostlikely_prob_', i, '.tif')),
+                  format    = 'GTiff',
+                  datatype  = 'FLT4S',
+                  NAflag    = -9999,
+                  overwrite = TRUE)
+    },
+    x = probmap_list,
+    i = seq_along(1:n_maps)
+    )
+    message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
+                   file.path(getwd(), 'most_probable_maps')))
+  } else {
+    message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
+                   file.path(getwd(), 'most_probable_maps')))
+  }
 
   unstacked_maps <- if(is.null(dsmart_probs)) {
     most_likely_maps
@@ -107,6 +115,7 @@ dsmartr_class_maps <- function(tallied_probs = NULL,
 
   class_dir <- file.path(getwd(), 'class_maps')
 
+  message(paste0(Sys.time(), ': dsmartr class map production in progress...'))
   suppressWarnings(
     probs_list <- if(is.null(soil_class)) {
       raster::unstack(tallied_probs)
@@ -131,4 +140,7 @@ dsmartr_class_maps <- function(tallied_probs = NULL,
                 overwrite = TRUE)
   })
 
+  message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
+                 file.path(getwd(), 'class_maps')))
+  class_ps
 }

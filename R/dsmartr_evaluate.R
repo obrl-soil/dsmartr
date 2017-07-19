@@ -35,6 +35,7 @@ dsmartr_eval_pgap <- function(dsmartr_probs = NULL, cpus = 1) {
   }
   strs <- file.path(getwd(), 'evaluation')
 
+  message(paste0(Sys.time(), ': dsmartr probability gap calculation in progress...'))
   dsmartr_probs <- if(is(dsmartr_probs, 'list')) {
     raster::stack(dsmartr_probs)
   } else { dsmartr_probs }
@@ -48,6 +49,8 @@ dsmartr_eval_pgap <- function(dsmartr_probs = NULL, cpus = 1) {
                               NAflag    = -9999,
                               overwrite = TRUE)
   endCluster()
+  message(paste0(Sys.time(), ': ...complete. Function outputs can be located at ',
+                 file.path(getwd(), 'evaluation')))
   probability_gap
 }
 
@@ -76,7 +79,7 @@ dsmartr_eval_npred <- function(tallied_preds = NULL,
     dir.create('evaluation', showWarnings = F)
   }
   strs <- file.path(getwd(), 'evaluation')
-
+  message(paste0(Sys.time(), ': dsmartr n soils predicted calculation in progress...'))
   beginCluster(cpus)
   n_classes_predicted <- clusterR(tallied_preds,
                                   fun       = calc,
@@ -89,6 +92,8 @@ dsmartr_eval_npred <- function(tallied_preds = NULL,
                                   overwrite = TRUE)
 
   endCluster()
+  message(paste0(Sys.time(), ': ...complete. Function outputs can be located at ',
+                 file.path(getwd(), 'evaluation')))
   n_classes_predicted
 
 }
@@ -131,6 +136,7 @@ dsmartr_eval_nxpred <- function(tallied_preds = NULL,
     ifelse(is.na(sum(x)), NA, length(x[x > (ceiling(n_iterations * noise_cutoff))]))
   }
 
+  message(paste0(Sys.time(), ': dsmartr notable soils predicted calculation in progress...'))
   beginCluster(cpus)
   assign('noise_cutoff', noise_cutoff, envir = parent.frame())
   assign('n_iterations', n_iterations, envir = parent.frame())
@@ -148,5 +154,7 @@ dsmartr_eval_nxpred <- function(tallied_preds = NULL,
 
   endCluster()
   rm(list = c('n_iterations', 'noise_cutoff'), envir = parent.frame())
+  message(paste0(Sys.time(), ': ...complete. Function outputs can be located at ',
+                 file.path(getwd(), 'evaluation')))
   n_classes_predicted_x
 }
