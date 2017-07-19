@@ -19,11 +19,11 @@ Checks dsmartr input polygons for potential data quality issues.
 }
 \details{
 This function highlights some issues that may cause dsmartr to either fail or behave
-unpredictably. Usually these are side-effects of prepration work carried out in other software.
-Sometimes they are the result of errors in the source data. Note that polygon geometry is not
-explicitly checked, only attributes. At present, three problems are checked - whether data is
-missing (e.g. a polygon class without a matching percentage), whether a percentage is 0%, and
-whether total percentage (by polygon) is not 100%.
+  unpredictably. Usually these are side-effects of prepration work carried out in other software.
+  Sometimes they are the result of errors in the source data. Note that polygon geometry is not
+  explicitly checked, only attributes. At present, three problems are checked - whether data is
+  missing (e.g. a polygon class without a matching percentage), whether a percentage is 0%, and
+  whether total percentage (by polygon) is not 100%.
 }
 \examples{
 \dontrun{

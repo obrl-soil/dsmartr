@@ -20,7 +20,7 @@ dsmartr_class_maps(tallied_probs = NULL, soil_class = NULL, lookup = NULL,
 }
 \value{
 \code{class_maps}: List of RasterLayers; probability surfaces for each soil class. All
-outputs are written to disk as GeoTIFF.
+  outputs are written to disk as GeoTIFF.
 }
 \description{
 Generates a soil class probability map for any or all input soil classes. Requires output of

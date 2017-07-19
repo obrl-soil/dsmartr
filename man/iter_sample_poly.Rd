@@ -2,7 +2,7 @@
 % Please edit documentation in R/dsmartr_iterate.R
 \name{iter_sample_poly}
 \alias{iter_sample_poly}
-\title{sample a polygon for dsmartr_iterate}
+\title{Sample a polygon for [dsmartr_iterate()]}
 \usage{
 iter_sample_poly(pd = NULL, cs = NULL, ps = NULL, nscol = NULL,
   cellcol = NULL, t_factor = NULL)
@@ -23,7 +23,7 @@ running split(x, 1:nrow(x)) on a polygon sf dataframe.}
 }
 \value{
 A data frame containing two columns: weighted random allocation of soil classes,
-and cell numbers
+  and cell numbers
 }
 \description{
 Randomly selects n cells for sampling and assigns them a soil class based on the overlying

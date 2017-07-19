@@ -10,14 +10,14 @@ dsmartr_prep_polygons(src_map = NULL, covariates = NULL, id_field = NULL,
 }
 \arguments{
 \item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object representing
-the soil map to be disaggregated. Format requirements:
+  the soil map to be disaggregated. Format requirements:
 \itemize{
 \item{one row per polygon (data is wide-formatted)}
 \item{A numeric unique ID field for polygons}
 \item{1-n character columns for soil classes named CLASS_1 to CLASS_n}
 \item{1-n numeric columns for soil class percentages named PERC_1 to PERC_n. PERC_1 must relate
-to CLASS_1, etc.}
-}
+  to CLASS_1, etc.}}
+
 Other columns may exist in the object; they will be ignored.}
 
 \item{covariates}{RasterStack or RasterBrick; environmental covariate data.}
@@ -51,12 +51,12 @@ Prepares soil map inputs for use in \code{\link{dsmartr_iterate}}.
 }
 \note{
 \itemize{
-\item{The output of this function is a required input for \code{\link{dsmartr_iterate}}}.
-\item{Covariate data should be in a projected CRS with defined units. While the function will run
- with lat/long data, polygon area calculations may be dangerously inaccurate. Vector inputs
-will be transformed to match the covariate CRS.}
-\item{The \code{intersecting_cells} attribute field is a list-column, so the returned  object
-cannot be written to e.g. csv format.}
+  \item{The output of this function is a required input for \code{\link{dsmartr_iterate}}}.
+  \item{Covariate data should be in a projected CRS with defined units. While the function will
+    run with lat/long data, polygon area calculations may be dangerously inaccurate. Vector
+    inputs will be transformed to match the covariate CRS.}
+  \item{The \code{intersecting_cells} attribute field is a list-column, so the returned  object
+    cannot be written to e.g. csv format.}
 \item{This function runs faster with a RasterBrick than a Stack.}}
 }
 \examples{
@@ -66,9 +66,9 @@ data('heronvale_covariates')
 
 # flat rate
 pr_flat <- dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 5)
+id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 6)
 
 # area_proportional rate with floor
 pr_ap <- dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 5)}
+id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 6)}
 }

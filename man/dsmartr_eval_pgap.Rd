@@ -15,7 +15,7 @@ dsmartr_eval_pgap(dsmartr_probs = NULL, cpus = 1)
 }
 \value{
 \code{probability_gap}: RasterLayer depicting the probability gap. Written to disk as
-GeoTIFF.
+  GeoTIFF.
 }
 \description{
 Calculates and maps the difference between the first and second most-probable
@@ -23,16 +23,16 @@ dsmartr probability surfaces. Requires outputs of \code{\link{dsmartr_collate}}.
 }
 \note{
 This function is often called the 'confusion index', but has been renamed as that term is
-used in multiple contexts within the scientific literature.
+  used in multiple contexts within the scientific literature.
 }
 \examples{
 \dontrun{
-# run dsmartr_collate() with the example data then:'
-pgap1 <- dsmartr_eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][[1:2]],
+# run dsmartr_collate() with the example data then:
+pgap1 <- dsmartr_eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][1:2],
 cpus = max(1, (parallel::detectCores() - 1)))
 
 # or supply unstacked maps (slightly faster)
-pgap2 <- dsmartr_eval_pgap(dsmartr_probs = most_likely[['most_likely_ps']][[1:2]],
+pgap2 <- dsmartr_eval_pgap(dsmartr_probs = most_likely[['most_likely_ps']][1:2],
 cpus = max(1, (parallel::detectCores() - 1)))
 
 # or read from file

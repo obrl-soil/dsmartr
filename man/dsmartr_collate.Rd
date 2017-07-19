@@ -11,7 +11,7 @@ dsmartr_collate(iteration_stack = NULL, lookup = NULL, cpus = 1)
 \code{\link{dsmartr_iterate}}.}
 
 \item{lookup}{Data Frame; contains raster values and corresponding soil class labels. Example:
- \preformatted{'data.frame':    38 obs. of  2 variables:
+\preformatted{'data.frame':    38 obs. of  2 variables:
 $ VALUE: int  1 2 3 4 5 6 7 8 9 10 ...
 $ CLASS: chr  "Ad" "An" "Bb" "Bh" ...}}
 
@@ -20,23 +20,24 @@ $ CLASS: chr  "Ad" "An" "Bb" "Bh" ...}}
 \value{
 A list of four RasterStacks:
 \itemize{
-\item{\code{dsmartr_predictions}: RasterStack, soil class prediction maps in order of most to
-least-probable}
-\item{\code{dsmartr_probabilties}: RasterStack, a probability surface for each layer of
-\code{dsmartr_predictions}.}
-\item{\code{tallied_predictions}: Optional RasterStack containing per-pixel tallies of soil
-class occurrence.}
-\item{\code{tallied_probabilities}: Optional RasterStack containing per-pixel probabilities of
-soil class occurrence}.}
- All outputs are written to disk as multiband GeoTIFFs before being assigned to the global
- environment.
+  \item{\code{dsmartr_predictions}: RasterStack, soil class prediction maps in order of most to
+  least-probable}
+  \item{\code{dsmartr_probabilties}: RasterStack, a probability surface for each layer of
+  \code{dsmartr_predictions}.}
+  \item{\code{tallied_predictions}: Optional RasterStack containing per-pixel tallies of soil
+  class occurrence.}
+  \item{\code{tallied_probabilities}: Optional RasterStack containing per-pixel probabilities of
+  soil class occurrence}.}
+
+All outputs are written to disk as multiband GeoTIFFs before being assigned to the global
+environment.
 }
 \description{
 Processes the outputs of \code{\link{dsmartr_iterate}}
 }
 \note{
 This function can generate very large R temporary files. A rough minimum disk space
-requirement is \code{n} iterations * \code{n} covariate cells * 8 bytes * 2.
+  requirement is \code{n} iterations * \code{n} covariate cells * 8 bytes * 2.
 }
 \examples{
 \dontrun{

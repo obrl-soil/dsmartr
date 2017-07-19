@@ -6,17 +6,17 @@
 \title{Data: Points where soil class is known}
 \format{A tbl/sf_POINT object in EPSG:3577 with 36 rows and 6 columns:
 \describe{
- \item{PROJECT_CODE}{Three-letter code identifying the soil survey}
- \item{SITE_ID}{Within-project unique site identifier}
- \item{LONGITUDE}{Longitude coordinate in EPSG:4283 (GDA94)}
- \item{LATITUDE}{Latitude coordinate in EPSG:4283 (GDA94)}
- \item{CLASS}{Soil class identified at this site}
- \item{geom}{list-column with class 'sfc_GEOMETRY', 'sfc'}}
- Site locations are accurate to within +/-50m.}
+  \item{PROJECT_CODE}{Three-letter code identifying the soil survey}
+  \item{SITE_ID}{Within-project unique site identifier}
+  \item{LONGITUDE}{Longitude coordinate in EPSG:4283 (GDA94)}
+  \item{LATITUDE}{Latitude coordinate in EPSG:4283 (GDA94)}
+  \item{CLASS}{Soil class identified at this site}
+  \item{geom}{list-column with class 'sfc_GEOMETRY', 'sfc'}}
+Site locations are accurate to within +/-50m.}
 \source{
 \itemize{
-\item{\url{https://publications.qld.gov.au/dataset/soils-whitsunday-coast-wcs}}
-\item{\url{https://www.qld.gov.au/environment/land/soil/soil-data/survey-types/}}}
+  \item{\url{https://publications.qld.gov.au/dataset/soils-whitsunday-coast-wcs}}
+  \item{\url{https://www.qld.gov.au/environment/land/soil/soil-data/survey-types/}}}
 }
 \usage{
 heronvale_known_sites

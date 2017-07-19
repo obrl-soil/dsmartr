@@ -5,33 +5,33 @@
 \alias{heronvale_covariates}
 \title{Data: Demonstration covariates for dsmartr}
 \format{A RasterBrick with dimensions 299, 285, 85215, 13  (nrow, ncol, ncell, nlayers) and
-resolution of 26.6 m, projected in Albers Equal Area (EPSG:3577). The dataset is clipped to
-the extent of the \href{https://data.qld.gov.au/dataset/queensland-map-sheet-key-maps-series}{Heronvale 1:10000 topographic key map sheet}, located on the coast of Northern Queensland
-between Proserpine and Bowen. Included surfaces are:
+  resolution of 26.6 m, projected in Albers Equal Area (EPSG:3577). The dataset is clipped to
+  the extent of the \href{https://data.qld.gov.au/dataset/queensland-map-sheet-key-maps-series}{Heronvale 1:10000 topographic key map sheet}, located on the coast of Northern Queensland
+  between Proserpine and Bowen. Included surfaces are:
 \describe{
   \item{DEM_S}{GeoScience Australia's
-  \href{http://www.ga.gov.au/metadata-gateway/metadata/record/72759/}{1" SRTM DEM-S } product}
+    \href{http://www.ga.gov.au/metadata-gateway/metadata/record/72759/}{1" SRTM DEM-S } product}
   \item{GM_INT_pattern}{'Intensity' output of GRASS add-on module
-  \href{https://grass.osgeo.org/grass72/manuals/addons/r.geomorphon.html}{r.geomorphon}, calculated
-  from DEM_S in GRASS 7.2 with a search distance of 11 cells, a skip distance of 3 cells, and a
-  flatness threshold of 0.3 degrees. This roughly corresponds to the 'landscape pattern' concept
-  outlined in \href{http://www.publish.csiro.au/book/5230}{NCST, 2009}. 'Intensity' is
-  the mean difference in elevation between a pixel and the eight neighbourhood pixels used to
-  define its geomorphon.}
+    \href{https://grass.osgeo.org/grass72/manuals/addons/r.geomorphon.html}{r.geomorphon},
+    calculated from DEM_S in GRASS 7.2 with a search distance of 11 cells, a skip distance of 3
+    cells, and a flatness threshold of 0.3 degrees. This roughly corresponds to the 'landscape
+    pattern' concept outlined in \href{http://www.publish.csiro.au/book/5230}{NCST, 2009}.
+    'Intensity' is the mean difference in elevation between a pixel and the eight neighbourhood
+    pixels used to define its geomorphon.}
   \item{GM_MCF_pattern}{'Most common forms' (MCF) output of r.geomorphon, settings as above. MCF
-  is a 10-category set of simple landscape shapes - flat, summit, ridge, shoulder, spur, slope,
-   hollow, footslope, valley, depression.}
+    is a 10-category set of simple landscape shapes - flat, summit, ridge, shoulder, spur, slope,
+    hollow, footslope, valley, depression.}
    \item{GM_RNG_pattern}{'Range' output of r.geomorphon, settings as above. 'Range' is the
-   difference between the max and min elevations of the cells used to define the geomorphon.}
+     difference between the max and min elevations of the cells used to define the geomorphon.}
    \item{NETD_MRVBF}{Multi-Resolution Valley Bottom Flatness Index derived from 1" DEM-S,
-   published by the CSIRO and available from \url{http://doi.org/10.4225/08/5701C885AB4FE}}
+     published by the CSIRO and available from \url{http://doi.org/10.4225/08/5701C885AB4FE}}
    \item{NETD_Prescott}{Prescott Index derived from 1" DEM-S, published by the CSIRO and
-   available from \url{http://doi.org/10.4225/08/53EB2D0EAE377}}
+     available from \url{http://doi.org/10.4225/08/53EB2D0EAE377}}
    \item{NETD_SLOPE_DG}{Slope derived from 1" DEM-S, published by the CSIRO and available from
    \url{http://doi.org/10.4225/08/5689DA774564A}}
    \item{PCRE_DBVG1M}{\href{https://data.qld.gov.au/dataset/pre-clearing-broad-vegetation-groups-of-queensland-version-3-0}{Pre-clearing
-   dominant broad vegetation groups of Queensland, v3.0}. This dataset was
-   rasterised from a polygon source.}
+     dominant broad vegetation groups of Queensland, v3.0}. This dataset was
+     rasterised from a polygon source.}
    \item{RM_F_K}{\href{http://dap.nci.org.au/thredds/remoteCatalogService?catalog=http://dapds00.nci.org.au/thredds/catalog/rr2/National_Coverages/http/radmap_v3_2015_filtered_pctk/catalog.xml}{Radiometric
    Map of Australia v3 - Filtered percent Potassium}}
    \item{RM_F_T}{\href{http://dap.nci.org.au/thredds/remoteCatalogService?catalog=http://dapds00.nci.org.au/thredds/catalog/rr2/National_Coverages/http/radmap_v3_2015_filtered_ppmth/catalog.xml}{Radiometric

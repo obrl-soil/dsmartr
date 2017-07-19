@@ -21,7 +21,7 @@ with NA values excluded.
 }
 \note{
 This is a helper function and not widely applicable. It is expected to be
-used by-row on wide-formatted sf attribute data.
+  used by-row on wide-formatted sf attribute data.
 }
 \examples{
 \dontrun{

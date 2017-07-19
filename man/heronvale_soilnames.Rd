@@ -6,12 +6,12 @@
 \title{Data: Decoded soil class names}
 \format{A tibble with 38 rows and 2 columns:
 \describe{
-\item{CLASS}{Soil class label}
-\item{NAME}{Soil class name}}}
+  \item{CLASS}{Soil class label}
+  \item{NAME}{Soil class name}}}
 \source{
 \itemize{
-\item{\url{https://publications.qld.gov.au/dataset/soils-whitsunday-coast-wcs}}
-\item{\url{https://www.qld.gov.au/environment/land/soil/soil-data/survey-types/}}}
+  \item{\url{https://publications.qld.gov.au/dataset/soils-whitsunday-coast-wcs}}
+  \item{\url{https://www.qld.gov.au/environment/land/soil/soil-data/survey-types/}}}
 }
 \usage{
 heronvale_soilnames

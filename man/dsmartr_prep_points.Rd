@@ -24,15 +24,15 @@ inputs.}
 }
 \value{
 A data frame with two attributes: soil class code and corresponding raster cell index
-number.
+  number.
 }
 \description{
 Prepares dsmartr point inputs for use in \code{\link{dsmartr_iterate}}.
 }
 \note{
 The output of this function is an optional input for \code{\link{dsmartr_iterate}}. If
-\code{known_points} is supplied as a data frame, the x and y coordinates must match the covariate
-crs.
+  \code{known_points} is supplied as a data frame, the x and y coordinates must match the
+  covariate crs.
 }
 \examples{
 \dontrun{

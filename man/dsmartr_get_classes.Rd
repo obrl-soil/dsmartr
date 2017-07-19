@@ -15,7 +15,7 @@ dsmartr_get_classes(soilmap = NULL, soilpoints = NULL, stub = NULL)
 }
 \value{
 A factor holding the set of soil classes occurring in both datasets, sorted
-alphabetically. Internal to \code{\link{dsmartr_iterate}}.
+  alphabetically. Internal to \code{\link{dsmartr_iterate}}.
 }
 \description{
 Returns the set of unique soil classes that occur in an input soil map, and, optionally,
@@ -23,7 +23,7 @@ a set of known points.
 }
 \note{
 It is up to the user to make sure the classification schema in both datasets matches/is
-compatible.
+  compatible.
 }
 \examples{
 \dontrun{

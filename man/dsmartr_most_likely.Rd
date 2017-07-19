@@ -10,8 +10,8 @@ dsmartr_most_likely(dsmart_preds = NULL, dsmart_probs = NULL, n_maps = 2)
 \item{dsmart_preds}{RasterBrick; output \code{dsmart_predictions} from
 \code{\link{dsmartr_collate}}.}
 
-\item{dsmart_probs}{RasterBrick; output \code{dsmart_probabilities} from \code{\link{dsmartr_collate}};
-optional.}
+\item{dsmart_probs}{RasterBrick; output \code{dsmart_probabilities} from
+\code{\link{dsmartr_collate}}; optional.}
 
 \item{n_maps}{integer; the number of most-probable maps desired.}
 }
