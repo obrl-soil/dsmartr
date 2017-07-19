@@ -11,12 +11,12 @@
 #' @note This function is often called the 'confusion index', but has been renamed as that term is
 #'   used in multiple contexts within the scientific literature.
 #' @examples \dontrun{
-#' # run dsmartr_collate() with the example data then:'
-#' pgap1 <- dsmartr_eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][[1:2]],
+#' # run dsmartr_collate() with the example data then:
+#' pgap1 <- dsmartr_eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][1:2],
 #' cpus = max(1, (parallel::detectCores() - 1)))
 #'
 #' # or supply unstacked maps (slightly faster)
-#' pgap2 <- dsmartr_eval_pgap(dsmartr_probs = most_likely[['most_likely_ps']][[1:2]],
+#' pgap2 <- dsmartr_eval_pgap(dsmartr_probs = most_likely[['most_likely_ps']][1:2],
 #' cpus = max(1, (parallel::detectCores() - 1)))
 #'
 #' # or read from file
@@ -58,8 +58,6 @@ dsmartr_eval_pgap <- function(dsmartr_probs = NULL, cpus = 1) {
 #' @param tallied_preds RasterBrick; \code{tallied_predictions} output by
 #'   \code{\link{dsmartr_collate}}.
 #' @param cpus Integer; number of processors to use in parallel.
-#' @param n_iterations Integer; the number of iterations that weresupplied to
-#'   \code{\link{dsmartr_iterate}}.
 #' @return \code{n_classes_predicted}: RasterLayer depicting the number of distinct soils predicted
 #'   per pixel. Written to disk as GeoTIFF.
 #' @note Fewer classes predicted on a pixel generally indicates higher internal model confidence at
@@ -72,12 +70,7 @@ dsmartr_eval_pgap <- function(dsmartr_probs = NULL, cpus = 1) {
 #' @importFrom raster beginCluster calc clusterR endCluster writeRaster
 #' @export
 dsmartr_eval_npred <- function(tallied_preds = NULL,
-                               cpus          = 1,
-                               n_iterations  = NULL) {
-
-  if (is.null(n_iterations)) {
-    stop('total number of DSMART model iterations must be supplied.')
-  }
+                               cpus          = 1) {
 
   if (!dir.exists('evaluation')) {
     dir.create('evaluation', showWarnings = F)
@@ -85,20 +78,17 @@ dsmartr_eval_npred <- function(tallied_preds = NULL,
   strs <- file.path(getwd(), 'evaluation')
 
   beginCluster(cpus)
-  assign('n_iterations', n_iterations, envir = parent.frame())
   n_classes_predicted <- clusterR(tallied_preds,
                                   fun       = calc,
                                   args      = list(fun = function(x) {
                                     ifelse(is.na(sum(x)), NA, length(x[x > 0]))
                                   }),
                                   filename  = file.path(strs, 'n_classes_predicted.tif'),
-                                  export    = 'n_iterations',
                                   NAflag    = -9999,
                                   datatype  = 'INT2S',
                                   overwrite = TRUE)
 
   endCluster()
-  rm(list = c('n_iterations'), envir = parent.frame())
   n_classes_predicted
 
 }
