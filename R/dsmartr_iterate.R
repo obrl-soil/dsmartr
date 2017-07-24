@@ -32,7 +32,7 @@ dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, stub = NULL) 
   }
 }
 
-#' Sample a polygon for [dsmartr_iterate()]
+#' Sample a polygon for dsmartr_iterate
 #'
 #' Randomly selects n cells for sampling and assigns them a soil class based on the overlying
 #' map polygon's components
@@ -47,9 +47,9 @@ dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, stub = NULL) 
 #' @return A data frame containing two columns: weighted random allocation of soil classes,
 #'   and cell numbers
 #' @examples \dontrun{
-#' # run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
+#' # run dsmartr_prep_polygons() with the example code, then:
 #' sample_points <- iter_sample_poly(pd = pr_ap[1, ], cs = 'CLASS', ps = 'PERC',
-#' nscol = 'n_samples', cellcol = 'intersecting_cells', t_factor = t_factor)}
+#' nscol = 'n_samples', cellcol = 'intersecting_cells', t_factor = 10000)}
 #' @importFrom gtools rdirichlet
 #' @importFrom stats na.omit
 iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
@@ -64,8 +64,16 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
     }
 
   poly_percs    <- as.vector(na.omit(unlist(pd[, c(grep(ps, names(pd)))])))
+  if (length(poly_percs == 0)) {
+    stop('At least one of your polygons is missing percentage data.
+         Run dsmartr_check_polygons to find out which.')
+  }
   poly_dirprops <- as.vector(rdirichlet(1, as.numeric(poly_percs) * t_factor))
   poly_classes  <- as.vector(na.omit(unlist(pd[, c(grep(cs, names(pd)))])))
+  if (length(poly_classes == 0)) {
+    stop('At least one of your polygons is missing soil class data.
+         Run dsmartr_check_polygons to find out which.')
+  }
 
   poly_alloc    <- mapply(function(class, dpn) {
       rep(class, times = dpn)
