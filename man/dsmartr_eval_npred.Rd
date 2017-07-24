@@ -18,8 +18,7 @@ dsmartr_eval_npred(tallied_preds = NULL, cpus = 1)
 }
 \description{
 Calculates and maps the number of distinct soil classes predicted by dsmartr across \code{n}
-iterations. Requires outputs of \code{\link{dsmartr_collate}} (with option
-\code{keep_tallies = TRUE}).
+iterations. Requires output from \code{\link{dsmartr_collate}}.
 }
 \note{
 Fewer classes predicted on a pixel generally indicates higher internal model confidence at
@@ -29,6 +28,5 @@ Fewer classes predicted on a pixel generally indicates higher internal model con
 \dontrun{
 # run dsmartr_iterate() and dsmartr_collate() with the example data then:
 npred <- dsmartr_eval_npred(tallied_preds = collated[['tallied_predictions']],
-cpus = max(1, (parallel::detectCores() - 1)),
-n_iterations = nlayers(iteration_maps))}
+cpus = max(1, (parallel::detectCores() - 1)))}
 }

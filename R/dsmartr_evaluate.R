@@ -68,8 +68,7 @@ dsmartr_eval_pgap <- function(dsmartr_probs = NULL, cpus = 1) {
 #' @examples \dontrun{
 #' # run dsmartr_iterate() and dsmartr_collate() with the example data then:
 #' npred <- dsmartr_eval_npred(tallied_preds = collated[['tallied_predictions']],
-#' cpus = max(1, (parallel::detectCores() - 1)),
-#' n_iterations = nlayers(iteration_maps))}
+#' cpus = max(1, (parallel::detectCores() - 1)))}
 #' @importFrom raster beginCluster calc clusterR endCluster writeRaster
 #' @export
 dsmartr_eval_npred <- function(tallied_preds = NULL,
