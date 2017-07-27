@@ -157,3 +157,52 @@ dsmartr_eval_nxpred <- function(tallied_preds = NULL,
                  file.path(getwd(), 'evaluation')))
   n_classes_predicted_x
 }
+
+
+#' Detect ties for most-probable soil
+#'
+#' Calculates and maps out locations where the most-probable soil is a tie between two or more
+#' classes. Requires output from \code{\link{dsmartr_collate}}.
+#' @param tallied_preds RasterBrick; \code{tallied_predictions} output by
+#'   \code{\link{dsmartr_collate}}.
+#' @param cpus Integer; number of processors to use in parallel.
+#' @return \code{n_classes_predicted}: RasterLayer depicting the number of soils tied for
+#'   most-probable per pixel. Written to disk as GeoTIFF.
+#' @examples \dontrun{
+#' # run dsmartr_iterate() and dsmartr_collate() with the example data then:
+#' tiemap <- dsmartr_eval_ties(tallied_preds = collated[['tallied_predictions']],
+#' cpus = max(1, (parallel::detectCores() - 1)))}
+#' @importFrom raster beginCluster calc clusterR endCluster writeRaster
+#' @export
+dsmartr_eval_ties <- function(tallied_preds = NULL,
+                              cpus          = 1) {
+
+  if (!dir.exists('evaluation')) {
+    dir.create('evaluation', showWarnings = F)
+  }
+  strs <- file.path(getwd(), 'evaluation')
+
+  tie_finder <- function(x) {
+    if (is.na(sum(x))) {
+      NA
+    } else {
+      y <- max(x, na.rm = TRUE)
+      z <- length(x[x==y])
+      ifelse(z == 1, 0, z)
+    }}
+
+  message(paste0(Sys.time(), ': dsmartr tie-finder calculation in progress...'))
+  beginCluster(cpus)
+  tie_map <- clusterR(tallied_preds,
+                      fun = calc,
+                      args = list(fun = tie_finder),
+                      filename  = file.path(strs, 'most_probable_ties.tif'),
+                      datatype  = 'INT2S',
+                      NAflag    = -9999,
+                      overwrite = TRUE)
+
+  endCluster()
+  message(paste0(Sys.time(), ': ...complete. Function outputs can be located at ',
+                 file.path(getwd(), 'evaluation')))
+  tie_map
+}
