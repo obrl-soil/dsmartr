@@ -1,8 +1,8 @@
 Package: dsmartr
 Type: Package
 Title: dsmartr: An R implementation of the DSMART algorithm
-Version: 0.0.0.9007
-Date: 2017-07-24
+Version: 0.0.0.9008
+Date: 2017-07-29
 Authors@R: c(
     person("Lauren", "O'Brien", email = "obrl_soil@gmail.com",          role = c('aut', 'cre')),
     person("Nathan", "Odgers",  email = "nathan.odgers@sydney.edu.au",  role = 'aut'),
@@ -13,21 +13,21 @@ BugReports: https://github.com/obrl-soil/dsmartr/issues
 Depends: R (>= 3.3.0)
 Imports:
     C50,
-	bindrcpp,
-	dplyr (>= 0.5),
+    bindrcpp,
+    dplyr (>= 0.5),
     gtools,
-	magrittr,
-	methods,
-	purrr,
-	raster,
-	rgdal,
-	rlang,
-	sf (>= 0.5),
-	sp,
-	stats,
-	tidyr,
-	units,
-	utils
+    magrittr,
+    methods,
+    purrr,
+    raster,
+    rgdal,
+    rlang,
+    sf (>= 0.5),
+    sp,
+    stats,
+    tidyr,
+    units,
+    utils
 Suggests:
     tidyverse,
     knitr,
