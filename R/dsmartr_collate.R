@@ -100,13 +100,23 @@ dsmartr_collate <- function(iteration_stack = NULL,
                                        # e.g. 0 5 8 0 becomes [1] 3 2 1 4
                                        # these values correspond to the lookup ID column, so they
                                        # can be linked to soil class name
-                                       function(x) {
+                                       # if there is an n-way tie for most-probable, the tied soils
+                                       # are shuffled randomly (otherwise they come out in
+                                       # alphabetical order, which biases the predictions)
+                                  function(x) {
                                          if (is.na(sum(x))) {
                                            rep(NA, soil_classes)
+                                         } else {
+                                           mpc      <- max(x, na.rm = TRUE)
+                                           nties    <- length(x[x == mpc])
+                                           mpseries <- if (nties > 1) {
+                                             mps      <- order(x, decreasing = TRUE, na.last = TRUE)
+                                             shuffle  <- sample(mps[1:nties], size = nties,
+                                                                replace = FALSE)
+                                             mps      <- c(shuffle, mps[(nties + 1):length(mps)])
                                            } else {
                                              order(x, decreasing = TRUE, na.last = TRUE)
-                                             }
-                                         }),
+                                           }}}),
                       export    = c('soil_classes'),
                       filename  = file.path(strs, 'dsmartr_predictions.tif'),
                       datatype  = 'INT2S',
@@ -123,6 +133,8 @@ dsmartr_collate <- function(iteration_stack = NULL,
                                        # sorts the elements of class_order or probs_order from
                                        # largest to smallest.
                                        # e.g. 0 0.25 0.4 0 becomes [1] 0.4 0.25 0 0
+                                       # still works with the tie-shuffle above as shuffled soils
+                                       # are equally probable
                                        function(x) {
                                          if (is.na(sum(x))) {
                                            rep(NA, soil_classes)
