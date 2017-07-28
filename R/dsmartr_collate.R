@@ -100,23 +100,15 @@ dsmartr_collate <- function(iteration_stack = NULL,
                                        # e.g. 0 5 8 0 becomes [1] 3 2 1 4
                                        # these values correspond to the lookup ID column, so they
                                        # can be linked to soil class name
-                                       # if there is an n-way tie for most-probable, the tied soils
-                                       # are shuffled randomly (otherwise they come out in
-                                       # alphabetical order, which biases the predictions)
+                                       # where ties for x-most-probable exist, they are shuffled
+                                       # rather than being output in ascending order within the tie
                                   function(x) {
                                          if (is.na(sum(x))) {
                                            rep(NA, soil_classes)
                                          } else {
-                                           mpc      <- max(x, na.rm = TRUE)
-                                           nties    <- length(x[x == mpc])
-                                           mpseries <- if (nties > 1) {
-                                             mps      <- order(x, decreasing = TRUE, na.last = TRUE)
-                                             shuffle  <- sample(mps[1:nties], size = nties,
-                                                                replace = FALSE)
-                                             mps      <- c(shuffle, mps[(nties + 1):length(mps)])
-                                           } else {
-                                             order(x, decreasing = TRUE, na.last = TRUE)
-                                           }}}),
+                                             order(x, sample(x, size = length(x), replace = FALSE),
+                                                   decreasing = TRUE, na.last = TRUE)
+                                           }}),
                       export    = c('soil_classes'),
                       filename  = file.path(strs, 'dsmartr_predictions.tif'),
                       datatype  = 'INT2S',
