@@ -17,8 +17,11 @@
 #' @param flat_rate Integer; Number of samples per polygon; use with \code{sample_method = 'flat'}.
 #' @param area_rate Integer; desired number of samples per square kilometre; use with
 #'   \code{sample_method = 'area_p'}.
-#' @param floor Integer; desired minimum number of samples per polygon. Optional; use with
+#' @param samp_floor Integer; desired minimum number of samples per polygon. Optional; use with
 #'   \code{sample_method = 'area_p'}. Defaults to 2x the number of soil classes on a polygon.
+#' @param samp_ceiling Integer; desired maximum number of samples per polygon. Optional; use with
+#'   \code{sample_method = 'area_p'}. Only applies to polygons with a single class component and
+#'   (effectively) a large area.
 #' @return A data frame holding polygon input attributes and four new attribute columns:
 #' \itemize{
 #'   \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf]{st_area}}.}
@@ -61,7 +64,8 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
                                   sample_method = c('flat', 'area_p'),
                                   flat_rate     = NULL,
                                   area_rate     = NULL,
-                                  floor         = NULL) {
+                                  samp_floor    = NULL,
+                                  samp_ceiling  = NULL) {
 
   if (!dir.exists('inputs')) {
     dir.create('inputs', showWarnings = F)
@@ -96,12 +100,16 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
     flat_rate
     } else if (sample_method == 'area_p') {
       map_int(src_split, function(ns) {
-               p_percs   <- as.numeric(n_things(ns, 'PERC'))
-               p_nsoils  <- as.integer(as.data.frame(ns)[, 'n_soils'])
-               p_area    <- as.numeric(as.data.frame(ns)[, 'area_sqkm'])
-               samp_area <- ceiling(p_area * area_rate)
-               floor     <- if(is.null(floor)) { p_nsoils * 2 } else { floor }
-               samp_n    <- as.integer(max(samp_area, floor))
+               p_percs    <- as.numeric(n_things(ns, 'PERC'))
+               p_nsoils   <- as.integer(as.data.frame(ns)[, 'n_soils'])
+               p_area     <- as.numeric(as.data.frame(ns)[, 'area_sqkm'])
+               samp_area  <- ceiling(p_area * area_rate)
+               samp_floor <- if(is.null(samp_floor)) { p_nsoils * 2 } else { samp_floor }
+               samp_n     <- if(p_nsoils == 1 & !is.null(samp_ceiling)) {
+                 as.integer(max(min(samp_ceiling, samp_area), samp_floor))
+               } else {
+                 as.integer(max(samp_area, samp_floor))
+               }
              } )
     } else {
       stop('Please provide a valid sample_method parameter. Options are \'flat\', \'area_p\'.')

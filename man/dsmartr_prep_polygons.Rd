@@ -6,7 +6,7 @@
 \usage{
 dsmartr_prep_polygons(src_map = NULL, covariates = NULL, id_field = NULL,
   sample_method = c("flat", "area_p"), flat_rate = NULL, area_rate = NULL,
-  floor = NULL)
+  samp_floor = NULL, samp_ceiling = NULL)
 }
 \arguments{
 \item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object representing
@@ -31,8 +31,12 @@ Other columns may exist in the object; they will be ignored.}
 \item{area_rate}{Integer; desired number of samples per square kilometre; use with
 \code{sample_method = 'area_p'}.}
 
-\item{floor}{Integer; desired minimum number of samples per polygon. Optional; use with
+\item{samp_floor}{Integer; desired minimum number of samples per polygon. Optional; use with
 \code{sample_method = 'area_p'}. Defaults to 2x the number of soil classes on a polygon.}
+
+\item{samp_ceiling}{Integer; desired maximum number of samples per polygon. Optional; use with
+\code{sample_method = 'area_p'}. Only applies to polygons with a single class component and
+(effectively) a large area.}
 }
 \value{
 A data frame holding polygon input attributes and four new attribute columns:
