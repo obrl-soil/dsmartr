@@ -16,12 +16,9 @@ dsmartr_most_likely(dsmart_preds = NULL, dsmart_probs = NULL, n_maps = 2)
 \item{n_maps}{integer; the number of most-probable maps desired.}
 }
 \value{
-A list containing:
-\itemize{
-  \item{\code{most_likely_maps}: A list of \code{n_maps} most-likely-soils maps, from most to least
-  probable.}
-  \item{\code{most_likely_ps}: Optional; A list of \code{n_maps} probability surfaces
-  associated with \code{most_likely_maps}.}}
+A list containing \code{n_maps} most-likely-soils maps, from most to least
+  probable. Optionally; \code{n_maps} probability surfaces associated with
+  \code{most_likely_maps} follow.
 All outputs are written to disk as GeoTIFFs.
 }
 \description{

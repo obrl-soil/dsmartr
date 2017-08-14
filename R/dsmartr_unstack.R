@@ -20,8 +20,8 @@
 dsmartr_most_likely <- function(dsmart_preds = NULL,
                                 dsmart_probs = NULL,
                                 n_maps       = 2) {
-  if (!dir.exists('most_likely_maps/')) {
-    dir.create('most_likely_maps/', showWarnings = F)
+  if (!dir.exists('most_likely_maps')) {
+    dir.create('most_likely_maps', showWarnings = F)
   }
   mp_dir <- file.path(getwd(), 'most_likely_maps')
 
@@ -113,8 +113,8 @@ dsmartr_class_maps <- function(tallied_probs = NULL,
                                soil_class    = NULL,
                                lookup        = NULL,
                                cpus          = 1) {
-  if (!dir.exists('class_maps/')) {
-    dir.create('class_maps/', showWarnings = F)
+  if (!dir.exists('class_maps')) {
+    dir.create('class_maps', showWarnings = F)
   }
 
   class_dir <- file.path(getwd(), 'class_maps')
