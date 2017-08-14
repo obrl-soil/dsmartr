@@ -7,12 +7,9 @@
 #' @param dsmart_probs RasterBrick; output \code{dsmart_probabilities} from
 #'   \code{\link{dsmartr_collate}}; optional.
 #' @param n_maps integer; the number of most-probable maps desired.
-#' @return A list containing:
-#' \itemize{
-#'   \item{\code{most_likely_maps}: A list of \code{n_maps} most-likely-soils maps, from most to least
-#'   probable.}
-#'   \item{\code{most_likely_ps}: Optional; A list of \code{n_maps} probability surfaces
-#'   associated with \code{most_likely_maps}.}}
+#' @return A list containing \code{n_maps} most-likely-soils maps, from most to least
+#'   probable. Optionally; \code{n_maps} probability surfaces associated with
+#'   \code{most_likely_maps} follow.
 #' All outputs are written to disk as GeoTIFFs.
 #' @examples \dontrun{
 #' # run dsmartr_collate() with the example data and then:
@@ -21,17 +18,18 @@
 #' @importFrom raster unstack ratify writeRaster
 #' @export
 dsmartr_most_likely <- function(dsmart_preds = NULL,
-                                  dsmart_probs = NULL,
-                                  n_maps       = 2) {
-  if (!dir.exists('most_probable_maps/')) {
-    dir.create('most_probable_maps/', showWarnings = F)
+                                dsmart_probs = NULL,
+                                n_maps       = 2) {
+  if (!dir.exists('most_likely_maps/')) {
+    dir.create('most_likely_maps/', showWarnings = F)
   }
-  mp_dir <- file.path(getwd(), 'most_probable_maps')
+  mp_dir <- file.path(getwd(), 'most_likely_maps')
 
   message(paste0(Sys.time(), ': dsmartr prediction map unstacking in progress...'))
 
   if (!is.null(dsmart_preds)) {
     suppressWarnings(map_list <- raster::unstack(dsmart_preds[[1:n_maps]]))
+    names(map_list) <- paste0('most_likely_', 1:nmaps)
   } else {
     stop('dsmart_preds raster stack has not been specified')
   }
@@ -39,7 +37,7 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
   pb <- txtProgressBar(min = 0, max = n_maps, style = 3)
   most_likely_maps <- mapply(FUN = function(x, i) {
     ml <- writeRaster(x,
-                filename  = file.path(mp_dir, paste0('mostlikely_', i ,'.tif')),
+                filename  = file.path(mp_dir, paste0('most_likely_', i ,'.tif')),
                 format    = 'GTiff',
                 NAflag    = -9999,
                 datatype  = 'INT2S',
@@ -55,10 +53,12 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
   if(!is.null(dsmart_probs)) {
     message(paste0(Sys.time(), ': dsmartr probability surface unstacking in progress...'))
     suppressWarnings(probmap_list <- raster::unstack(dsmart_probs[[1:n_maps]]))
+    names(probmap_list) <- paste0('most_likely_prob_', 1:nmaps)
+
     pb <- txtProgressBar(min = 0, max = n_maps, style = 3)
     most_likely_ps <- mapply(FUN = function(x, i) {
       mp <- writeRaster(x,
-                  filename  = file.path(mp_dir, paste0('mostlikely_prob_', i, '.tif')),
+                  filename  = file.path(mp_dir, paste0('most_likely_prob_', i, '.tif')),
                   format    = 'GTiff',
                   datatype  = 'FLT4S',
                   NAflag    = -9999,
@@ -71,17 +71,16 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
     )
     close(pb)
     message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
-                   file.path(getwd(), 'most_probable_maps')))
+                   file.path(getwd(), 'most_likely_maps')))
   } else {
     message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
-                   file.path(getwd(), 'most_probable_maps')))
+                   file.path(getwd(), 'most_likely_maps')))
   }
 
   unstacked_maps <- if(is.null(dsmart_probs)) {
     most_likely_maps
   } else {
-    list("most_likely_maps" = most_likely_maps,
-         "most_likely_ps"   = most_likely_ps ) # ps 'probability surface'
+    c(most_likely_maps, most_likely_ps)
   }
 
 }
