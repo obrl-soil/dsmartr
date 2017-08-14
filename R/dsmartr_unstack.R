@@ -29,7 +29,7 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
 
   if (!is.null(dsmart_preds)) {
     suppressWarnings(map_list <- raster::unstack(dsmart_preds[[1:n_maps]]))
-    names(map_list) <- paste0('most_likely_', 1:nmaps)
+    names(map_list) <- paste0('most_likely_', 1:n_maps)
   } else {
     stop('dsmart_preds raster stack has not been specified')
   }
@@ -53,7 +53,7 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
   if(!is.null(dsmart_probs)) {
     message(paste0(Sys.time(), ': dsmartr probability surface unstacking in progress...'))
     suppressWarnings(probmap_list <- raster::unstack(dsmart_probs[[1:n_maps]]))
-    names(probmap_list) <- paste0('most_likely_prob_', 1:nmaps)
+    names(probmap_list) <- paste0('most_likely_prob_', 1:n_maps)
 
     pb <- txtProgressBar(min = 0, max = n_maps, style = 3)
     most_likely_ps <- mapply(FUN = function(x, i) {
