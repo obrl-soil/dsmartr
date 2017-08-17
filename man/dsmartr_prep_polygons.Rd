@@ -20,7 +20,7 @@ dsmartr_prep_polygons(src_map = NULL, covariates = NULL, id_field = NULL,
 
 Other columns may exist in the object; they will be ignored.}
 
-\item{covariates}{RasterStack or RasterBrick; environmental covariate data.}
+\item{covariates}{RasterStack or RasterBrick; environmental covariate datasets.}
 
 \item{id_field}{String; name of unique identifier field in \code{src_map}.}
 

@@ -68,3 +68,81 @@ dsmartr_check_polygons <- function(src_map  = NULL, id_field = NULL) {
 
   return(src_map)
 }
+
+#' generate masks from samples
+#'
+#' Generates a rasterlayer for each dsmart iteration highlighting areas where
+#' one or more covariates has a value that is out of range of the sample used to
+#' model soil distribution.
+#' @param samples List; POINT_sfc objects created by \code{\link{dsmartr_iterate}} when option
+#' write_samples = TRUE
+#' @param covariates RasterStack or RasterBrick; environmental covariate datasets.
+#' @param tolerance Integer; the number of out of range covariates allowed. Defaults to 0,
+#' that is, if any covariate is out of range on a given pixel, that pixel will be masked.
+#' @param cpus Integer; number of processors to use in parallel.
+#' @details For each model iteration this function generates a raster that can be used to mask
+#'  dsmartr predictions where covariate values are out of range of the sample of cells
+#'  used in that iteration. The masks can also be combined to produce an overall mask, applicable to
+#'  final products.
+#' @return a list of rasters
+#' @examples \dontrun{
+#' # run dsmartr_iterate() with the example data, then:
+#' sample_list <- lapply(as.list(list.files(file.path(getwd(), 'iterations', 'samples'),
+#' pattern = '\\.shp', full.names = TRUE)), function(x) read_sf(x))
+#' masks <- dsmartr_pred_masks(samples = sample_list,
+#' covariates = heronvale_covariates, cpus = max(1, (parallel::detectCores() - 1)))
+#'
+#' # less strict: up to 3 out of range covariates are allowed
+#' masks <- dsmartr_pred_masks(samples = sample_list, covariates = heronvale_covariates,
+#' tolerance = 3, cpus = max(1, (parallel::detectCores() - 1)))
+#'
+#' # a 'final product' mask, where outputs are masked only if the mode of that
+#' cell is 'do not predict'.
+#' all_masks <- stack(masks)
+#' modal_mask <- calc(all_masks, function(cell) ifelse(modal(cell) == FALSE, NA ,1))
+#' # the above could be applied to the most-likely soils map after running dsmartr_most_likely:
+#' masked_m1 <- most_likely[[1]][[1]] + modal_mask
+#' }
+#' @importFrom raster calc writeRaster
+#' @importFrom sf st_set_geometry
+#' @importFrom purrr map2_lgl
+#' @export
+dsmartr_pred_masks <- function(samples = NULL, covariates = NULL, tolerance = 0L, cpus = 1) {
+  if (!dir.exists(file.path(getwd(), 'iterations', 'masks'))) {
+    dir.create(file.path(getwd(), 'iterations', 'masks'), showWarnings = F)
+  }
+  drmsk <- file.path(getwd(), 'iterations', 'masks')
+
+  message(paste0(Sys.time(), ': dsmartr prediction mask creation in progress...'))
+  pb <- txtProgressBar(min = 0, max = length(samples), style = 3)
+  beginCluster(n = cpus)
+  all_masks <- mapply(FUN = function(m, n) {
+    sx <- st_set_geometry(m, NULL)
+    rangex <- apply(sx[, c(3:ncol(sx))], MARGIN = 2,
+                    FUN = function(x) range(x, na.rm = TRUE))
+
+    pred_mask <- clusterR(x    = covariates,
+                          fun  = calc,
+                          args = list(function(cell) {
+                            in_or_out <- map2_lgl(.x = cell, .y = seq_along(cell),
+                                                  function(.x, .y) {
+                                                    .x >= rangex[1, .y] & .x <= rangex[2, .y]
+                                                    })
+                            ifelse(sum(in_or_out == FALSE) > tolerance, NA, 1)
+                            }),
+                          filename = file.path(drmsk, paste0('pred_mask_', n, '.tif')),
+                          NAflag = -9999,
+                          datatype = 'INT2S',
+                          overwrite = TRUE)
+    setTxtProgressBar(pb, n)
+    pred_mask
+    },
+    m = samples,
+    n = seq_along(samples))
+  endCluster()
+  close(pb)
+
+  message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
+                 drmsk))
+  all_masks
+}

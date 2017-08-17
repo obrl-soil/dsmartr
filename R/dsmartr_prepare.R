@@ -11,7 +11,7 @@
 #'   to CLASS_1, etc.}}
 #'
 #' Other columns may exist in the object; they will be ignored.
-#' @param covariates RasterStack or RasterBrick; environmental covariate data.
+#' @param covariates RasterStack or RasterBrick; environmental covariate datasets.
 #' @param id_field String; name of unique identifier field in \code{src_map}.
 #' @param sample_method String; choice of flat rate per polygon or area-proportional rate.
 #' @param flat_rate Integer; Number of samples per polygon; use with \code{sample_method = 'flat'}.
