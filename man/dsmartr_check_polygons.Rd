@@ -4,12 +4,17 @@
 \alias{dsmartr_check_polygons}
 \title{Check dsmartr polygon inputs}
 \usage{
-dsmartr_check_polygons(src_map = NULL, id_field = NULL)
+dsmartr_check_polygons(src_map = NULL, id_field = NULL, cs = NULL,
+  ps = NULL)
 }
 \arguments{
 \item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object.}
 
 \item{id_field}{String; name of unique identifier field.}
+
+\item{cs}{String; stub of attribute column names holding soil class data}
+
+\item{ps}{String; stub of attribute column names folding soil percentage data}
 }
 \value{
 An sf object with appended logical columns indicating presence of possible data faults.
@@ -21,9 +26,9 @@ Checks dsmartr input polygons for potential data quality issues.
 This function highlights some issues that may cause dsmartr to either fail or behave
   unpredictably. Usually these are side-effects of prepration work carried out in other software.
   Sometimes they are the result of errors in the source data. Note that polygon geometry is not
-  explicitly checked, only attributes. At present, three problems are checked - whether data is
-  missing (e.g. a polygon class without a matching percentage), whether a percentage is 0%, and
-  whether total percentage (by polygon) is not 100%.
+  explicitly checked, only attributes. At present, four problems are checked - whether data is
+  missing (e.g. a polygon class without a matching percentage), whether a percentage is 0%,
+  whether total percentage (by polygon) is not 100%, and whether any IDs are duplicated.
 }
 \examples{
 \dontrun{
