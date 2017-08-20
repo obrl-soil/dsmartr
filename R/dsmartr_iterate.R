@@ -5,26 +5,22 @@
 #' @keywords internal
 #' @param soilmap Data Frame; Returned by \code{\link{dsmartr_prep_polygons}}.
 #' @param soilpoints Data Frame; Returned by \code{\link{dsmartr_prep_points}}; optional.
-#' @param stub String; Common column name or name stub holding soil class data.
+#' @param cs String; stub of attribute column names holding soil class data
 #' @return A factor holding the set of soil classes occurring in both datasets, sorted
 #'   alphabetically. Internal to \code{\link{dsmartr_iterate}}.
 #' @note It is up to the user to make sure the classification schema in both datasets matches/is
 #'   compatible.
 #' @examples \dontrun{
 #' # run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
-#' class_levels <- dsmartr_get_all_classes(soilmap = pr_ap, soilpoints = pr_points, stub = 'CLASS')}
+#' class_levels <- dsmartr_get_all_classes(soilmap = pr_ap, soilpoints = pr_points, cs = 'CLASS')}
 #' @importFrom stats na.omit
-dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, stub = NULL) {
+dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, cs = NULL) {
 
-  map_levels   <- soilmap[ , c(grep(stub, names(soilmap)))]
-  map_levels[] <- lapply(map_levels, as.character)
-  map_levels   <- as.vector(na.omit(unique(unlist(map_levels, use.names = FALSE))))
+  map_levels <- unique(n_things(soilmap, cs))
 
   out_levels <- if(!is.null(soilpoints)) {
     # sometimes known points have soil classes that have not been mapped
-    point_levels   <- soilpoints[, c(grep(stub, names(soilpoints)))]
-    point_levels[] <- lapply(point_levels, as.character)
-    point_levels   <- as.vector(na.omit(unique(unlist(point_levels, use.names = FALSE))))
+    point_levels   <- unique(n_things(soilpoints, cs))
     all_levels     <- union(map_levels, point_levels)
     as.factor(sort(all_levels))
   } else {
@@ -63,9 +59,9 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
       sample(poly_cells, size = poly_nsample, replace = FALSE)
     }
 
-  poly_percs    <- as.vector(na.omit(unlist(pd[, c(grep(ps, names(pd)))])))
+  poly_percs    <- as.numeric(n_things(pd, ps))
   poly_dirprops <- as.vector(rdirichlet(1, as.numeric(poly_percs) * t_factor))
-  poly_classes  <- as.vector(na.omit(unlist(pd[, c(grep(cs, names(pd)))])))
+  poly_classes  <- as.numeric(n_things(pd, cs))
 
   poly_alloc    <- mapply(function(class, dpn) {
       rep(class, times = dpn)
@@ -158,7 +154,7 @@ dsmartr_iterate <- function(prepped_map    = NULL,
 
   class_levels <- dsmartr_get_classes(soilmap    = prepped_map,
                                       soilpoints = prepped_points,
-                                      stub       = 'CLASS')
+                                      cs         = 'CLASS')
 
   message(paste0(Sys.time(), ': dsmartr iteration in progress...'))
   pb <- txtProgressBar(min = 0, max = n_iterations, style = 3)

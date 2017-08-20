@@ -100,7 +100,6 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
     flat_rate
     } else if (sample_method == 'area_p') {
       map_int(src_split, function(ns) {
-               p_percs    <- as.numeric(n_things(ns, 'PERC'))
                p_nsoils   <- as.integer(as.data.frame(ns)[, 'n_soils'])
                p_area     <- as.numeric(as.data.frame(ns)[, 'area_sqkm'])
                samp_area  <- ceiling(p_area * area_rate)

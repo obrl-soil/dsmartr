@@ -4,14 +4,14 @@
 \alias{dsmartr_get_classes}
 \title{Get all soil classes}
 \usage{
-dsmartr_get_classes(soilmap = NULL, soilpoints = NULL, stub = NULL)
+dsmartr_get_classes(soilmap = NULL, soilpoints = NULL, cs = NULL)
 }
 \arguments{
 \item{soilmap}{Data Frame; Returned by \code{\link{dsmartr_prep_polygons}}.}
 
 \item{soilpoints}{Data Frame; Returned by \code{\link{dsmartr_prep_points}}; optional.}
 
-\item{stub}{String; Common column name or name stub holding soil class data.}
+\item{cs}{String; stub of attribute column names holding soil class data}
 }
 \value{
 A factor holding the set of soil classes occurring in both datasets, sorted
@@ -28,6 +28,6 @@ It is up to the user to make sure the classification schema in both datasets mat
 \examples{
 \dontrun{
 # run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
-class_levels <- dsmartr_get_all_classes(soilmap = pr_ap, soilpoints = pr_points, stub = 'CLASS')}
+class_levels <- dsmartr_get_all_classes(soilmap = pr_ap, soilpoints = pr_points, cs = 'CLASS')}
 }
 \keyword{internal}

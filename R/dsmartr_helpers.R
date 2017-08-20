@@ -14,8 +14,11 @@
 #' percs_1 <- n_things(heronvale_soilmap[1, ], 'PERC')}
 #' @importFrom stats na.omit
 n_things <- function(input = NULL, selector = NULL) {
-  as.vector(na.omit(unlist(as.data.frame(input)[, c(grep(selector, names(input)))])))
+  input <- as.data.frame(input, stringsAsFactors = FALSE)
+  output <- as.vector(na.omit(unlist(input[, c(grep(selector, names(input)))])))
+  if(length(output) == 0) { NA } else { output }
 }
+
 
 #' Check dsmartr polygon inputs
 #'
