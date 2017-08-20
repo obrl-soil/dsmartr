@@ -26,6 +26,7 @@ dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, cs = NULL) {
   } else {
     as.factor(sort(map_levels))
   }
+  out_levels
 }
 
 #' Sample a polygon for [dsmartr_iterate()]
@@ -61,7 +62,7 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
 
   poly_percs    <- as.numeric(n_things(pd, ps))
   poly_dirprops <- as.vector(rdirichlet(1, as.numeric(poly_percs) * t_factor))
-  poly_classes  <- as.numeric(n_things(pd, cs))
+  poly_classes  <- as.character(n_things(pd, cs))
 
   poly_alloc    <- mapply(function(class, dpn) {
       rep(class, times = dpn)
