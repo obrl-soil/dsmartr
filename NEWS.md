@@ -1,3 +1,11 @@
+## v.0.0.0.9012
+
+  * more robust version of n_things (internal)
+  * used n_things where it should be used in `dsmartr_iterate`
+  * fixed parameter passing in `dsmartr_check_polygons`
+  * removed unused param in `dsmartr_prep_polygons`
+  * enabled unit testing, started adding tests
+
 ## v. 0.0.0.9011
 
   * Added function `dsmartr_pred_mask`, which creates masking rasters for areas where predictions maybe shouldn't be made, on a per-iteration basis.
