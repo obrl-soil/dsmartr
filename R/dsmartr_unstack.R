@@ -92,27 +92,21 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
 #' @param tallied_probs RasterBrick; \code{tallied_probabilities} output by
 #'   \code{\link{dsmartr_collate}}.
 #' @param soil_class String; Soil class(es) of interest, if only particular maps are desired.
-#' @param lookup Data Frame; contains raster values and corresponding soil class labels. See
-#'   \code{\link{dsmartr_collate}}.
-#' @param cpus Integer; number of processors to use in parallel.
 #' @return \code{class_maps}: List of RasterLayers; probability surfaces for each soil class. All
 #'   outputs are written to disk as GeoTIFF.
 #' @examples \dontrun{
 #' # run dsmartr_collate() with the example data and then
 #'
 #' # all classes:
-#' classmaps <- dsmartr_class_maps(tallied_probs = collated[['tallied_probabilities']],
-#'  lookup = LUT)
+#' classmaps <- dsmartr_class_maps(tallied_probs = collated[['tallied_probabilities']])
 #'
 #' # just map two classes of interest:
 #' classmaps <- dsmartr_class_maps(tallied_probs = collated[['tallied_probabilities']],
-#' soil_class = c('An', 'Wr'), lookup = LUT)}
+#' soil_class = c('An', 'Wr'))}
 #' @importFrom raster unstack writeRaster
 #' @export
 dsmartr_class_maps <- function(tallied_probs = NULL,
-                               soil_class    = NULL,
-                               lookup        = NULL,
-                               cpus          = 1) {
+                               soil_class    = NULL) {
   if (!dir.exists('class_maps')) {
     dir.create('class_maps', showWarnings = F)
   }
@@ -128,18 +122,16 @@ dsmartr_class_maps <- function(tallied_probs = NULL,
         })
 
   if(is.null(soil_class)) {
-  lapply(seq_along(probs_list), function(i) {
-    names(probs_list[[i]]) <- as.character(lookup[i, 2])
-  })
-  } else {
-     names(probs_list) <- soil_class
+    names(probs_list) <- names(tallied_probs)
+    } else {
+      names(probs_list) <- soil_class
     }
 
   pb <- txtProgressBar(min = 0, max = length(probs_list), style = 3)
   class_ps <- lapply(seq_along(probs_list), function(x) {
     cm <- writeRaster(probs_list[[x]],
                       filename  = file.path(class_dir,
-                                            paste0(names(probs_list)[x], "_probability.tif")),
+                                            paste0(names(probs_list)[[x]], "_probability.tif")),
                       format    = "GTiff",
                       NAflag    = -9999,
                       datatype  = 'FLT4S',

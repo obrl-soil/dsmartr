@@ -4,19 +4,13 @@
 \alias{dsmartr_class_maps}
 \title{Produce soil class probability surfaces}
 \usage{
-dsmartr_class_maps(tallied_probs = NULL, soil_class = NULL, lookup = NULL,
-  cpus = 1)
+dsmartr_class_maps(tallied_probs = NULL, soil_class = NULL)
 }
 \arguments{
 \item{tallied_probs}{RasterBrick; \code{tallied_probabilities} output by
 \code{\link{dsmartr_collate}}.}
 
 \item{soil_class}{String; Soil class(es) of interest, if only particular maps are desired.}
-
-\item{lookup}{Data Frame; contains raster values and corresponding soil class labels. See
-\code{\link{dsmartr_collate}}.}
-
-\item{cpus}{Integer; number of processors to use in parallel.}
 }
 \value{
 \code{class_maps}: List of RasterLayers; probability surfaces for each soil class. All
@@ -31,10 +25,9 @@ Generates a soil class probability map for any or all input soil classes. Requir
 # run dsmartr_collate() with the example data and then
 
 # all classes:
-classmaps <- dsmartr_class_maps(tallied_probs = collated[['tallied_probabilities']],
- lookup = LUT)
+classmaps <- dsmartr_class_maps(tallied_probs = collated[['tallied_probabilities']])
 
 # just map two classes of interest:
 classmaps <- dsmartr_class_maps(tallied_probs = collated[['tallied_probabilities']],
-soil_class = c('An', 'Wr'), lookup = LUT)}
+soil_class = c('An', 'Wr'))}
 }
