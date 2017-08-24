@@ -116,7 +116,8 @@ dsmartr_check_polygons <- function(src_map  = NULL, id_field = NULL,
 #' @export
 dsmartr_pred_masks <- function(samples = NULL, covariates = NULL, tolerance = 0L, cpus = 1) {
   if (!dir.exists(file.path(getwd(), 'iterations', 'masks'))) {
-    dir.create(file.path(getwd(), 'iterations', 'masks'), showWarnings = F)
+    dir.create(file.path(getwd(), 'iterations', 'masks'),
+               showWarnings = FALSE, recursive = TRUE)
   }
   drmsk <- file.path(getwd(), 'iterations', 'masks')
 
@@ -135,7 +136,7 @@ dsmartr_pred_masks <- function(samples = NULL, covariates = NULL, tolerance = 0L
                                                   function(.x, .y) {
                                                     .x >= rangex[1, .y] & .x <= rangex[2, .y]
                                                     })
-                            ifelse(sum(in_or_out == FALSE) > tolerance, NA, 1)
+                            ifelse(sum(in_or_out == FALSE) > tolerance, NA, 0)
                             }),
                           filename = file.path(drmsk, paste0('pred_mask_', n, '.tif')),
                           NAflag = -9999,

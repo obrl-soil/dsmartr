@@ -67,8 +67,8 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
                                   samp_floor    = NULL,
                                   samp_ceiling  = NULL) {
 
-  if (!dir.exists('inputs')) {
-    dir.create('inputs', showWarnings = F)
+  if (!dir.exists(file.path(getwd(), 'inputs'))) {
+    dir.create(file.path(getwd(), 'inputs'), showWarnings = FALSE)
   }
   in_dir <- file.path(getwd(), 'inputs')
 
@@ -89,7 +89,7 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
 
   # number of soil classes on polygon
   n_soils <- map_int(src_split, function(ncl) {
-               sum(!is.na(ncl) & grepl('CLASS', names(ncl)) == T)
+               sum(!is.na(ncl) & grepl('CLASS', names(ncl)) == TRUE)
              })
 
   src_prepped$n_soils <- as.vector(n_soils)
@@ -183,8 +183,8 @@ dsmartr_prep_points <- function(known_points = NULL, soil_id  = NULL,
                                 x_coords     = NULL, y_coords = NULL,
                                 covariates   = NULL) {
 
-  if (!dir.exists('inputs')) {
-    dir.create('inputs', showWarnings = F)
+  if (!dir.exists(file.path(getwd(), 'inputs'))) {
+    dir.create(file.path(getwd(), 'inputs'), showWarnings = FALSE)
   }
   in_dir <- file.path(getwd(), 'inputs')
 

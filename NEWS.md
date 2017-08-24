@@ -1,3 +1,8 @@
+## v.0.0.0.9013
+
+  * simplified and debugged `dsmartr_class_maps`
+  * fixed `dir.create` params for nested paths
+
 ## v.0.0.0.9012
 
   * more robust version of n_things (internal)

@@ -30,8 +30,8 @@
 #' @export
 dsmartr_eval_pgap <- function(dsmartr_probs = NULL, cpus = 1) {
 
-  if (!dir.exists('evaluation')) {
-    dir.create('evaluation', showWarnings = F)
+  if (!dir.exists(file.path(getwd(), 'evaluation'))) {
+    dir.create(file.path(getwd(), 'evaluation'), showWarnings = FALSE)
   }
   strs <- file.path(getwd(), 'evaluation')
 
@@ -74,8 +74,8 @@ dsmartr_eval_pgap <- function(dsmartr_probs = NULL, cpus = 1) {
 dsmartr_eval_npred <- function(tallied_preds = NULL,
                                cpus          = 1) {
 
-  if (!dir.exists('evaluation')) {
-    dir.create('evaluation', showWarnings = F)
+  if (!dir.exists(file.path(getwd(), 'evaluation'))) {
+    dir.create(file.path(getwd(), 'evaluation'), showWarnings = FALSE)
   }
   strs <- file.path(getwd(), 'evaluation')
   message(paste0(Sys.time(), ': dsmartr n soils predicted calculation in progress...'))
@@ -126,8 +126,8 @@ dsmartr_eval_nxpred <- function(tallied_preds = NULL,
     stop('total number of DSMART model iterations must be supplied.')
   }
 
-  if (!dir.exists('evaluation')) {
-    dir.create('evaluation', showWarnings = F)
+  if (!dir.exists(file.path(getwd(), 'evaluation'))) {
+    dir.create(file.path(getwd(), 'evaluation'), showWarnings = FALSE)
   }
   strs <- file.path(getwd(), 'evaluation')
 
@@ -177,8 +177,8 @@ dsmartr_eval_nxpred <- function(tallied_preds = NULL,
 dsmartr_eval_ties <- function(tallied_preds = NULL,
                               cpus          = 1) {
 
-  if (!dir.exists('evaluation')) {
-    dir.create('evaluation', showWarnings = F)
+  if (!dir.exists(file.path(getwd(), 'evaluation'))) {
+    dir.create(file.path(getwd(), 'evaluation'), showWarnings = FALSE)
   }
   strs <- file.path(getwd(), 'evaluation')
 

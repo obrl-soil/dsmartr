@@ -39,8 +39,8 @@ dsmartr_collate <- function(iteration_stack = NULL,
   message(paste0(Sys.time(), ': dsmartr collation in progress...'))
 
   pb <- txtProgressBar(min = 0, max = 100, initial = 0, style = 3)
-  if (!dir.exists("tallies")) {
-    dir.create("tallies", showWarnings = F)
+  if (!dir.exists(file.path(getwd(), 'tallies'))) {
+    dir.create(file.path(getwd(), 'tallies'), showWarnings = FALSE)
   }
   strs           <- file.path(getwd(), 'tallies')
   soil_classes   <- nrow(lookup)

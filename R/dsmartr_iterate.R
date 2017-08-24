@@ -147,9 +147,8 @@ dsmartr_iterate <- function(prepped_map    = NULL,
                             resume_from    = NULL) {
 
   # output directories
-  dir.create('iterations',        showWarnings = F)
-  dir.create('iterations/maps',   showWarnings = F)
-  dir.create('iterations/models', showWarnings = F)
+  dir.create(file.path(getwd(), 'iterations', 'maps'),   showWarnings = FALSE, recursive = TRUE)
+  dir.create(file.path(getwd(), 'iterations', 'models'), showWarnings = FALSE, recursive = TRUE)
   strr   <- file.path(getwd(), 'iterations', 'maps')
   strm   <- file.path(getwd(), 'iterations', 'models')
 
@@ -247,8 +246,9 @@ dsmartr_iterate <- function(prepped_map    = NULL,
 
     if (write_samples == TRUE) {
 
-      if (!dir.exists('iterations/samples')) {
-        dir.create('iterations/samples', showWarnings = F)
+      if (!dir.exists(file.path(getwd(), 'iterations', 'samples'))) {
+        dir.create(file.path(getwd(), 'iterations', 'samples'),
+                   showWarnings = FALSE, recursive = TRUE)
       }
       strd <- file.path(getwd(), 'iterations', 'samples')
 
@@ -257,7 +257,7 @@ dsmartr_iterate <- function(prepped_map    = NULL,
         st_point(as.vector(xyFromCell(covariates, x)))
       }))
       model_input <- st_as_sf(model_input,
-                              crs = covariates@crs@projargs, agr = 'contstant')
+                              crs = covariates@crs@projargs, agr = 'constant')
 
       if (write_files == 'rds') {
         saveRDS(model_input, file.path(strd, paste0('samples_',  j, '.rds')))
