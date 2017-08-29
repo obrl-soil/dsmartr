@@ -16,12 +16,12 @@
 #' cpus = max(1, (parallel::detectCores() - 1)))
 #'
 #' # or supply unstacked maps (slightly faster)
-#' pgap2 <- dsmartr_eval_pgap(dsmartr_probs = most_likely[['most_likely_ps']][1:2],
-#' cpus = max(1, (parallel::detectCores() - 1)))
+#' pgap2 <- dsmartr_eval_pgap(dsmartr_probs = most_likely[c('most_likely_prob_1', 'most_likely_prob_2')],
+#' #' cpus = max(1, (parallel::detectCores() - 1)))
 #'
 #' # or read from file
-#' mpp_1 <- raster(file.path(getwd(), 'most_probable_maps', 'mostlikely_1.tif'))
-#' mpp_2 <- raster(file.path(getwd(), 'most_probable_maps', 'mostlikely_2.tif'))
+#' mpp_1 <- raster(file.path(getwd(), 'most_likely_maps', 'most_likely_1.tif'))
+#' mpp_2 <- raster(file.path(getwd(), 'most_likely_maps', 'most_likely_2.tif'))
 #' pgap3 <- dsmartr_eval_pgap(dsmartr_probs = list(mpp_1, mpp_2),
 #' cpus = max(1, (parallel::detectCores() - 1)))
 #' }

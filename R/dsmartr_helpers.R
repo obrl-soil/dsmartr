@@ -15,8 +15,11 @@
 #' @importFrom stats na.omit
 n_things <- function(input = NULL, selector = NULL) {
   input <- as.data.frame(input, stringsAsFactors = FALSE)
+  if(length(grep(selector, names(input))) == 0) {
+    stop("Error: Selector not found within input's column names")
+  } else {
   output <- as.vector(na.omit(unlist(input[, c(grep(selector, names(input)))])))
-  if(length(output) == 0) { NA } else { output }
+  if(length(output) == 0) { NA } else { output }}
 }
 
 
@@ -123,12 +126,12 @@ dsmartr_pred_masks <- function(samples = NULL, covariates = NULL, tolerance = 0L
 
   message(paste0(Sys.time(), ': dsmartr prediction mask creation in progress...'))
   pb <- txtProgressBar(min = 0, max = length(samples), style = 3)
-  beginCluster(n = cpus)
+
   all_masks <- mapply(FUN = function(m, n) {
     sx <- st_set_geometry(m, NULL)
     rangex <- apply(sx[, c(3:ncol(sx))], MARGIN = 2,
                     FUN = function(x) range(x, na.rm = TRUE))
-
+    beginCluster(n = cpus)
     pred_mask <- clusterR(x    = covariates,
                           fun  = calc,
                           args = list(function(cell) {
@@ -143,11 +146,12 @@ dsmartr_pred_masks <- function(samples = NULL, covariates = NULL, tolerance = 0L
                           datatype = 'INT2S',
                           overwrite = TRUE)
     setTxtProgressBar(pb, n)
+    endCluster()
     pred_mask
     },
     m = samples,
     n = seq_along(samples))
-  endCluster()
+
   close(pb)
 
   message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
