@@ -1,3 +1,15 @@
+## v.1.0.0 'what I did on my holidays'
+  * Happy New Year, have an API change. Took 'dsmartr_' out of all function names because Twitter Said
+  * Added @importFroms to data.R so sf/sp/raster don't need to be libraried
+  * switched to custom function 'strict_cfp' for returning cell numbers that intersect polygons - better performance, plus old way has some obscure bugs with particular geometries
+  * Covariate samples now write to GPKG as slow write issue has been resolved (see sf issue #470)
+  * all internal functions separated from wrappers, enabling unit testing
+  * Core functions all have unit tests
+  * prediction_masks function corrected
+  * eval_npred and eval_nxpred functions combined
+  * Documentation updated
+  * Regenerated demo data with some tidying up, particularly soil map geometry
+
 ## v.0.0.0.9013
 
   * simplified and debugged `dsmartr_class_maps`

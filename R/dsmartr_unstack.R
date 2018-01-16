@@ -1,25 +1,25 @@
 #' Extract most-likely-soil maps
 #'
-#' This function takes the outputs of \code{\link{dsmartr_collate}} and extracts the top \code{n}
+#' This function takes the outputs of \code{\link{collate}} and extracts the top \code{n}
 #' most-likely soil maps. Optionally, their respective probability surfaces are also extracted.
-#' @param dsmart_preds RasterBrick; output \code{dsmart_predictions} from
-#'   \code{\link{dsmartr_collate}}.
-#' @param dsmart_probs RasterBrick; output \code{dsmart_probabilities} from
-#'   \code{\link{dsmartr_collate}}; optional.
+#' @param dsmart_preds RasterBrick; output \code{dsmartr_predictions} from
+#'   \code{\link{collate}}.
+#' @param dsmart_probs RasterBrick; output \code{dsmartr_probabilities} from
+#'   \code{\link{collate}}; optional.
 #' @param n_maps integer; the number of most-probable maps desired.
 #' @return A list containing \code{n_maps} most-likely-soils maps, from most to least
 #'   probable. Optionally; \code{n_maps} probability surfaces associated with
 #'   \code{most_likely_maps} follow.
 #' All outputs are written to disk as GeoTIFFs.
 #' @examples \dontrun{
-#' # run dsmartr_collate() with the example data and then:
-#' most_likely <- dsmartr_most_likely(dsmart_preds = collated[['dsmartr_predictions']],
+#' # run collate() example code, then:
+#' most_likely_soil <- most_likely(dsmart_preds = collated[['dsmartr_predictions']],
 #' dsmart_probs = collated[['dsmartr_probabilities']], n_maps = 2)}
 #' @importFrom raster unstack ratify writeRaster
 #' @export
-dsmartr_most_likely <- function(dsmart_preds = NULL,
-                                dsmart_probs = NULL,
-                                n_maps       = 2) {
+most_likely <- function(dsmart_preds = NULL,
+                        dsmart_probs = NULL,
+                        n_maps       = 2L) {
   if (!dir.exists(file.path(getwd(), 'most_likely_maps'))) {
     dir.create(file.path(getwd(), 'most_likely_maps'), showWarnings = FALSE)
   }
@@ -88,25 +88,25 @@ dsmartr_most_likely <- function(dsmart_preds = NULL,
 #' Produce soil class probability surfaces
 #'
 #' Generates a soil class probability map for any or all input soil classes. Requires output of
-#' \code{\link{dsmartr_collate}}.
+#' \code{\link{collate}}.
 #' @param tallied_probs RasterBrick; \code{tallied_probabilities} output by
-#'   \code{\link{dsmartr_collate}}.
+#'   \code{\link{collate}}.
 #' @param soil_class String; Soil class(es) of interest, if only particular maps are desired.
 #' @return \code{class_maps}: List of RasterLayers; probability surfaces for each soil class. All
 #'   outputs are written to disk as GeoTIFF.
 #' @examples \dontrun{
-#' # run dsmartr_collate() with the example data and then
+#' # run collate() example code, then
 #'
 #' # all classes:
-#' classmaps <- dsmartr_class_maps(tallied_probs = collated[['tallied_probabilities']])
+#' classmaps <- class_maps(tallied_probs = collated[['tallied_probabilities']])
 #'
 #' # just map two classes of interest:
-#' classmaps <- dsmartr_class_maps(tallied_probs = collated[['tallied_probabilities']],
+#' classmaps <- class_maps(tallied_probs = collated[['tallied_probabilities']],
 #' soil_class = c('An', 'Wr'))}
 #' @importFrom raster unstack writeRaster
 #' @export
-dsmartr_class_maps <- function(tallied_probs = NULL,
-                               soil_class    = NULL) {
+class_maps <- function(tallied_probs = NULL,
+                       soil_class    = NULL) {
   if (!dir.exists(file.path(getwd(), 'class_maps'))) {
     dir.create(file.path(getwd(), 'class_maps'), showWarnings = FALSE)
   }

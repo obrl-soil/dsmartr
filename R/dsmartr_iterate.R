@@ -3,25 +3,25 @@
 #' Returns the set of unique soil classes that occur in an input soil map, and, optionally,
 #' a set of known points.
 #' @keywords internal
-#' @param soilmap Data Frame; Returned by \code{\link{dsmartr_prep_polygons}}.
-#' @param soilpoints Data Frame; Returned by \code{\link{dsmartr_prep_points}}; optional.
-#' @param cs String; stub of attribute column names holding soil class data
+#' @param soilmap Data Frame; Returned by \code{\link{prep_polygons}}.
+#' @param soilpoints Data Frame; Returned by \code{\link{prep_points}}; optional.
+#' @param col_stub String; stub of attribute column names holding soil class data
 #' @return A factor holding the set of soil classes occurring in both datasets, sorted
-#'   alphabetically. Internal to \code{\link{dsmartr_iterate}}.
+#'   alphabetically. Internal to \code{\link{iterate}}.
 #' @note It is up to the user to make sure the classification schema in both datasets matches/is
 #'   compatible.
 #' @examples \dontrun{
-#' # run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
-#' class_levels <- dsmartr_get_all_classes(soilmap = pr_ap, soilpoints = pr_points, cs = 'CLASS')}
+#' # run prep_polygons() and prep_points() examples, then:
+#' class_levels <- get_classes(soil_map = pr_ap, soil_points = pr_points, col_stub = 'CLASS')}
 #' @importFrom stats na.omit
-dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, cs = NULL) {
+get_classes <- function(soil_map = NULL, soil_points = NULL, col_stub = NULL) {
 
-  map_levels <- unique(n_things(soilmap, cs))
+  map_levels <- unique(n_things(soil_map, col_stub))
 
-  out_levels <- if(!is.null(soilpoints)) {
+  out_levels <- if(!is.null(soil_points)) {
     # sometimes known points have soil classes that have not been mapped
-    point_levels   <- unique(n_things(soilpoints, cs))
-    all_levels     <- union(map_levels, point_levels)
+    point_levels <- unique(n_things(soil_points, col_stub))
+    all_levels   <- base::union(map_levels, point_levels)
     as.factor(sort(all_levels))
   } else {
     as.factor(sort(map_levels))
@@ -29,7 +29,7 @@ dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, cs = NULL) {
   out_levels
 }
 
-#' Sample a polygon for [dsmartr_iterate()]
+#' Sample a polygon for [iterate()]
 #'
 #' Randomly selects n cells for sampling and assigns them a soil class based on the overlying
 #' map polygon's components
@@ -44,7 +44,7 @@ dsmartr_get_classes <- function(soilmap = NULL, soilpoints = NULL, cs = NULL) {
 #' @return A data frame containing two columns: weighted random allocation of soil classes,
 #'   and cell numbers
 #' @examples \dontrun{
-#' # run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
+#' # run prep_polygons() and prep_points() examples, then:
 #' sample_points <- iter_sample_poly(pd = pr_ap[1, ], cs = 'CLASS', ps = 'PERC',
 #' nscol = 'n_samples', cellcol = 'intersecting_cells', t_factor = t_factor)}
 #' @importFrom gtools rdirichlet
@@ -73,7 +73,7 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
 
   poly_alloc <- unlist(poly_alloc, use.names = FALSE)
   # shuffle randomly and make sure n is what it should be:
-  #(sometimes you get n + 1 above)
+  # (sometimes you get n + 1 above)
   poly_alloc <- sample(poly_alloc, size = length(poly_cellsamp), replace = FALSE)
   # tried using a matrix here - speed boost insignificant and code harder to read
   poly_spoints  <- data.frame('CLASS' = poly_alloc,
@@ -81,25 +81,23 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
                               stringsAsFactors = FALSE)
 }
 
-
-utils::globalVariables(names = c("CELL"), package = 'dsmartr')
 #' Generate disaggregated soil maps
 #'
 #' Disaggregates an input soil map a given number of times.
-#' @param prepped_map Data Frame; Returned by \code{\link{dsmartr_prep_polygons}}.
+#' @param prepped_map Data Frame; Returned by \code{\link{prep_polygons}}.
 #' @param covariates RasterStack or RasterBrick; environmental covariate datasets.
-#' @param prepped_points Data Frame; Returned by \code{\link{dsmartr_prep_points}}; optional.
+#' @param prepped_points Data Frame; Returned by \code{\link{prep_points}}; optional.
 #' @param id_field String; name of unique polygon identifier field.
 #' @param n_iterations Integer; desired number of model runs.
 #' @param t_factor Integer; dirichlet distribution modifier. Where map units have >1 soil class
 #'   component, larger values of \code{t_factor} dampen variation away from the input proportions.
 #' @param c5_ctrl List; output of \code{\link[C50]{C5.0Control}}; optional.
 #' @param cpus Integer; number of processors to use in parallel.
-#' @param write_files String; choose 'native' to write outputs in GeoTIFF, ESRI shapefile, csv, or
-#'   txt as appropriate, or 'rds' for outputs in RDS format. Note that map rasters are always written
-#'   as GeoTIFF.
+#' @param write_files String; choose 'native' to write outputs in GeoTIFF, GPKG, or csv as
+#' appropriate, or 'rds' for outputs in RDS format. Note that map rasters are always
+#' written as GeoTIFF.
 #' @param write_samples Logical; whether to retain the covariate samples taken during each
-#'   iteration. If \code{TRUE}, each set of samples is written to disk as ESRI Shapefile or RDS.
+#'   iteration. If \code{TRUE}, each set of samples is written to disk as GPKG or RDS.
 #' @param resume_from Integer; If this function is interrupted, it can be resumed from a specified
 #'   iteration number (prevents overwriting existing model iterations in output directory).
 #' @note This function writes a large number of files to disk.
@@ -108,19 +106,19 @@ utils::globalVariables(names = c("CELL"), package = 'dsmartr')
 #'   covariate sample points in spatial data format.
 #' @examples \dontrun{
 #' # Polygons only:
-#' # run dsmartr_prep_polygons() per the example code for that function, then
-#' iteration_maps <- dsmartr_iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
+#' # run prep_polygons() example code, then
+#' iteration_maps <- iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
 #'  id_field = 'POLY_NO', n_iterations = 20,
 #'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'native', write_samples = TRUE)
 #'
 #'  # Polygons, points and a C50 model tweak, no samples, rds output:
 #'  win_on <- C50::C5.0Control(winnow = TRUE)
-#'  iteration_maps <- dsmartr_iterate(prepped_map = prepped_ap, covariates = heronvale_covariates,
+#'  iteration_maps <- iterate(prepped_map = prepped_ap, covariates = heronvale_covariates,
 #'  id_field = 'POLY_NO', prepped_points = pr_pts, n_iterations = 20, c5_ctrl = win_on,
 #'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'rds')
 #'
 #' ## Oh no, there was a blackout halfway through my model run:
-#' iteration_maps_2 <- dsmartr_iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
+#' iteration_maps_2 <- iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
 #' id_field = 'POLY_NO', n_iterations = 6, cpus = max(1, (parallel::detectCores() - 1)),
 #' write_files = 'all', write_samples = TRUE, resume_from = 14)
 #' }
@@ -129,22 +127,22 @@ utils::globalVariables(names = c("CELL"), package = 'dsmartr')
 #' @importFrom gtools rdirichlet
 #' @importFrom purrr map
 #' @importFrom raster beginCluster clusterR endCluster extract inMemory readAll writeRaster xyFromCell
-#' @importFrom sf st_point st_sfc write_sf
+#' @importFrom sf st_as_sf st_point st_sfc st_write
 #' @importFrom stats complete.cases na.omit
 #' @importFrom tidyr gather
 #' @importFrom utils capture.output setTxtProgressBar txtProgressBar write.table
 #' @export
-dsmartr_iterate <- function(prepped_map    = NULL,
-                            covariates     = NULL,
-                            prepped_points = NULL,
-                            id_field       = NULL,
-                            n_iterations   = NULL,
-                            t_factor       = 10000,
-                            c5_ctrl        = NULL,
-                            cpus           = 1,
-                            write_files    = c('native', 'rds'),
-                            write_samples  = FALSE,
-                            resume_from    = NULL) {
+iterate <- function(prepped_map    = NULL,
+                    covariates     = NULL,
+                    prepped_points = NULL,
+                    id_field       = NULL,
+                    n_iterations   = NULL,
+                    t_factor       = 10000,
+                    c5_ctrl        = NULL,
+                    cpus           = 1,
+                    write_files    = c('native', 'rds'),
+                    write_samples  = FALSE,
+                    resume_from    = NULL) {
 
   # output directories
   dir.create(file.path(getwd(), 'iterations', 'maps'),   showWarnings = FALSE, recursive = TRUE)
@@ -152,9 +150,9 @@ dsmartr_iterate <- function(prepped_map    = NULL,
   strr   <- file.path(getwd(), 'iterations', 'maps')
   strm   <- file.path(getwd(), 'iterations', 'models')
 
-  class_levels <- dsmartr_get_classes(soilmap    = prepped_map,
-                                      soilpoints = prepped_points,
-                                      cs         = 'CLASS')
+  class_levels <- get_classes(soil_map    = prepped_map,
+                              soil_points = prepped_points,
+                              col_stub   = 'CLASS')
 
   message(paste0(Sys.time(), ': dsmartr iteration in progress...'))
   pb <- txtProgressBar(min = 0, max = n_iterations, style = 3)
@@ -262,26 +260,13 @@ dsmartr_iterate <- function(prepped_map    = NULL,
       if (write_files == 'rds') {
         saveRDS(model_input, file.path(strd, paste0('samples_',  j, '.rds')))
       } else {
-        ### NB Don't change this to GPKG format yet - disk write time is crazy slow
-        # make a lookup table for all_samplepoints covariate column names, because they're about
-        # to get severely abbreviated for writing to shp
-        cov_LUT_nm   <- file.path(strd, 'covariate_LUT.csv')
-        cov_names    <- names(as.data.frame(model_input)[3:(ncol(model_input)-1)])
-        cov_shpnames <- paste0('COV_', 1:length(cov_names))
-        if (!file.exists(cov_LUT_nm)) {
-          cov_LUT <- data.frame("COV_NAMES" = cov_names, "SHPCOL_NAMES" = cov_shpnames,
-                                stringsAsFactors = FALSE)
-          write.table(cov_LUT, file = cov_LUT_nm, sep = ', ',
-                      quote = FALSE, col.names = TRUE, row.names = FALSE) }
-
-        names(model_input)[3:(ncol(model_input) - 1)] <- cov_shpnames
-        sf_name    <- paste0('samples_', j, '.shp')
-        # see https://trac.osgeo.org/gdal/ticket/6803,
-        # and https://github.com/edzer/sfr/issues/306:
-        suppressWarnings(write_sf(model_input,
-                                  file.path(strd, sf_name),
-                                  driver = 'ESRI Shapefile',
-                                  delete_layer = TRUE))
+        suppressWarnings(st_write(obj          = model_input,
+                                  dsn          = file.path(strd, paste0('samples_', j, '.gpkg')),
+                                  driver       = 'GPKG',
+                                  delete_dsn   = TRUE,
+                                  delete_layer = TRUE,
+                                  quiet        = TRUE)
+                         )
       }
     }
 

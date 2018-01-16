@@ -4,7 +4,19 @@
 \name{heronvale_soilmap}
 \alias{heronvale_soilmap}
 \title{Data: Broadscale soil map of the Heronvale area}
-\format{An object of class \code{sf} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 100 rows and 10 columns.}
+\format{An sf data.frame of POLYGON type in EPSG:3577, with 105 rows
+   and 10 variables:
+ \describe{
+ \item{PROJECT_CODE}{Three-letter code identifying the soil survey}
+ \item{POLY_NO}{Within-project Unique Map Area identifier}
+ \item{POLY_UID}{Concatenation of PROJECT_CODE and POLY_NO}
+ \item{CLASS_1}{dominant soil class within the map unit}
+ \item{CLASS_2}{subdominant soil class within the map unit}
+ \item{CLASS_3}{subdominant soil class within the map unit}
+ \item{PERC_1}{Estimated percentage of the map unit occupied by CLASS_1}
+ \item{PERC_2}{Estimated percentage of the map unit occupied by CLASS_2}
+ \item{PERC_3}{Estimated percentage of the map unit occupied by CLASS_3}
+ \item{geom}{list-column with class 'sfc_POLYGON', 'sfc'}}}
 \source{
 \itemize{
   \item{\url{https://publications.qld.gov.au/dataset/soils-whitsunday-coast-wcs}}
@@ -17,19 +29,9 @@ heronvale_soilmap
 A dataset containing an extract of 1:100,000 scale soils mapping from the Whitsunday coast area.
 The complete dataset can be viewed in the \href{https://qldglobe.information.qld.gov.au/}{Queensland
  Globe.} Data was extracted from the Queensland Soil and Land Information (SALI) database in 2017
- and formatted for dsmartr in R 3.3.
- @format A tbl/sf dataframe of mixed POLYGON/MULTIPOLYGON types in EPSG:3577, with 100 rows
-   and 10 variables:
- \describe{
- \item{PROJECT_CODE}{Three-letter code identifying the soil survey}
- \item{POLY_NO}{Within-project Unique Map Area identifier}
- \item{POLY_UID}{Concatenation of PROJECT_CODE and POLY_NO}
- \item{CLASS_1}{dominant soil class within the map unit}
- \item{CLASS_2}{subdominant soil class within the map unit}
- \item{CLASS_3}{subdominant soil class within the map unit}
- \item{PERC_1}{Estimated percentage of the map unit occupied by CLASS_1}
- \item{PERC_2}{Estimated percentage of the map unit occupied by CLASS_2}
- \item{PERC_3}{Estimated percentage of the map unit occupied by CLASS_3}
- \item{geom}{list-column with class 'sfc_GEOMETRY', 'sfc'}}
+ and formatted for dsmartr in R 3.4.2.
+}
+\note{
+This object's geometry has its precision attribute set to one decimal place (approx 10cm on the ground).
 }
 \keyword{datasets}

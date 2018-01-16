@@ -1,16 +1,19 @@
 Package: dsmartr
 Type: Package
 Title: dsmartr: An R implementation of the DSMART algorithm
-Version: 0.0.0.9013
-Date: 2017-08-24
+Version: 1.0.0
+Date: 2018-01-09
 Authors@R: c(
-    person("Lauren", "O'Brien", email = "obrl_soil@gmail.com",          role = c('aut', 'cre')),
-    person("Nathan", "Odgers",  email = "nathan.odgers@sydney.edu.au",  role = 'aut'),
-	person("Brendan", "Malone", email = "brendan.malone@sydney.edu.au", role = 'aut'))
+    person("Lauren", "O'Brien", email = "obrlsoilau@gmail.com",         role = c('aut', 'cre')),
+    person("Nathan", "Odgers",  email = "nathan.odgers@sydney.edu.au",  role = 'ctb'),
+	person("Brendan", "Malone", email = "brendan.malone@sydney.edu.au", role = 'ctb'))
 Description: This package reinterprets legacy soil mapping by correlating existing map information with higher-density environmental data.
 URL: https://github.com/obrl-soil/dsmartr
 BugReports: https://github.com/obrl-soil/dsmartr/issues
-Depends: R (>= 3.3.0)
+Depends: R (>= 3.3.0),
+    raster,
+    sp,
+    sf
 Imports:
     C50,
     bindrcpp,
@@ -19,12 +22,10 @@ Imports:
     magrittr,
     methods,
     purrr,
-    raster,
     rgdal,
+	rgeos,
     rlang,
-    sf (>= 0.5),
 	snow,
-    sp,
     stats,
     tidyr,
     units,

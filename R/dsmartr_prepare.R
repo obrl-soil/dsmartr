@@ -1,6 +1,6 @@
 #' Prepare dsmartr polygons
 #'
-#' Prepares soil map inputs for use in \code{\link{dsmartr_iterate}}.
+#' Prepares soil map inputs for use in \code{\link{iterate}}.
 #' @param src_map An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object representing
 #'   the soil map to be disaggregated. Format requirements:
 #' \itemize{
@@ -18,13 +18,13 @@
 #' @param area_rate Integer; desired number of samples per square kilometre; use with
 #'   \code{sample_method = 'area_p'}.
 #' @param samp_floor Integer; desired minimum number of samples per polygon. Optional; use with
-#'   \code{sample_method = 'area_p'}. Defaults to 2x the number of soil classes on a polygon.
+#'   \code{sample_method = 'area_p'}. Defaults to 2x the number of soil classes on a polygon, switch off with samp_floor = 0 (not recommended).
 #' @param samp_ceiling Integer; desired maximum number of samples per polygon. Optional; use with
 #'   \code{sample_method = 'area_p'}. Only applies to polygons with a single class component and
 #'   (effectively) a large area.
 #' @return A data frame holding polygon input attributes and four new attribute columns:
 #' \itemize{
-#'   \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf]{st_area}}.}
+#'   \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf:st_area]{st_area}}.}
 #'   \item{\code{n_soils}: The number of soil classes within the map unit.}
 #'   \item{\code{n_samples}: The number of environmental covariate point samples that will be taken
 #'   on each model iteration.}
@@ -33,11 +33,11 @@
 #'   }
 #' Outputs are also written to disk.
 #' @note \itemize{
-#'   \item{The output of this function is a required input for \code{\link{dsmartr_iterate}}}.
+#'   \item{The output of this function is a required input for \code{\link[dsmartr]{iterate}}}.
 #'   \item{Covariate data should be in a projected CRS with defined units. While the function will
 #'     run with lat/long data, polygon area calculations may be dangerously inaccurate. Vector
 #'     inputs will be transformed to match the covariate CRS.}
-#'   \item{The \code{intersecting_cells} attribute field is a list-column, so the returned  object
+#'   \item{The \code{intersecting_cells} attribute field is a list-column, so the returned object
 #'     cannot be written to e.g. csv format.}
 #' \item{This function runs faster with a RasterBrick than a Stack.}}
 #' @examples \dontrun{
@@ -45,12 +45,13 @@
 #' data('heronvale_covariates')
 #'
 #' # flat rate
-#' pr_flat <- dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
+#' pr_flat <- prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
 #' id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 6)
 #'
 #' # area_proportional rate with floor
-#' pr_ap <- dsmartr_prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-#' id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 6)}
+#' pr_ap <- prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
+#' id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 6)
+#' }
 #' @importFrom dplyr filter mutate mutate_if
 #' @importFrom methods is as
 #' @importFrom purrr map map_int
@@ -58,21 +59,21 @@
 #' @importFrom stats setNames
 #' @importFrom raster crs cellFromPolygon
 #' @export
-dsmartr_prep_polygons <- function(src_map       = NULL,
-                                  covariates    = NULL,
-                                  id_field      = NULL,
-                                  sample_method = c('flat', 'area_p'),
-                                  flat_rate     = NULL,
-                                  area_rate     = NULL,
-                                  samp_floor    = NULL,
-                                  samp_ceiling  = NULL) {
+prep_polygons <- function(src_map       = NULL,
+                          covariates    = NULL,
+                          id_field      = NULL,
+                          sample_method = c('flat', 'area_p'),
+                          flat_rate     = NULL,
+                          area_rate     = NULL,
+                          samp_floor    = NULL,
+                          samp_ceiling  = NULL) {
 
   if (!dir.exists(file.path(getwd(), 'inputs'))) {
     dir.create(file.path(getwd(), 'inputs'), showWarnings = FALSE)
   }
   in_dir <- file.path(getwd(), 'inputs')
 
-  # coerce polygons to sf
+  # coerce sp polygons to sf
   src_map <- if(is(src_map, 'sf') == FALSE) {
     st_as_sf(src_map)
   } else {
@@ -115,20 +116,24 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
     }
 
   src_prepped$n_samples <- as.vector(n_samples)
-  src_split <- split(src_prepped, 1:nrow(src_prepped))
+  #src_split <- split(src_prepped, 1:nrow(src_prepped))
 
   # list cell numbers that intersect the polygon
   #(these will be subset randomly on each model run)
-  intersecting_cells <- map(src_split, function(g) {
-               poly_sp <- as(g, 'Spatial')
-               cells   <- as.integer(unlist(cellFromPolygon(na.omit(covariates), poly_sp)))
-               cells   <- if (length(cells) == 0) { NA } else { cells }
-             })
-  intersecting_cells <- setNames(intersecting_cells, NULL)
+  intersecting_cells <- strict_cfp(src_map    = src_prepped,
+                                   covariates = covariates)
+
+  ## old way - buggy, some problem in raster pkg, src unclear at Jan 17
+  #intersecting_cells <- map(src_split, function(g) {
+  #             poly_sp <- as(g, 'Spatial')
+  #             cells   <- as.integer(unlist(cellFromPolygon(covariates, poly_sp),
+  #                                          use.names = FALSE))
+  #             cells   <- if (length(cells) == 0) { NA } else { cells }
+  #           })
 
   src_prepped$intersecting_cells <- intersecting_cells #list-column
 
-  src_prepped <- filter(src_prepped, !(is.na(intersecting_cells))) # can't index a list-column
+  src_prepped <- filter(src_prepped, !(length(intersecting_cells) == 0)) # can't index a list-column
 
   src_prepped <- st_set_geometry(src_prepped, NULL)
 
@@ -150,7 +155,7 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
 
 #' Prepare dsmartr points
 #'
-#' Prepares dsmartr point inputs for use in \code{\link{dsmartr_iterate}}.
+#' Prepares dsmartr point inputs for use in \code{\link{iterate}}.
 #' @param known_points sfc_POINT, SpatialPointsDataFrame or Data Frame object; represents locations
 #'   where the soil class has been directly observed. Supply with spatial location (spatial data or
 #'   x and y attributes), unique numeric ID, and soil class.
@@ -162,7 +167,7 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
 #' @param covariates RasterStack or RasterBrick; environmental covariate data.
 #' @return A data frame with two attributes: soil class code and corresponding raster cell index
 #'   number.
-#' @note The output of this function is an optional input for \code{\link{dsmartr_iterate}}. If
+#' @note The output of this function is an optional input for \code{\link{iterate}}. If
 #'   \code{known_points} is supplied as a data frame, the x and y coordinates must match the
 #'   covariate crs.
 #' @examples \dontrun{
@@ -171,17 +176,18 @@ dsmartr_prep_polygons <- function(src_map       = NULL,
 #' load('heronvale_covariates')
 #'
 #' # data frame input:
-#' pr_pts <- dsmartr_prep_points(src_map = heronvale_soilmap, known_points = heronvale_known_sites,
-#' soil_id = 'CLASS', x_coords = 'x', y_coords = 'y', covariates = heronvale_covariates) }
+#' pr_pts <- prep_points(src_map = heronvale_soilmap, known_points = heronvale_known_sites,
+#' soil_id = 'CLASS', x_coords = 'x', y_coords = 'y', covariates = heronvale_covariates)
+#' }
 #' @importFrom dplyr mutate_if
 #' @importFrom methods is as
 #' @importFrom raster cellFromXY crs extract
 #' @importFrom sp spTransform
 #' @importFrom sf st_as_sf st_set_crs st_set_geometry st_transform
 #' @export
-dsmartr_prep_points <- function(known_points = NULL, soil_id  = NULL,
-                                x_coords     = NULL, y_coords = NULL,
-                                covariates   = NULL) {
+prep_points <- function(known_points = NULL, soil_id  = NULL,
+                        x_coords     = NULL, y_coords = NULL,
+                        covariates   = NULL) {
 
   if (!dir.exists(file.path(getwd(), 'inputs'))) {
     dir.create(file.path(getwd(), 'inputs'), showWarnings = FALSE)

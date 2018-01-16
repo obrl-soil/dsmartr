@@ -2,13 +2,13 @@
 % Please edit documentation in R/dsmartr_helpers.R
 \name{n_things}
 \alias{n_things}
-\title{helper function}
+\title{get items}
 \usage{
 n_things(input = NULL, selector = NULL)
 }
 \arguments{
 \item{input}{An object of class sfc_POLYGON/MULTIPOLYGON, see
-\code{\link{dsmartr_prep_polygons}}.}
+\code{\link{prep_polygons}}.}
 
 \item{selector}{String; a column name or name stub.}
 }
@@ -21,11 +21,12 @@ with NA values excluded.
 }
 \note{
 This is a helper function and not widely applicable. It is expected to be
-  used by-row on wide-formatted sf attribute data.
+  used by-row on wide-formatted spatial attribute data.
 }
 \examples{
 \dontrun{
 load('heronvale_soilmap')
-percs_1 <- n_things(heronvale_soilmap[1, ], 'PERC')}
+percs_1 <- n_things(heronvale_soilmap[1, ], 'PERC')
+}
 }
 \keyword{internal}

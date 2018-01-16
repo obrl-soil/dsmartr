@@ -4,7 +4,7 @@
 \name{heronvale_soilnames}
 \alias{heronvale_soilnames}
 \title{Data: Decoded soil class names}
-\format{A tibble with 38 rows and 2 columns:
+\format{A data.frame with 37 rows and 2 columns:
 \describe{
   \item{CLASS}{Soil class label}
   \item{NAME}{Soil class name}}}

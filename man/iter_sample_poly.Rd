@@ -2,7 +2,7 @@
 % Please edit documentation in R/dsmartr_iterate.R
 \name{iter_sample_poly}
 \alias{iter_sample_poly}
-\title{Sample a polygon for [dsmartr_iterate()]}
+\title{Sample a polygon for [iterate()]}
 \usage{
 iter_sample_poly(pd = NULL, cs = NULL, ps = NULL, nscol = NULL,
   cellcol = NULL, t_factor = NULL)
@@ -31,7 +31,7 @@ map polygon's components
 }
 \examples{
 \dontrun{
-# run dsmartr_prep_polygons() and dsmartr_prep_points() with the example code, then:
+# run prep_polygons() and prep_points() examples, then:
 sample_points <- iter_sample_poly(pd = pr_ap[1, ], cs = 'CLASS', ps = 'PERC',
 nscol = 'n_samples', cellcol = 'intersecting_cells', t_factor = t_factor)}
 }

@@ -9,5 +9,3 @@ far as is it can.
 Install with  
 
     devtools::install_github("obrl-soil/dsmartr")
-
-NB: Since sf is under active development, install will force an upgrade of sf to >= 0.5.

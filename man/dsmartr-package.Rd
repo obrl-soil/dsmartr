@@ -9,9 +9,10 @@
 dsmartr is an approach to the DSMART model (Odgers, 2014), which attempts increase the
 level of detail in legacy soil maps. Relationships between these maps and various environmental
 datasets are used to build a classification tree model. The model is used to map the map
-components as a fine-scaled raster. This process is repeated multiple times, with variation introduced around sample location and
-soil class proportions to vary the outputs somewhat. The model realisations are then processed
-to give a 'most likely' soils map. Refer to the package vignette for more detail.
+components as a fine-scaled raster. This process is repeated multiple times, with variation
+introduced around sample location and soil class proportions to vary the outputs somewhat. The
+model realisations are then processed to give a 'most likely' soils map. Refer to the package
+vignette for more detail.
 }
 \references{
 Odgers, N.P., Sun, W., McBratney, A.B., Minasny, B., Clifford, D., (2014)
@@ -27,12 +28,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Lauren O'Brien \email{obrl_soil@gmail.com}
+\strong{Maintainer}: Lauren O'Brien \email{obrlsoilau@gmail.com}
 
-Authors:
+Other contributors:
 \itemize{
-  \item Nathan Odgers \email{nathan.odgers@sydney.edu.au}
-  \item Brendan Malone \email{brendan.malone@sydney.edu.au}
+  \item Nathan Odgers \email{nathan.odgers@sydney.edu.au} [contributor]
+  \item Brendan Malone \email{brendan.malone@sydney.edu.au} [contributor]
 }
 
 }
