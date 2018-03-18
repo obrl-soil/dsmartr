@@ -1,3 +1,6 @@
+## v.1.0.1
+  * documentation fixes
+
 ## v.1.0.0 'what I did on my holidays'
   * Happy New Year, have an API change. Took 'dsmartr_' out of all function names because Twitter Said
   * Added @importFroms to data.R so sf/sp/raster don't need to be libraried

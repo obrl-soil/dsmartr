@@ -34,8 +34,8 @@ Fewer classes predicted on a pixel generally indicates higher internal model con
 \examples{
 \dontrun{
 # run iterate() and collate() with the example data then:
-nxpred <- eval_nxpred(tallied_preds = collated[['tallied_predictions']],
-                      cpus = max(1, (parallel::detectCores() - 1)),
-                      n_iterations = nlayers(iteration_maps), noise_cutoff = 0.1)
-                      }
+nxpred <- eval_npred(tallied_preds = collated[['tallied_predictions']],
+                     cpus = max(1, (parallel::detectCores() - 1)),
+                     n_iterations = nlayers(iteration_maps), noise_cutoff = 0.1)
+}
 }

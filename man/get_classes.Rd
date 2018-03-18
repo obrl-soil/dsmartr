@@ -28,6 +28,6 @@ It is up to the user to make sure the classification schema in both datasets mat
 \examples{
 \dontrun{
 # run prep_polygons() and prep_points() examples, then:
-class_levels <- get_classes(soil_map = pr_ap, soil_points = pr_points, col_stub = 'CLASS')}
+class_levels <- get_classes(soil_map = pr_ap, soil_points = pr_pts, col_stub = 'CLASS')}
 }
 \keyword{internal}

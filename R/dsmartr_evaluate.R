@@ -12,7 +12,7 @@
 #'   used in multiple contexts within the scientific literature.
 #' @examples \dontrun{
 #' # run collate() with the example data then:
-#' pgap1 <- eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][1:2],
+#' pgap1 <- eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][[1:2]],
 #' cpus = max(1, (parallel::detectCores() - 1)))
 #'
 #' # or supply unstacked maps after running unstack() (slightly faster)
@@ -115,10 +115,11 @@ n_predicted <- function(input = NULL, n_iterations = NULL, noise_cutoff = NULL) 
 #'   that location.
 #' @examples \dontrun{
 #' # run iterate() and collate() with the example data then:
-#' nxpred <- eval_nxpred(tallied_preds = collated[['tallied_predictions']],
-#'                       cpus = max(1, (parallel::detectCores() - 1)),
-#'                       n_iterations = nlayers(iteration_maps), noise_cutoff = 0.1)
-#'                       }
+#' nxpred <- eval_npred(tallied_preds = collated[['tallied_predictions']],
+#'                      cpus = max(1, (parallel::detectCores() - 1)),
+#'                      n_iterations = nlayers(iteration_maps), noise_cutoff = 0.1)
+#' }
+#' @import parallel
 #' @importFrom raster beginCluster calc clusterR endCluster writeRaster
 #' @export
 eval_npred <- function(tallied_preds = NULL,

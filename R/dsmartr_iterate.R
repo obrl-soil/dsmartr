@@ -12,7 +12,7 @@
 #'   compatible.
 #' @examples \dontrun{
 #' # run prep_polygons() and prep_points() examples, then:
-#' class_levels <- get_classes(soil_map = pr_ap, soil_points = pr_points, col_stub = 'CLASS')}
+#' class_levels <- get_classes(soil_map = pr_ap, soil_points = pr_pts, col_stub = 'CLASS')}
 #' @importFrom stats na.omit
 get_classes <- function(soil_map = NULL, soil_points = NULL, col_stub = NULL) {
 
@@ -113,7 +113,7 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
 #'
 #'  # Polygons, points and a C50 model tweak, no samples, rds output:
 #'  win_on <- C50::C5.0Control(winnow = TRUE)
-#'  iteration_maps <- iterate(prepped_map = prepped_ap, covariates = heronvale_covariates,
+#'  iteration_maps <- iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
 #'  id_field = 'POLY_NO', prepped_points = pr_pts, n_iterations = 20, c5_ctrl = win_on,
 #'  cpus = max(1, (parallel::detectCores() - 1)), write_files = 'rds')
 #'
@@ -125,6 +125,7 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
 #' @importFrom C50 C5.0
 #' @importFrom dplyr distinct filter
 #' @importFrom gtools rdirichlet
+#' @import parallel
 #' @importFrom purrr map
 #' @importFrom raster beginCluster clusterR endCluster extract inMemory readAll writeRaster xyFromCell
 #' @importFrom sf st_as_sf st_point st_sfc st_write

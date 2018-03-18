@@ -28,7 +28,7 @@ This function is often called the 'confusion index', but has been renamed as tha
 \examples{
 \dontrun{
 # run collate() with the example data then:
-pgap1 <- eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][1:2],
+pgap1 <- eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][[1:2]],
 cpus = max(1, (parallel::detectCores() - 1)))
 
 # or supply unstacked maps after running unstack() (slightly faster)

@@ -37,7 +37,7 @@ For each model iteration this function generates a raster that can be used to ma
 \dontrun{
 # run iterate() with the example data, then:
 sample_list <- lapply(as.list(list.files(file.path(getwd(), 'iterations', 'samples'),
-pattern = '\\\\.shp', full.names = TRUE)), function(x) read_sf(x))
+pattern = '\\\\.gpkg', full.names = TRUE)), function(x) read_sf(x))
 masks <- prediction_masks(samples = sample_list, covariates = heronvale_covariates,
                           cpus = max(1, (parallel::detectCores() - 1)))
 
@@ -50,6 +50,6 @@ cell is 'do not predict'.
 all_masks <- stack(masks)
 modal_mask <- calc(all_masks, function(cell) ifelse(raster::modal(cell) == 1, NA, 0))
 # the above could be applied to the most-likely soils map after running dsmartr::most_likely:
-masked_m1 <- most_likely[[1]][[1]] + modal_mask
+masked_m1 <- most_likely_soil[[1]][[1]] + modal_mask
 }
 }

@@ -1,8 +1,8 @@
 Package: dsmartr
 Type: Package
 Title: dsmartr: An R implementation of the DSMART algorithm
-Version: 1.0.0
-Date: 2018-01-09
+Version: 1.0.1
+Date: 2018-03-18
 Authors@R: c(
     person("Lauren", "O'Brien", email = "obrlsoilau@gmail.com",         role = c('aut', 'cre')),
     person("Nathan", "Odgers",  email = "nathan.odgers@sydney.edu.au",  role = 'ctb'),
@@ -21,11 +21,12 @@ Imports:
     gtools,
     magrittr,
     methods,
+    parallel,
     purrr,
     rgdal,
-	rgeos,
+    rgeos,
     rlang,
-	snow,
+    snow,
     stats,
     tidyr,
     units,

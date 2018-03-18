@@ -101,7 +101,7 @@ most_likely <- function(dsmart_preds = NULL,
 #' classmaps <- class_maps(tallied_probs = collated[['tallied_probabilities']])
 #'
 #' # just map two classes of interest:
-#' classmaps <- class_maps(tallied_probs = collated[['tallied_probabilities']],
+#' two_classmaps <- class_maps(tallied_probs = collated[['tallied_probabilities']],
 #' soil_class = c('An', 'Wr'))}
 #' @importFrom raster unstack writeRaster
 #' @export

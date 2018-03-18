@@ -41,7 +41,7 @@ load('heronvale_soilmap')
 load('heronvale_covariates')
 
 # data frame input:
-pr_pts <- prep_points(src_map = heronvale_soilmap, known_points = heronvale_known_sites,
-soil_id = 'CLASS', x_coords = 'x', y_coords = 'y', covariates = heronvale_covariates)
+pr_pts <- prep_points(known_points = heronvale_known_sites, soil_id = 'CLASS',
+x_coords = 'x', y_coords = 'y', covariates = heronvale_covariates)
 }
 }

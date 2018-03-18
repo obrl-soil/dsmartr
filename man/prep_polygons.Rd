@@ -41,7 +41,7 @@ Other columns may exist in the object; they will be ignored.}
 \value{
 A data frame holding polygon input attributes and four new attribute columns:
 \itemize{
-  \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf:st_area]{st_area}}.}
+  \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf:geos_measures]{st_area}}.}
   \item{\code{n_soils}: The number of soil classes within the map unit.}
   \item{\code{n_samples}: The number of environmental covariate point samples that will be taken
   on each model iteration.}
@@ -74,6 +74,6 @@ id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 6)
 
 # area_proportional rate with floor
 pr_ap <- prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 6)
+id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, samp_floor = 6)
 }
 }

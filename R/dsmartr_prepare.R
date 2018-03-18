@@ -24,7 +24,7 @@
 #'   (effectively) a large area.
 #' @return A data frame holding polygon input attributes and four new attribute columns:
 #' \itemize{
-#'   \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf:st_area]{st_area}}.}
+#'   \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf:geos_measures]{st_area}}.}
 #'   \item{\code{n_soils}: The number of soil classes within the map unit.}
 #'   \item{\code{n_samples}: The number of environmental covariate point samples that will be taken
 #'   on each model iteration.}
@@ -50,7 +50,7 @@
 #'
 #' # area_proportional rate with floor
 #' pr_ap <- prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-#' id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, floor = 6)
+#' id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, samp_floor = 6)
 #' }
 #' @importFrom dplyr filter mutate mutate_if
 #' @importFrom methods is as
@@ -176,8 +176,8 @@ prep_polygons <- function(src_map       = NULL,
 #' load('heronvale_covariates')
 #'
 #' # data frame input:
-#' pr_pts <- prep_points(src_map = heronvale_soilmap, known_points = heronvale_known_sites,
-#' soil_id = 'CLASS', x_coords = 'x', y_coords = 'y', covariates = heronvale_covariates)
+#' pr_pts <- prep_points(known_points = heronvale_known_sites, soil_id = 'CLASS',
+#' x_coords = 'x', y_coords = 'y', covariates = heronvale_covariates)
 #' }
 #' @importFrom dplyr mutate_if
 #' @importFrom methods is as

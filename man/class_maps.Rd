@@ -28,6 +28,6 @@ Generates a soil class probability map for any or all input soil classes. Requir
 classmaps <- class_maps(tallied_probs = collated[['tallied_probabilities']])
 
 # just map two classes of interest:
-classmaps <- class_maps(tallied_probs = collated[['tallied_probabilities']],
+two_classmaps <- class_maps(tallied_probs = collated[['tallied_probabilities']],
 soil_class = c('An', 'Wr'))}
 }
