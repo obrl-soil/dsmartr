@@ -1,7 +1,8 @@
 #' Calculate probability gap
 #'
 #' Calculates and maps the difference between the first and second most-probable
-#' dsmartr probability surfaces. Requires outputs of \code{\link{collate}}.
+#' dsmartr probability surfaces. Requires outputs of
+#' \code{\link[dsmartr:collate]{dsmartr::collate()}}.
 #' @param dsmartr_probs RasterBrick; 'dsmartr_probabilities' output by
 #'   \code{\link[dsmartr:collate]{dsmartr::collate()}}. Alternatively,
 #'   probability maps output by
@@ -15,8 +16,9 @@
 #'   literature.
 #' @examples \dontrun{
 #' # run collate() with the example data then:
-#' pgap1 <- eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][[1:2]],
-#' cpus = max(1, (parallel::detectCores() - 1)))
+#' pgap1 <-
+#'   eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][[1:2]],
+#'   cpus = max(1, (parallel::detectCores() - 1)))
 #'
 #' # or supply unstacked maps after running unstack() (slightly faster)
 #' pgap2 <- eval_pgap(dsmartr_probs = most_likely_soil[c('most_likely_prob_1',
@@ -40,21 +42,24 @@ eval_pgap <- function(dsmartr_probs = NULL, cpus = 1) {
   }
   strs <- file.path(getwd(), 'evaluation')
 
-  message(paste0(Sys.time(), ': dsmartr probability gap calculation in progress...'))
-  dsmartr_probs <- if(is(dsmartr_probs, 'list')) {
-    raster::stack(dsmartr_probs)
-  } else { dsmartr_probs }
+  message(paste0(Sys.time(),
+                 ': dsmartr probability gap calculation in progress...'))
+
+  if(inherits(dsmartr_probs, 'list')) {
+    dsmartr_probs <- raster::stack(dsmartr_probs)
+  }
 
   prob_gap <- function(cell = NULL) {
     1 - (cell[[1]] - cell[[2]])
     }
   beginCluster(cpus)
-  probability_gap <- clusterR(x         = dsmartr_probs,
-                              fun       = prob_gap,
-                              filename  = file.path(strs, 'probability_gap.tif'),
-                              datatype  = 'FLT4S',
-                              NAflag    = -9999,
-                              overwrite = TRUE)
+  probability_gap <-
+    clusterR(x         = dsmartr_probs,
+             fun       = prob_gap,
+             filename  = file.path(strs, 'probability_gap.tif'),
+             datatype  = 'FLT4S',
+             NAflag    = -9999,
+             overwrite = TRUE)
   endCluster()
   message(paste0(Sys.time(), ': ...complete. Function outputs can be located at ',
                  file.path(getwd(), 'evaluation')))
@@ -90,10 +95,9 @@ n_predicted <- function(input = NULL, n_iterations = NULL, noise_cutoff = NULL) 
     stopifnot(in_range(noise_cutoff, 0, 1, strict = FALSE))
   }
 
-  tol <- if(!is.null(noise_cutoff)) {
-    ceiling(n_iterations * noise_cutoff)
-  } else {
-    0L
+  tol <- 0L
+  if(!is.null(noise_cutoff)) {
+    tol <- ceiling(n_iterations * noise_cutoff)
   }
 
   if(all(is.na(input))) {
@@ -132,33 +136,33 @@ n_predicted <- function(input = NULL, n_iterations = NULL, noise_cutoff = NULL) 
 #' @importFrom raster beginCluster calc clusterR endCluster writeRaster
 #' @export
 eval_npred <- function(tallied_preds = NULL,
-                        cpus          = 1,
-                        n_iterations  = NULL,
-                        noise_cutoff  = NULL) {
+                        cpus         = 1,
+                        n_iterations = NULL,
+                        noise_cutoff = NULL) {
 
   if (!dir.exists(file.path(getwd(), 'evaluation'))) {
     dir.create(file.path(getwd(), 'evaluation'), showWarnings = FALSE)
   }
   strs <- file.path(getwd(), 'evaluation')
 
-  message(paste0(Sys.time(), ': dsmartr notable soils predicted calculation in progress...'))
+  message(paste0(Sys.time(),
+                ': dsmartr notable soils predicted calculation in progress...'))
   beginCluster(cpus)
   assign('noise_cutoff', noise_cutoff, envir = parent.frame())
   assign('n_iterations', n_iterations, envir = parent.frame())
-
-  n_classes_predicted_x <- clusterR(tallied_preds,
-                                    fun       = calc,
-                                    args = list(fun = function(cell) {
-                                      n_predicted(cell, n_iterations, noise_cutoff)
-                                    }),
-                                    filename  = file.path(strs,
-                                                          paste0('n_classes_predicted_over_',
-                                                                 (n_iterations * noise_cutoff),
-                                                                 '.tif')),
-                                    datatype  = 'INT2S',
-                                    NAflag    = -9999,
-                                    overwrite = TRUE)
-
+  n_classes_predicted_x <-
+    clusterR(tallied_preds,
+             fun       = calc,
+             args      = list(fun = function(cell) {
+               n_predicted(cell, n_iterations, noise_cutoff)
+             }),
+             filename  = file.path(strs,
+                                   paste0('n_classes_predicted_over_',
+                                          (n_iterations * noise_cutoff),
+                                          '.tif')),
+             datatype  = 'INT2S',
+             NAflag    = -9999,
+             overwrite = TRUE)
   endCluster()
   rm(list = c('n_iterations', 'noise_cutoff'), envir = parent.frame())
   message(paste0(Sys.time(), ': ...complete. Function outputs can be located at ',
@@ -191,12 +195,11 @@ eval_npred <- function(tallied_preds = NULL,
 #'
 tie_finder <- function(input = NULL) {
   if (all(is.na(input))) {
-    NA_integer_
-  } else {
-    y <- max(input, na.rm = TRUE)
-    z <- length(input[input == y])
-    if(z == 1L) { 0L } else { z }
+    return(NA_integer_)
   }
+  y <- max(input, na.rm = TRUE)
+  z <- length(input[input == y])
+  if(z == 1L) { 0L } else { z }
 }
 
 #' Detect ties for most-probable soil
@@ -205,7 +208,7 @@ tie_finder <- function(input = NULL) {
 #' between two or more classes. Requires output from
 #' \code{\link[dsmartr:collate]{dsmartr::collate()}}.
 #' @param tallied_preds RasterBrick; \code{tallied_predictions} output by
-#'   \code{\link{collate}}.
+#'   \code{\link[dsmartr:collate]{dsmartr::collate()}}.
 #' @param cpus Integer; number of processors to use in parallel.
 #' @return \code{n_classes_predicted}: RasterLayer depicting the number of soils
 #'   tied for most-probable per pixel. Written to disk as GeoTIFF.
@@ -216,6 +219,7 @@ tie_finder <- function(input = NULL) {
 #'                    }
 #' @importFrom raster beginCluster calc clusterR endCluster writeRaster
 #' @export
+#'
 eval_ties <- function(tallied_preds = NULL,
                       cpus          = 1) {
 
@@ -227,7 +231,7 @@ eval_ties <- function(tallied_preds = NULL,
   message(paste0(Sys.time(), ': dsmartr tie-finder calculation in progress...'))
   beginCluster(cpus)
   tie_map <- clusterR(tallied_preds,
-                      fun = calc,
+                      fun  = calc,
                       args = list(fun = function(cell) {
                         tie_finder(input = cell)
                         }),

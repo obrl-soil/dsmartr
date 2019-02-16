@@ -76,7 +76,7 @@ prepped_flat <- prep_polygons(src_map       = heronvale_soilmap,
                               covariates    = heronvale_covariates,
                               id_field      = 'POLY_ID', 
                               sample_method = 'flat', 
-                              flat_rate     = 5)
+                              sample_rate   = 5)
 
 str(prepped_flat[1:5, ])
 
@@ -85,8 +85,8 @@ prepped_ap <- prep_polygons(src_map       = heronvale_soilmap,
                             covariates    = heronvale_covariates,
                             id_field      = 'POLY_ID', 
                             sample_method = 'area_p', 
-                            area_rate     = 20,
-                            samp_floor    = 5)
+                            sample_rate   = 20,
+                            rate_floor    = 5)
 
 str(prepped_ap[1:5, ])
 
@@ -131,7 +131,12 @@ After the n model iterations are stacked, each cell in the stack can be consider
 sc <- 37
 
 # 100 model runs, from a cell in the middle of the heronvale demo dataset
-cell_19291 <- c(29, 7, 7, 7, 12, 9, 29, 29, 29, 3, 16, 15, 9, 21, 24, 2, 9, 15, 34, 9, 24, 34, 24, 34, 21, 24, 15, 15, 9, 21, 21, 7, 7, 34, 34, 15, 15, 21, 7, 30, 32, 21, 29, 21, 24, 29, 31, 12, 24, 12, 21, 15, 15, 29, 12, 7, 21, 12, 7, 34, 9, 32, 7, 7, 32, 32, 12, 34, 29, 7, 3, 15, 15, 29, 7, 3, 34, 9, 9, 33, 32, 21, 34, 29, 33, 7, 7, 31, 7, 7, 24, 21, 15, 7, 24, 29, 21, 31, 29, 15, 7)
+cell_19291 <- c(29, 7, 7, 7, 12, 9, 29, 29, 29, 3, 16, 15, 9, 21, 24, 2, 9, 15, 
+                34, 9, 24, 34, 24, 34, 21, 24, 15, 15, 9, 21, 21, 7, 7, 34, 34,
+                15, 15, 21, 7, 30, 32, 21, 29, 21, 24, 29, 31, 12, 24, 12, 21, 
+                15, 15, 29, 12, 7, 21, 12, 7, 34, 9, 32, 7, 7, 32, 32, 12, 34, 
+                29, 7, 3, 15, 15, 29, 7, 3, 34, 9, 9, 33, 32, 21, 34, 29, 33, 7,
+                7, 31, 7, 7, 24, 21, 15, 7, 24, 29, 21, 31, 29, 15, 7)
 
 counts <- tabulate(cell_19291, nbins = sc)
 counts

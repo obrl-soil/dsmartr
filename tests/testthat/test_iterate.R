@@ -33,7 +33,7 @@ test_that('iter_sample_poly', {
                                     covariates = heronvale_covariates,
                                     id_field = 'POLY_UID',
                                     sample_method = 'flat',
-                                    flat_rate = 100L),
+                                    sample_rate = 100L),
 
     test1 <- dsmartr:::iter_sample_poly(pd = pr_ap[1L, ], cs = 'CLASS', ps = 'PERC',
                               nscol = 'n_samples', cellcol = 'intersecting_cells',

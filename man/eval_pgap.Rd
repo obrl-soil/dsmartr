@@ -21,7 +21,8 @@ list of two rasters read from disk.}
 }
 \description{
 Calculates and maps the difference between the first and second most-probable
-dsmartr probability surfaces. Requires outputs of \code{\link{collate}}.
+dsmartr probability surfaces. Requires outputs of
+\code{\link[dsmartr:collate]{dsmartr::collate()}}.
 }
 \note{
 This function is often called the 'confusion index', but has been
@@ -31,8 +32,9 @@ This function is often called the 'confusion index', but has been
 \examples{
 \dontrun{
 # run collate() with the example data then:
-pgap1 <- eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][[1:2]],
-cpus = max(1, (parallel::detectCores() - 1)))
+pgap1 <-
+  eval_pgap(dsmartr_probs = collated[['dsmartr_probabilities']][[1:2]],
+  cpus = max(1, (parallel::detectCores() - 1)))
 
 # or supply unstacked maps after running unstack() (slightly faster)
 pgap2 <- eval_pgap(dsmartr_probs = most_likely_soil[c('most_likely_prob_1',

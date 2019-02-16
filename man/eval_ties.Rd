@@ -8,7 +8,7 @@ eval_ties(tallied_preds = NULL, cpus = 1)
 }
 \arguments{
 \item{tallied_preds}{RasterBrick; \code{tallied_predictions} output by
-\code{\link{collate}}.}
+\code{\link[dsmartr:collate]{dsmartr::collate()}}.}
 
 \item{cpus}{Integer; number of processors to use in parallel.}
 }

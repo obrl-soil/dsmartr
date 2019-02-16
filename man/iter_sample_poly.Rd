@@ -2,7 +2,7 @@
 % Please edit documentation in R/dsmartr_iterate.R
 \name{iter_sample_poly}
 \alias{iter_sample_poly}
-\title{Sample a polygon for [iterate()]}
+\title{Sample covariates under a polygon}
 \usage{
 iter_sample_poly(pd = NULL, cs = NULL, ps = NULL, nscol = NULL,
   cellcol = NULL, t_factor = NULL)
@@ -28,7 +28,7 @@ A data frame containing two columns: weighted random allocation of
 }
 \description{
 Randomly selects n cells for sampling and assigns them a soil class based on
-the overlying map polygon's components
+the overlying map polygon's components.
 }
 \examples{
 \dontrun{

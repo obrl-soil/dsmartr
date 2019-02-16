@@ -10,7 +10,7 @@ test_that('prep_polygons with flat rate', {
                                     covariates    = heronvale_covariates,
                                     id_field      = 'POLY_UID',
                                     sample_method = 'flat',
-                                    flat_rate     = 10L),
+                                    sample_rate     = 10L),
             expect_output(str(test_1), '5 obs'),
             expect_output(str(test_1), '13 variables'),
             expect_s3_class(test_1$area_sqkm, 'units'),
@@ -53,7 +53,7 @@ test_that('prep_polygons with area_proportional rate - 10/sqkm', {
                             covariates    = heronvale_covariates,
                             id_field      = 'POLY_UID',
                             sample_method = 'area_p',
-                            area_rate = 10),
+                            sample_rate = 10),
     expect_identical(test_3$n_samples, c(4L, 6L, 2L, 6L, 4L))
     )
   })
@@ -65,8 +65,8 @@ test_that('prep_polygons with area_proportional rate - no floor', {
                             covariates    = heronvale_covariates,
                             id_field      = 'POLY_UID',
                             sample_method = 'area_p',
-                            area_rate = 10,
-                            samp_floor = 0),
+                            sample_rate = 10,
+                            rate_floor = 0),
     expect_identical(test_4$n_samples, as.integer(ceiling(test_4$area_sqkm * 10)))
     )
   })
@@ -78,8 +78,8 @@ test_that('prep_polygons with area_proportional rate with cap', {
                             covariates    = heronvale_covariates,
                             id_field      = 'POLY_UID',
                             sample_method = 'area_p',
-                            area_rate = 100,
-                            samp_ceiling = 5),
+                            sample_rate = 100,
+                            rate_ceiling = 5),
     expect_equal(test_5$n_samples[3], 5L)
     )
   })

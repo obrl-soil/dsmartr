@@ -15,5 +15,3 @@
 #'   harmonising soil map units through resampled classification trees}.
 #'   Geoderma, 214-215: 91-100.
 "_PACKAGE"
-
-utils::globalVariables(names = c("CELL"), package = 'dsmartr')

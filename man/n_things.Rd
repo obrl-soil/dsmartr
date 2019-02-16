@@ -7,8 +7,7 @@
 n_things(input = NULL, selector = NULL)
 }
 \arguments{
-\item{input}{An object of class sfc_POLYGON/MULTIPOLYGON, see
-\code{\link{prep_polygons}}.}
+\item{input}{One row of a data frame, as vector}
 
 \item{selector}{String; a column name or name stub.}
 }
@@ -27,7 +26,8 @@ This is a helper function and not widely applicable. It is expected to
 \examples{
 \dontrun{
 load('heronvale_soilmap')
-percs_1 <- n_things(heronvale_soilmap[1, ], 'PERC')
+sm <- sf::st_set_geometry(heronvale_soilmap, NULL)
+percs_1 <- n_things(sm[1, ], 'PERC')
 }
 }
 \keyword{internal}

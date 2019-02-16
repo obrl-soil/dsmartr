@@ -7,8 +7,8 @@
 collate(iteration_stack = NULL, lookup = NULL, cpus = 1)
 }
 \arguments{
-\item{iteration_stack}{RasterStack or Brick; output \code{iteration_maps} from
-\code{\link{iterate}}.}
+\item{iteration_stack}{RasterStack or Brick; output \code{iteration_maps}
+from \code{\link{iterate}}.}
 
 \item{lookup}{Data Frame; contains raster values and corresponding soil class
 labels. Example:

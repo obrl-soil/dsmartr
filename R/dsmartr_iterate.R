@@ -33,10 +33,10 @@ get_classes <- function(soil_map = NULL, soil_points = NULL, col_stub = NULL) {
   out_levels
 }
 
-#' Sample a polygon for [iterate()]
+#' Sample covariates under a polygon
 #'
 #' Randomly selects n cells for sampling and assigns them a soil class based on
-#' the overlying map polygon's components
+#' the overlying map polygon's components.
 #' @keywords internal
 #' @param pd A single-row sf object containing soil attributes and geometry.
 #'   Usually output of running split(x, seq(nrow(x))) on a polygon sf dataframe.
@@ -57,8 +57,8 @@ get_classes <- function(soil_map = NULL, soil_points = NULL, col_stub = NULL) {
 #'
 iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
                              nscol = NULL, cellcol = NULL, t_factor = NULL) {
-  poly_nsample  <- unlist(pd[ , nscol], use.names = FALSE)
-  poly_cells    <- unlist(pd[ , cellcol], use.names = FALSE)
+  poly_nsample  <- pd[[nscol]]
+  poly_cells    <- unlist(pd[[cellcol]], use.names = FALSE)
 
   poly_cellsamp <- if(length(poly_cells) <= poly_nsample) {
     poly_cells
@@ -67,7 +67,7 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
     }
 
   poly_percs    <- as.numeric(n_things(pd, ps))
-  poly_dirprops <- as.vector(rdirichlet(1, as.numeric(poly_percs) * t_factor))
+  poly_dirprops <- as.vector(rdirichlet(1, poly_percs * t_factor))
   poly_classes  <- as.character(n_things(pd, cs))
 
   poly_alloc    <- mapply(function(class, dpn) {
@@ -144,15 +144,12 @@ iter_sample_poly <- function(pd = NULL, cs = NULL, ps = NULL,
 #'                             resume_from = 14)
 #' }
 #' @importFrom C50 C5.0
-#' @importFrom dplyr distinct filter
 #' @importFrom gtools rdirichlet
 #' @import parallel
-#' @importFrom purrr map
 #' @importFrom raster beginCluster clusterR endCluster extract inMemory readAll
 #'   writeRaster xyFromCell
 #' @importFrom sf st_as_sf st_point st_sfc st_write
 #' @importFrom stats complete.cases na.omit
-#' @importFrom tidyr gather
 #' @importFrom utils capture.output setTxtProgressBar txtProgressBar write.table
 #' @export
 iterate <- function(prepped_map    = NULL,
@@ -168,8 +165,10 @@ iterate <- function(prepped_map    = NULL,
                     resume_from    = NULL) {
 
   # output directories
-  dir.create(file.path(getwd(), 'iterations', 'maps'),   showWarnings = FALSE, recursive = TRUE)
-  dir.create(file.path(getwd(), 'iterations', 'models'), showWarnings = FALSE, recursive = TRUE)
+  dir.create(file.path(getwd(), 'iterations', 'maps'),
+             showWarnings = FALSE, recursive = TRUE)
+  dir.create(file.path(getwd(), 'iterations', 'models'),
+             showWarnings = FALSE, recursive = TRUE)
   strr   <- file.path(getwd(), 'iterations', 'maps')
   strm   <- file.path(getwd(), 'iterations', 'models')
 
@@ -187,9 +186,9 @@ iterate <- function(prepped_map    = NULL,
 
     beginCluster(cpus)
 
-    src_split <- split(prepped_map, 1:nrow(prepped_map))
-    sample_points <- map(.x = src_split, .f = function(z) {
-      iter_sample_poly(pd = z, cs = 'CLASS', ps = 'PERC', nscol = 'n_samples',
+    src_split <- split(prepped_map, seq(nrow(prepped_map)))
+    sample_points <- lapply(src_split, function(row) {
+      iter_sample_poly(pd = row, cs = 'CLASS', ps = 'PERC', nscol = 'n_samples',
                        cellcol = 'intersecting_cells', t_factor = t_factor)})
     all_samplepoints <- do.call('rbind', sample_points)
 
@@ -205,7 +204,8 @@ iterate <- function(prepped_map    = NULL,
 
       # make sure known cells haven't been randomly sampled in this iteration
       # if so, drop the randomly generated row in favour of the known class
-      asp <- dplyr::filter(all_samplepoints, !(CELL %in% c(prepped_points$CELL)))
+      asp <- all_samplepoints[!(all_samplepoints$CELL %in%
+                                  c(prepped_points$CELL)), ]
       asp <- rbind(asp, prepped_points)
       asp
     } else {
@@ -230,7 +230,9 @@ iterate <- function(prepped_map    = NULL,
     }
 
     # make prediction map
-    iter_map <- clusterR(covariates, raster::predict, args = list(res), datatype = 'INT2S')
+    iter_map <- clusterR(covariates, raster::predict,
+                         args = list(res),
+                         datatype = 'INT2S', NAflag = -9999)
 
     # factorise prediction map
     lookup <- data.frame("ID"    = as.integer(as.factor(res$levels)),
@@ -274,21 +276,24 @@ iterate <- function(prepped_map    = NULL,
       strd <- file.path(getwd(), 'iterations', 'samples')
 
       # spatialise (sf point object)
-      model_input$geometry <- st_sfc(lapply(model_input$CELL, function(x) {
-        st_point(as.vector(xyFromCell(covariates, x)))
+      model_input$geometry <- sf::st_sfc(lapply(model_input$CELL, function(x) {
+        sf::st_point(as.vector(raster::xyFromCell(covariates, x)))
       }))
-      model_input <- st_as_sf(model_input,
-                              crs = covariates@crs@projargs, agr = 'constant')
+      model_input <-
+        sf::st_as_sf(model_input, crs = covariates@crs@projargs,
+                     agr = 'constant')
 
       if (write_files == 'rds') {
         saveRDS(model_input, file.path(strd, paste0('samples_',  j, '.rds')))
       } else {
-        suppressWarnings(st_write(obj          = model_input,
-                                  dsn          = file.path(strd, paste0('samples_', j, '.gpkg')),
-                                  driver       = 'GPKG',
-                                  delete_dsn   = TRUE,
-                                  delete_layer = TRUE,
-                                  quiet        = TRUE)
+        suppressWarnings(
+          sf::st_write(obj          = model_input,
+                       dsn          = file.path(strd,
+                                                paste0('samples_', j, '.gpkg')),
+                       driver       = 'GPKG',
+                       delete_dsn   = TRUE,
+                       delete_layer = TRUE,
+                       quiet        = TRUE)
                          )
       }
     }

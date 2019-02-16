@@ -3,8 +3,7 @@
 #' Returns cell values from selected columns in an attribute table as an atomic
 #' vector, with NA values excluded.
 #' @keywords internal
-#' @param input An object of class sfc_POLYGON/MULTIPOLYGON, see
-#' \code{\link{prep_polygons}}.
+#' @param input One row of a data frame, as vector
 #' @param selector String; a column name or name stub.
 #' @return An atomic vector of non-NA values in the selected columns, by order
 #'   of occurrence.
@@ -12,16 +11,16 @@
 #'   be used by-row on wide-formatted spatial attribute data.
 #' @examples \dontrun{
 #' load('heronvale_soilmap')
-#' percs_1 <- n_things(heronvale_soilmap[1, ], 'PERC')
+#' sm <- sf::st_set_geometry(heronvale_soilmap, NULL)
+#' percs_1 <- n_things(sm[1, ], 'PERC')
 #' }
 #' @importFrom stats na.omit
 #'
 n_things <- function(input = NULL, selector = NULL) {
-  input <- as.data.frame(input, stringsAsFactors = FALSE)
   if(length(grep(selector, names(input))) == 0) {
     stop("Error: Selector not found within input's column names")
   } else {
-  output <- as.vector(na.omit(unlist(input[, c(grep(selector, names(input)))])))
+  output <- as.vector(na.omit(unlist(input[c(grep(selector, names(input)))])))
   if(length(output) == 0) { NA } else { output }}
 }
 
@@ -78,44 +77,40 @@ in_range <- function(value = NULL, lower = NULL, upper = NULL, strict = TRUE) {
 #' # can't store boolean), do this beforehand:
 #' checked_map <- dplyr::mutate_if(checked_map, is.logical, as.character)
 #' }
+#' @importFrom sf st_as_sf st_set_geometry
 #' @export
 #'
 check_attributes <- function(src_map  = NULL, id_field = NULL,
                              cs = NULL, ps = NULL) {
 
   # coerce to sf
-  src_map <- if(is(src_map, 'sf') == FALSE) {
-    st_as_sf(src_map)
-  } else {
-    src_map
+  if(is(src_map, 'sf') == FALSE) {
+    src_map <- sf::st_as_sf(src_map)
   }
 
-  ### highlight problems in new columns for easy ID
-  src_split <- split(src_map, 1:nrow(src_map))
+  sm <- sf::st_set_geometry(src_map, NULL)
 
-  missing_data <- purrr::map_lgl(src_split, function(md) {
-               n_classes <- length(n_things(md, cs))
-               n_percs   <- length(n_things(md, ps))
-               ifelse(n_classes != n_percs, TRUE, FALSE)
+  ### put problems in new columns for easy ID
+
+  src_map$missing_data <- apply(sm, MARGIN = 1, FUN = function(row) {
+    n_classes <- length(n_things(row, cs))
+    n_percs   <- length(n_things(row, ps))
+    if(n_classes != n_percs) { TRUE } else { FALSE }
+    })
+
+  src_map$zero_percs <- apply(sm, MARGIN = 1, FUN = function(row) {
+    poly_percs <- as.numeric(n_things(row, ps))
+    if(any(poly_percs == 0)) { TRUE } else { FALSE }
+    })
+
+  src_map$problem_percs <- apply(sm, MARGIN = 1, FUN = function(row) {
+               total <- sum(as.numeric(n_things(row, ps)))
+               if(total != 100) { TRUE } else { FALSE }
                })
 
-  zero_percs <- purrr::map_lgl(src_split, function(zp) {
-               poly_percs <- n_things(zp, ps)
-               ifelse(any(poly_percs == 0), TRUE, FALSE)
-             })
+  src_map$duplicate_ids <- duplicated(sm[[id_field]])
 
-  problem_percs <- purrr::map_lgl(src_split, function(sps) {
-               total <- sum(n_things(sps, ps))
-               ifelse(total != 100, TRUE, FALSE)
-               })
-
-  src_map$missing_data  <- as.vector(missing_data)
-  src_map$zero_percs    <- as.vector(zero_percs)
-  src_map$problem_percs <- as.vector(problem_percs)
-  src_map$duplicate_ids <- duplicated(src_map[, id_field])
-
-  src_map <- st_as_sf(src_map) # re-orders cols so geom at end
-  return(src_map)
+  sf::st_as_sf(src_map) # re-orders cols so geom at end
 }
 
 #' generate masks from samples
@@ -164,17 +159,19 @@ check_attributes <- function(src_map  = NULL, id_field = NULL,
 #' }
 #' @importFrom raster calc writeRaster
 #' @importFrom sf st_set_geometry
-#' @importFrom purrr map2_lgl
 #' @export
 #'
-prediction_masks <- function(samples = NULL, covariates = NULL, tolerance = 0L, cpus = 1) {
+prediction_masks <- function(samples = NULL, covariates = NULL,
+                             tolerance = 0L, cpus = 1) {
 
   if (!dir.exists(file.path(getwd(), 'iterations', 'masks'))) {
     dir.create(file.path(getwd(), 'iterations', 'masks'),
                showWarnings = FALSE, recursive = TRUE)
   }
   drmsk <- file.path(getwd(), 'iterations', 'masks')
-
+  if(length(samples) == 0) {
+    stop('Samples missing.')
+  }
   message(paste0(Sys.time(), ': dsmartr prediction mask creation in progress...'))
   pb <- txtProgressBar(min = 0, max = length(samples), style = 3)
 
@@ -188,23 +185,25 @@ prediction_masks <- function(samples = NULL, covariates = NULL, tolerance = 0L, 
     beginCluster(n = cpus)
     assign('sx_mins', sx_mins, envir = parent.frame())
     assign('sx_maxs', sx_maxs, envir = parent.frame())
-    pred_mask <- clusterR(x    = covariates,
-                          fun  = calc,
-                          args = list(fun = function(cell) {
-                            in_or_out <- in_range(cell, sx_mins, sx_maxs, strict = FALSE)
-                            # handle no data areas
-                            if(all(is.na(in_or_out))) {
-                              NA_integer_
-                            } else if(sum(in_or_out == FALSE, na.rm = TRUE) > tolerance) {
-                                1L
-                              } else {
-                                0L
-                                }
-                            }),
-                          filename = file.path(drmsk, paste0('pred_mask_', n, '.tif')),
-                          NAflag = -9999,
-                          datatype = 'INT2S',
-                          overwrite = TRUE)
+    pred_mask <-
+      clusterR(x    = covariates,
+               fun  = calc,
+               args = list(fun = function(cell) {
+                 in_or_out <- in_range(cell, sx_mins, sx_maxs, strict = FALSE)
+                 # handle no data areas
+                 if(all(is.na(in_or_out))) {
+                   return(NA_integer_)
+                 }
+                 if(sum(in_or_out == FALSE, na.rm = TRUE) > tolerance) {
+                     1L
+                   } else {
+                     0L
+                     }
+                 }),
+               filename  = file.path(drmsk, paste0('pred_mask_', n, '.tif')),
+               NAflag    = -9999,
+               datatype  = 'INT2S',
+               overwrite = TRUE)
     setTxtProgressBar(pb, n)
     endCluster()
     pred_mask
@@ -258,39 +257,29 @@ prediction_masks <- function(samples = NULL, covariates = NULL, tolerance = 0L, 
 #' }
 #' @importFrom raster alignExtent crop extent intersect ncell raster
 #'   rasterToPoints
-#' @importFrom sf st_geometry
-#' @importFrom rgeos gIntersects gIntersection gUnaryUnion
+#' @importFrom sf st_geometry st_intersection st_as_sf
 #' @export
 #'
 strict_cfp <- function(src_map = NULL, covariates = NULL) {
 
   # init empty raster
-  r_blank <- raster(covariates)
+  r_blank <- raster::raster(covariates)
   # populate with cell index values
-  r_blank[] <- 1:ncell(r_blank)
+  r_blank[] <- seq.int(ncell(r_blank))
 
-  inps <- split(as(st_geometry(src_map), 'Spatial'), 1:nrow(src_map))
+  inps <- split(src_map, seq(nrow(src_map)))
 
   # lapply and map produce identical output in identical times here
-  intersecting_cells <- lapply(inps, FUN = function(p) {
+  lapply(inps, FUN = function(p) {
     p_extent <- alignExtent(extent(p), r_blank, snap = 'near')
     # catch polygons off the edge of a raster
-    r_blank_p <- try(crop(r_blank, p_extent), silent = TRUE) # src of rgeos dep
-    intersecting_pts <- if(inherits(r_blank_p, 'try-error')) {
-      NA_integer_
-      } else {
-        blank_pts <- rasterToPoints(r_blank_p, spatial = TRUE)
-        as.integer(raster::intersect(blank_pts, p)$layer)
-      }
-
-    # for interest:
-    #values(r_blank_p)[! (values(r_blank_p) %in% intersecting_pts$layer)] <- NA
-
-   # if (length(intersecting_pts$layer) == 0) {
-   #   NA_integer_
-   # } else {
-   #     as.integer(intersecting_pts$layer)
-   # }
-
-  })
+    r_blank_p <- try(raster::crop(r_blank, p_extent)) # src of rgeos dep
+    if(inherits(r_blank_p, 'try-error')) {
+      return(NA_integer_)
+    }
+    blank_pts <- raster::rasterToPoints(r_blank_p, spatial = TRUE)
+    blank_pts <- sf::st_as_sf(blank_pts)
+    out <- suppressWarnings(sf::st_intersection(blank_pts, sf::st_geometry(p)))
+    as.integer(out$layer)
+   })
 }

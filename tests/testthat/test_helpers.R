@@ -10,8 +10,8 @@ test_that('n_things', {
   expect_equal(n_things(test_df[1, ], 'P'), c(90L, 10L)),
   expect_equal(n_things(test_df[2, ], 'C'), c('A')),
   expect_equal(n_things(test_df[2, ], 'P'), c(100L)),
-  expect_true(is.na(n_things(test_df[3,], 'C'))),
-  expect_true(is.na(n_things(test_df[3,], 'P'))),
+  expect_true(is.na(n_things(test_df[3, ], 'C'))),
+  expect_true(is.na(n_things(test_df[3, ], 'P'))),
   expect_equal(n_things(test_df, 'C'), c('A', 'A', 'B')),
   expect_equal(n_things(test_df, 'P'), c(90L, 100L, 10L))
   )
@@ -49,10 +49,15 @@ test_that('check_attributes', {
 test_that('strict_cfp_total_intersect', {
   c(
     tpoly <- st_sf('ID'   = 1,
-                   'geom' = st_sfc(st_polygon(x = list(matrix(c(2,2,2,5,5,5,5,2,2,2),
-                                                              ncol = 2, byrow = TRUE))))),
-    trast <- raster::raster(matrix(sample(c(1:49), size = 49, replace = FALSE), ncol = 7, byrow = T),
-                            xmn = 0, xmx = 7, ymn = 0, ymx = 7, crs = NA, template = NULL),
+                   'geom' =
+                     st_sfc(
+                       st_polygon(x = list(matrix(c(2,2,2,5,5,5,5,2,2,2),
+                                                  ncol = 2, byrow = TRUE))))
+                   ),
+    trast <- raster::raster(matrix(sample(c(1:49), size = 49, replace = FALSE),
+                                   ncol = 7, byrow = T),
+                            xmn = 0, xmx = 7, ymn = 0, ymx = 7,
+                            crs = NA, template = NULL),
     expect_is(strict_cfp(tpoly, trast), 'list'),
     expect_is(strict_cfp(tpoly, trast)[[1]], 'integer'),
     expect_identical(strict_cfp(tpoly, trast)[[1]],
@@ -64,10 +69,13 @@ test_that('strict_cfp_total_intersect', {
 test_that('strict_cfp_partial_intersect', {
   c(
     tpoly <- st_sf('ID'   = 1,
-                   'geom' = st_sfc(st_polygon(x = list(matrix(c(2,2,2,5,5,5,5,2,2,2),
-                                                              ncol = 2, byrow = TRUE))))),
-    trast <- raster::raster(matrix(sample(c(1:32), size = 32, replace = FALSE), ncol = 4, byrow = T),
-                            xmn = 0, xmx = 4, ymn = 0, ymx = 8, crs = NA, template = NULL),
+                   'geom' = st_sfc(
+                     st_polygon(x = list(matrix(c(2,2,2,5,5,5,5,2,2,2),
+                                                ncol = 2, byrow = TRUE))))),
+    trast <- raster::raster(matrix(sample(c(1:32), size = 32, replace = FALSE),
+                                   ncol = 4, byrow = T),
+                            xmn = 0, xmx = 4, ymn = 0, ymx = 8,
+                            crs = NA, template = NULL),
     expect_is(strict_cfp(tpoly, trast), 'list'),
     expect_is(strict_cfp(tpoly, trast)[[1]], 'integer'),
     expect_identical(strict_cfp(tpoly, trast)[[1]],
@@ -78,10 +86,13 @@ test_that('strict_cfp_partial_intersect', {
 test_that('strict_cfp_no_intersect', {
   c(
     tpoly <- st_sf('ID'   = 1,
-                   'geom' = st_sfc(st_polygon(x = list(matrix(c(2,2,2,5,5,5,5,2,2,2),
-                                                              ncol = 2, byrow = TRUE))))),
-    trast <- raster::raster(matrix(sample(c(1:25), size = 25, replace = FALSE), ncol = 5, byrow = T),
-                            xmn = 6, xmx = 11, ymn = 6, ymx = 11, crs = NA, template = NULL),
+                   'geom' = st_sfc(
+                     st_polygon(x = list(matrix(c(2,2,2,5,5,5,5,2,2,2),
+                                                ncol = 2, byrow = TRUE))))),
+    trast <- raster::raster(matrix(sample(c(1:25), size = 25, replace = FALSE),
+                                   ncol = 5, byrow = T),
+                            xmn = 6, xmx = 11, ymn = 6, ymx = 11,
+                            crs = NA, template = NULL),
     expect_is(strict_cfp(tpoly, trast), 'list'),
     expect_is(strict_cfp(tpoly, trast)[[1]], 'integer'),
     expect_identical(strict_cfp(tpoly, trast)[[1]], NA_integer_)

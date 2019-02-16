@@ -5,8 +5,8 @@
 \title{Prepare dsmartr polygons}
 \usage{
 prep_polygons(src_map = NULL, covariates = NULL, id_field = NULL,
-  sample_method = c("flat", "area_p"), flat_rate = NULL,
-  area_rate = NULL, samp_floor = NULL, samp_ceiling = NULL)
+  sample_method = c("flat", "area_p"), sample_rate = NULL,
+  rate_floor = NULL, rate_ceiling = NULL)
 }
 \arguments{
 \item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object
@@ -28,18 +28,14 @@ datasets.}
 \item{sample_method}{String; choice of flat rate per polygon or
 area-proportional rate.}
 
-\item{flat_rate}{Integer; Number of samples per polygon; use with
-\code{sample_method = 'flat'}.}
+\item{sample_rate}{Integer; Number of samples per polygon.}
 
-\item{area_rate}{Integer; desired number of samples per square kilometre; use
-with \code{sample_method = 'area_p'}.}
-
-\item{samp_floor}{Integer; desired minimum number of samples per polygon.
-Optional; use with \code{sample_method = 'area_p'}. Defaults to 2x the
+\item{rate_floor}{Integer; desired minimum number of samples per polygon.
+Optional; used with \code{sample_method = 'area_p'}. Defaults to 2x the
 number of soil classes on a polygon, switch off with samp_floor = 0 (not
 recommended).}
 
-\item{samp_ceiling}{Integer; desired maximum number of samples per polygon.
+\item{rate_ceiling}{Integer; desired maximum number of samples per polygon.
 Optional; use with \code{sample_method = 'area_p'}. Only applies to
 polygons with a single class component and (effectively) a large area.}
 }
@@ -82,12 +78,12 @@ data('heronvale_covariates')
 pr_flat <- prep_polygons(src_map = heronvale_soilmap,
                          covariates = heronvale_covariates,
                          id_field = 'POLY_NO', sample_method = 'flat',
-                         flat_rate = 6)
+                         sample_rate = 6)
 
 # area_proportional rate with floor
 pr_ap <- prep_polygons(src_map = heronvale_soilmap,
                        covariates = heronvale_covariates,
                        id_field = 'POLY_NO', sample_method = 'area_p',
-                       area_rate = 20, samp_floor = 6)
+                       sample_rate = 20, rate_floor = 6)
 }
 }

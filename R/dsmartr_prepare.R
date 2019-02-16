@@ -17,15 +17,12 @@
 #' @param id_field String; name of unique identifier field in \code{src_map}.
 #' @param sample_method String; choice of flat rate per polygon or
 #'   area-proportional rate.
-#' @param flat_rate Integer; Number of samples per polygon; use with
-#'   \code{sample_method = 'flat'}.
-#' @param area_rate Integer; desired number of samples per square kilometre; use
-#'   with \code{sample_method = 'area_p'}.
-#' @param samp_floor Integer; desired minimum number of samples per polygon.
-#'   Optional; use with \code{sample_method = 'area_p'}. Defaults to 2x the
+#' @param sample_rate Integer; Number of samples per polygon.
+#' @param rate_floor Integer; desired minimum number of samples per polygon.
+#'   Optional; used with \code{sample_method = 'area_p'}. Defaults to 2x the
 #'   number of soil classes on a polygon, switch off with samp_floor = 0 (not
 #'   recommended).
-#' @param samp_ceiling Integer; desired maximum number of samples per polygon.
+#' @param rate_ceiling Integer; desired maximum number of samples per polygon.
 #'   Optional; use with \code{sample_method = 'area_p'}. Only applies to
 #'   polygons with a single class component and (effectively) a large area.
 #' @return A data frame holding polygon input attributes and four new attribute
@@ -58,30 +55,29 @@
 #' pr_flat <- prep_polygons(src_map = heronvale_soilmap,
 #'                          covariates = heronvale_covariates,
 #'                          id_field = 'POLY_NO', sample_method = 'flat',
-#'                          flat_rate = 6)
+#'                          sample_rate = 6)
 #'
 #' # area_proportional rate with floor
 #' pr_ap <- prep_polygons(src_map = heronvale_soilmap,
 #'                        covariates = heronvale_covariates,
 #'                        id_field = 'POLY_NO', sample_method = 'area_p',
-#'                        area_rate = 20, samp_floor = 6)
+#'                        sample_rate = 20, rate_floor = 6)
 #' }
-#' @importFrom dplyr filter mutate mutate_if
-#' @importFrom methods is as
-#' @importFrom purrr map map_int
-#' @importFrom sf st_area st_set_geometry
-#' @importFrom stats setNames
-#' @importFrom raster crs cellFromPolygon
+#' @importFrom methods as
+#' @importFrom sf st_area st_set_geometry st_transform
+#' @importFrom raster crs
+#' @importFrom units ud_units
 #' @export
 #'
 prep_polygons <- function(src_map       = NULL,
                           covariates    = NULL,
                           id_field      = NULL,
                           sample_method = c('flat', 'area_p'),
-                          flat_rate     = NULL,
-                          area_rate     = NULL,
-                          samp_floor    = NULL,
-                          samp_ceiling  = NULL) {
+                          sample_rate   = NULL,
+                          rate_floor    = NULL,
+                          rate_ceiling  = NULL) {
+
+  sample_method <- match.arg(sample_method)
 
   if (!dir.exists(file.path(getwd(), 'inputs'))) {
     dir.create(file.path(getwd(), 'inputs'), showWarnings = FALSE)
@@ -89,54 +85,51 @@ prep_polygons <- function(src_map       = NULL,
   in_dir <- file.path(getwd(), 'inputs')
 
   # coerce sp polygons to sf
-  src_map <- if(is(src_map, 'sf') == FALSE) {
-    st_as_sf(src_map)
-  } else {
-    src_map
+  if(!inherits(src_map, 'sf')) {
+    src_map <- sf::st_as_sf(src_map)
   }
 
-  src_map <- mutate_if(src_map, is.factor, as.character)
-  src_map <- st_transform(src_map, crs = crs(covariates, asText = TRUE))
+  fct <- sapply(src_map, is.factor)
+  src_map[fct] <- lapply(src_map[fct], as.character)
+  src_prepped <-
+    sf::st_transform(src_map, crs = raster::crs(covariates, asText = TRUE))
 
   # polygon area in sq km
-  src_prepped <- mutate(src_map, area_sqkm = st_area(src_map))
+  src_prepped$area_sqkm <- sf::st_area(src_prepped)
   units(src_prepped$area_sqkm) <- with(units::ud_units, km^2)
-  src_split <- split(src_prepped, 1:nrow(src_prepped))
 
   # number of soil classes on polygon
-  n_soils <- map_int(src_split, function(ncl) {
-               sum(!is.na(ncl) & grepl('CLASS', names(ncl)) == TRUE)
-             })
-
-  src_prepped$n_soils <- as.vector(n_soils)
-  src_split <- split(src_prepped, 1:nrow(src_prepped))
-
+  src_prepped$n_soils <- apply(sf::st_set_geometry(src_prepped, NULL),
+                               MARGIN = 1, FUN = function(row) {
+                                 sum(!is.na(row) &
+                                       grepl('CLASS', names(row)) == TRUE)
+                                 })
   # intended sample number
-  n_samples <- if(sample_method == 'flat') {
-    flat_rate
-    } else if (sample_method == 'area_p') {
-      map_int(src_split, function(ns) {
-               p_nsoils   <- as.integer(as.data.frame(ns)[, 'n_soils'])
-               p_area     <- as.numeric(as.data.frame(ns)[, 'area_sqkm'])
-               samp_area  <- ceiling(p_area * area_rate)
-               samp_floor <- if(is.null(samp_floor)) { p_nsoils * 2 } else { samp_floor }
-               samp_n     <- if(p_nsoils == 1 & !is.null(samp_ceiling)) {
-                 as.integer(max(min(samp_ceiling, samp_area), samp_floor))
-               } else {
-                 as.integer(max(samp_area, samp_floor))
-               }
-             } )
-    } else {
-      stop('Please provide a valid sample_method parameter. Options are \'flat\', \'area_p\'.')
+  if(sample_method == 'flat') {
+    src_prepped$n_samples <- sample_rate
+  }
+
+  if(sample_method == 'area_p') {
+    src_prepped$temparea <- as.numeric(src_prepped$area_sqkm) # apply coercion :|
+    src_prepped$n_samples <-
+      apply(sf::st_set_geometry(src_prepped, NULL), MARGIN = 1, function(row) {
+        p_nsoils   <- as.integer(row[['n_soils']])
+        p_area     <- as.numeric(row[['temparea']])
+        samp_area  <- ceiling(p_area * sample_rate)
+        samp_floor <- if(is.null(rate_floor)) { p_nsoils * 2 } else { rate_floor }
+        if(p_nsoils == 1L & !is.null(rate_ceiling)) {
+          as.integer(max(min(rate_ceiling, samp_area), samp_floor))
+        } else {
+          as.integer(max(samp_area, samp_floor))
+        }
+      })
+    src_prepped$temparea <- NULL
     }
 
-  src_prepped$n_samples <- as.vector(n_samples)
-  #src_split <- split(src_prepped, 1:nrow(src_prepped))
-
   # list cell numbers that intersect the polygon
-  #(these will be subset randomly on each model run)
-  intersecting_cells <- strict_cfp(src_map    = src_prepped,
-                                   covariates = covariates)
+  # (these will be subset randomly on each model run)
+  src_prepped$intersecting_cells <- strict_cfp(src_map    = src_prepped,
+                                               covariates = covariates)
 
   ## old way - buggy, some problem in raster pkg, src unclear at Jan 17
   #intersecting_cells <- map(src_split, function(g) {
@@ -146,16 +139,13 @@ prep_polygons <- function(src_map       = NULL,
   #             cells   <- if (length(cells) == 0) { NA } else { cells }
   #           })
 
-  src_prepped$intersecting_cells <- intersecting_cells #list-column
-
-  src_prepped <- filter(src_prepped, !(length(intersecting_cells) == 0)) # can't index a list-column
-
-  src_prepped <- st_set_geometry(src_prepped, NULL)
+  # can't index a list-column
+  src_prepped <- src_prepped[which(!is.na(src_prepped$intersecting_cells)), ]
+  src_prepped <- sf::st_set_geometry(src_prepped, NULL)
 
   IDstr_r <- if (nrow(src_map) > nrow(src_prepped)) {
-    removed   <- setdiff(as.data.frame(src_map)[ , id_field],
-                         src_prepped[ , id_field])
-    n_removed <- nrow(removed)
+    removed   <- setdiff(src_map[[id_field]], src_prepped[[id_field]])
+    n_removed <- length(removed)
     IDstr     <- toString(unlist(removed))
     message(paste0('Polygons with ID(s) ', IDstr, ' excluded - no cell intersections.'))
     IDstr
@@ -164,7 +154,7 @@ prep_polygons <- function(src_map       = NULL,
   }
 
   saveRDS(src_prepped, file.path(in_dir, 'prepped_map.rds'))
-  return(src_prepped)
+  src_prepped
 
 }
 
@@ -197,11 +187,10 @@ prep_polygons <- function(src_map       = NULL,
 #' pr_pts <- prep_points(known_points = heronvale_known_sites, soil_id = 'CLASS',
 #' x_coords = 'x', y_coords = 'y', covariates = heronvale_covariates)
 #' }
-#' @importFrom dplyr mutate_if
-#' @importFrom methods is as
+#' @importFrom methods as
 #' @importFrom raster cellFromXY crs extract
 #' @importFrom sp spTransform
-#' @importFrom sf st_as_sf st_set_crs st_set_geometry st_transform
+#' @importFrom sf st_as_sf st_set_geometry st_transform
 #' @export
 #'
 prep_points <- function(known_points = NULL, soil_id  = NULL,
@@ -213,34 +202,40 @@ prep_points <- function(known_points = NULL, soil_id  = NULL,
   }
   in_dir <- file.path(getwd(), 'inputs')
 
-  known_points <- mutate_if(known_points, is.factor, as.character)
-  kpp <- if(is(known_points, 'sf')) {
-    known_points <- st_transform(known_points, crs = crs(covariates, asText = TRUE))
-    cellnos <- cellFromXY(covariates, xy = as(known_points, 'Spatial'))
+  fct <- sapply(known_points, is.factor)
+  known_points[fct] <- lapply(known_points[fct], as.character)
+
+  kpp <- if(inherits(known_points, 'sf')) {
+    known_points <-
+      sf::st_transform(known_points, crs = raster::crs(covariates,
+                                                       asText = TRUE))
+    cellnos <- raster::cellFromXY(covariates, xy = as(known_points, 'Spatial'))
     known_points$CELL <- cellnos
-    known_points  <- st_set_geometry(known_points, NULL)
+    known_points  <- sf::st_set_geometry(known_points, NULL)
     names(known_points)[names(known_points) == soil_id]  <- 'CLASS'
     known_points <- known_points[ , c('CLASS', 'CELL')]
 
-    } else if (is(known_points, 'Spatial')) {
-       known_points <- spTransform(known_points, CRSobj = crs(covariates))
-       cellnos <- cellFromXY(covariates, xy = known_points)
+    } else if (inherits(known_points, 'Spatial')) {
+       known_points <-
+         sp::spTransform(known_points, CRSobj = raster::crs(covariates))
+       cellnos <- raster::cellFromXY(covariates, xy = known_points)
        known_points <- known_points@data
        names(known_points)[names(known_points) == soil_id]  <- 'CLASS'
        known_points$CELL  <- cellnos
        known_points <- known_points[ , c('CLASS', 'CELL')]
 
-       } else if (is(known_points, 'data.frame')) {
-         known_points <- st_as_sf(known_points, coords = c(x_coords, y_coords))
-         known_points <- st_set_crs(known_points, value = crs(covariates, asText = TRUE))
-         cellnos   <- cellFromXY(covariates, xy = as(known_points, 'Spatial'))
+       } else if(inherits(known_points, 'data.frame')) {
+         known_points <-
+           sf::st_as_sf(known_points, coords = c(x_coords, y_coords),
+                        crs = raster::crs(covariates, asText = TRUE))
+         cellnos <- raster::cellFromXY(covariates,
+                                       xy = as(known_points, 'Spatial'))
          names(known_points)[names(known_points) == soil_id]  <- 'CLASS'
-         known_points$CELL  <- cellnos
+         known_points$CELL <- cellnos
          known_points <- known_points[ , c('CLASS', 'CELL')]
 
        } else { stop('Please supply a valid input file') }
 
   saveRDS(kpp, file.path(in_dir, 'prepped_points.rds'))
-  return(kpp)
-
-  }
+  kpp
+}
