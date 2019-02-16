@@ -148,8 +148,8 @@ sort_probabilities <- function(input = NULL, n_classes = NULL) {
 #' Collate dsmartr iterations
 #'
 #' Processes the outputs of \code{\link[dsmartr:iterate]{iterate}}
-#' @param iteration_stack RasterStack or Brick; output \code{iteration_maps} from
-#'   \code{\link{iterate}}.
+#' @param iteration_stack RasterStack or Brick; output \code{iteration_maps}
+#'   from \code{\link{iterate}}.
 #' @param lookup Data Frame; contains raster values and corresponding soil class
 #'   labels. Example:
 #'   \preformatted{'data.frame':	38 obs. of  2 variables:
@@ -189,12 +189,11 @@ collate <- function(iteration_stack = NULL,
                     cpus            = 1) {
   message(paste0(Sys.time(), ': dsmartr collation in progress...'))
 
-  pb <- txtProgressBar(min = 0, max = 100, initial = 0, style = 3)
   if (!dir.exists(file.path(getwd(), 'tallies'))) {
     dir.create(file.path(getwd(), 'tallies'), showWarnings = FALSE)
   }
   strs         <- file.path(getwd(), 'tallies')
-  soil_classes <- nrow(lookup)
+  soil_classes <- dim(lookup)[1]
   n_iterations <- nlayers(iteration_stack)
 
   beginCluster(n = cpus)
@@ -212,13 +211,15 @@ collate <- function(iteration_stack = NULL,
                      NAflag    = -9999,
                      overwrite = TRUE)
 
-  setTxtProgressBar(pb, 50)
+  message(paste0(Sys.time(),
+                 ': Predictions tallied. Calculating probabilities...'))
 
   # 2. express the tallies as probablities
   probs <- clusterR(x         = counts,
                     fun       = calc,
                     args      = list(fun = function(cell) {
-                      calc_probabilities(input = cell, n_iterations = n_iterations)
+                      calc_probabilities(input = cell,
+                                         n_iterations = n_iterations)
                       }),
                     filename  = file.path(strs, 'tallied_probabilities.tif'),
                     datatype  = 'FLT4S',
@@ -226,7 +227,8 @@ collate <- function(iteration_stack = NULL,
                     NAflag    = -9999,
                     overwrite = TRUE)
 
-  setTxtProgressBar(pb, 80)
+  message(paste0(Sys.time(),
+                 ': Probabilities calculated. Ordering predictions...'))
 
   # 3. get the soil classes corresponding to counts
   ordered <- clusterR(x         = counts,
@@ -240,13 +242,15 @@ collate <- function(iteration_stack = NULL,
                       NAflag    = -9999,
                       overwrite = TRUE)
 
-  setTxtProgressBar(pb, 90)
+  message(paste0(Sys.time(),
+                 ': Predictions ordered. Ordering probabilities...'))
 
   # 4. sort probs by most to least probable
   sorted  <- clusterR(x         = probs,
                       fun       = calc,
                       args      = list(fun = function(cell) {
-                        sort_probabilities(input = cell, n_classes = soil_classes)
+                        sort_probabilities(input = cell,
+                                           n_classes = soil_classes)
                       }),
                       filename  = file.path(strs, 'dsmartr_probabilities.tif'),
                       datatype  = 'FLT4S',
@@ -255,41 +259,45 @@ collate <- function(iteration_stack = NULL,
                       overwrite = TRUE)
 
   # think of ordered as the names of sorted
-  # e.g. [1] 3 2 1 4 or [1]  3   2   1 4
-  #         8 5 0 0        0.4 0.25 0 0
+  # e.g. [1] 3 2 1 4 or [1]  3   2    1 4
+  #          8 5 0 0         0.4 0.25 0 0
 
-  setTxtProgressBar(pb, 95)
+  message(paste0(Sys.time(),
+                 ': Probabilities ordered.'))
   endCluster()
 
   # Assemble outputs
   tallied_predictions <- raster::stack(file.path(strs, 'tallied_predictions.tif'))
   # faster to go lookup$CLASS but then can't be flexible about colnames
-  names(tallied_predictions) <- as.vector(lookup[ , 2])
+  names(tallied_predictions) <- lookup[[2]]
 
-  tallied_probabilities <- raster::stack(file.path(strs, 'tallied_probabilities.tif'))
-  names(tallied_probabilities) <- as.vector(lookup[ , 2])
+  tallied_probabilities <-
+    raster::stack(file.path(strs, 'tallied_probabilities.tif'))
+  names(tallied_probabilities) <- lookup[[2]]
 
-  dsmartr_predictions <- raster::stack(file.path(strs, 'dsmartr_predictions.tif'))
+  dsmartr_predictions <-
+    raster::stack(file.path(strs, 'dsmartr_predictions.tif'))
   # give these rasters categories for these values
   # nb seq(layers(x)) is not faster than 1:n in this case - 3x slower
-  # no danger of trying to get length of missing object; fn would fail before this point
-  # in the case of a missing file
-  for (i in 1:nlayers(dsmartr_predictions)) {
+  # no danger of trying to get length of missing object; fn would fail before
+  # this point in the case of a missing file
+  for (i in seq(nlayers(dsmartr_predictions))) {
     levels(dsmartr_predictions[[i]]) <- lookup
   }
-  names(dsmartr_predictions) <- paste0('mostlikely_', 1:nlayers(dsmartr_predictions))
-
-  dsmartr_probabilities <- raster::stack(file.path(strs, 'dsmartr_probabilities.tif'))
-  names(dsmartr_probabilities) <- paste0('mostlikely_prob_', 1:nlayers(dsmartr_probabilities))
+  names(dsmartr_predictions) <- paste0('mostlikely_',
+                                       seq(nlayers(dsmartr_predictions)))
+  dsmartr_probabilities <-
+    raster::stack(file.path(strs, 'dsmartr_probabilities.tif'))
+  names(dsmartr_probabilities) <- paste0('mostlikely_prob_',
+                                         seq(nlayers(dsmartr_probabilities)))
 
   collated_outputs <- list("dsmartr_predictions"   = dsmartr_predictions,
                            "dsmartr_probabilities" = dsmartr_probabilities,
                            "tallied_predictions"   = tallied_predictions,
                            "tallied_probabilities" = tallied_probabilities)
-  setTxtProgressBar(pb, 100)
-  close(pb)
   rm(list = c('soil_classes', 'n_iterations'), envir = parent.frame())
-  message(paste0(Sys.time(), ': ...complete. dsmartr outputs can be located at ',
+  message(paste0(Sys.time(),
+                 ': Collation complete. dsmartr outputs can be located at ',
                  file.path(getwd(), 'tallies')))
   collated_outputs
 }
