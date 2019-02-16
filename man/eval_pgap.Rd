@@ -8,22 +8,25 @@ eval_pgap(dsmartr_probs = NULL, cpus = 1)
 }
 \arguments{
 \item{dsmartr_probs}{RasterBrick; 'dsmartr_probabilities' output by
-\code{\link{collate}}. Alternatively, probability maps output by
-\code{\link{most_likely}} can be used, or a list of two rasters read from disk.}
+\code{\link[dsmartr:collate]{dsmartr::collate()}}. Alternatively,
+probability maps output by
+\code{\link[dsmartr:most_likely]{dsmartr::most_likely()}} can be used, or a
+list of two rasters read from disk.}
 
 \item{cpus}{Integer; number of processors to use in parallel.}
 }
 \value{
-\code{probability_gap}: RasterLayer depicting the probability gap. Written to disk as
-  GeoTIFF.
+\code{probability_gap}: RasterLayer depicting the probability gap.
+  Written to disk as GeoTIFF.
 }
 \description{
 Calculates and maps the difference between the first and second most-probable
 dsmartr probability surfaces. Requires outputs of \code{\link{collate}}.
 }
 \note{
-This function is often called the 'confusion index', but has been renamed as that term is
-  used in multiple contexts within the scientific literature.
+This function is often called the 'confusion index', but has been
+  renamed as that term is used in multiple contexts within the scientific
+  literature.
 }
 \examples{
 \dontrun{

@@ -7,10 +7,11 @@
 strict_cfp(src_map = NULL, covariates = NULL)
 }
 \arguments{
-\item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object representing
-the soil map to be disaggregated. Attributes are not required.}
+\item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object
+representing the soil map to be disaggregated. Attributes are not required.}
 
-\item{covariates}{RasterStack or RasterBrick; environmental covariate datasets.}
+\item{covariates}{RasterStack or RasterBrick; environmental covariate
+datasets.}
 }
 \value{
 a list of atomic vectors containing raster cell numbers.
@@ -19,9 +20,10 @@ a list of atomic vectors containing raster cell numbers.
 Determines which covariate cells intersect with a given map polygon.
 }
 \details{
-Given a polygon layer and spatially intersecting raster object, determines which
-raster cells intersect which polygons. This function is primarily intended for use in
-\code{\link{prep_polygons}} but can be used as a standalone.
+Given a polygon layer and spatially intersecting raster object,
+  determines which raster cells intersect which polygons. This function is
+  primarily intended for use in \code{\link{prep_polygons}} but can be used
+  as a standalone.
 }
 \examples{
 \dontrun{

@@ -17,8 +17,9 @@
 heronvale_soilnames
 }
 \description{
-A table of soil class labels found in 'heronvale_soilmap' and 'heronvale_known_sites', along with
-their full names. Explanations of the concept associated with each soil name are available in the
- report associated with this mapping project.
+A table of soil class labels found in 'heronvale_soilmap' and
+'heronvale_known_sites', along with their full names. Explanations of the
+concept associated with each soil name are available in the report associated
+with this mapping project.
 }
 \keyword{datasets}

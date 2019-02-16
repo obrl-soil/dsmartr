@@ -4,11 +4,12 @@
 \alias{check_attributes}
 \title{Check dsmartr input map attributes}
 \usage{
-check_attributes(src_map = NULL, id_field = NULL, cs = NULL, ps = NULL)
+check_attributes(src_map = NULL, id_field = NULL, cs = NULL,
+  ps = NULL)
 }
 \arguments{
-\item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object, see
-\code{\link{prep_polygons}}.}
+\item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame
+object, see \code{\link[dsmartr:prep_polygons]{dsmartr::prep_polygons()}}.}
 
 \item{id_field}{String; name of unique feature identifier field.}
 
@@ -17,19 +18,22 @@ check_attributes(src_map = NULL, id_field = NULL, cs = NULL, ps = NULL)
 \item{ps}{String; stub of attribute column names folding soil percentage data}
 }
 \value{
-An sf object with appended logical columns indicating presence of possible data faults.
+An sf object with appended logical columns indicating presence of
+  possible data faults.
 }
 \description{
 Checks dsmartr input map attributes for potential data quality issues.
 }
 \details{
-This function highlights some issues that may cause dsmartr to either fail or behave
-  unpredictably. Usually these are side-effects of prepration work carried out in other software.
-  Sometimes they are the result of errors in the source data. Note that only attributes are
-  checked; geometry checking techniques are already available in sf and other spatial packages.
-  At present, four problems are checked: whether data is missing (e.g. a polygon class without a
-  matching percentage), whether any percentage values are 0\%, whether total percentage (by
-  polygon) is not 100\%, and whether any IDs are duplicated.
+This function highlights some issues that may cause dsmartr to
+  either fail or behave unpredictably. Usually these are side-effects of
+  prepration work carried out in other software. Sometimes they are the
+  result of errors in the source data. Note that only attributes are checked;
+  geometry checking techniques are already available in sf and other spatial
+  packages. At present, four problems are checked: whether data is missing
+  (e.g. a polygon class without a matching percentage), whether any
+  percentage values are 0\%, whether total percentage (by polygon) is not
+  100\%, and whether any IDs are duplicated.
 }
 \examples{
 \dontrun{

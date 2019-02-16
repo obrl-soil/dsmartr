@@ -8,8 +8,8 @@ iter_sample_poly(pd = NULL, cs = NULL, ps = NULL, nscol = NULL,
   cellcol = NULL, t_factor = NULL)
 }
 \arguments{
-\item{pd}{A single-row sf object containing soil attributes and geometry. Usually output of
-running split(x, 1:nrow(x)) on a polygon sf dataframe.}
+\item{pd}{A single-row sf object containing soil attributes and geometry.
+Usually output of running split(x, seq(nrow(x))) on a polygon sf dataframe.}
 
 \item{cs}{String; stub of attribute column names holding soil class data}
 
@@ -17,17 +17,18 @@ running split(x, 1:nrow(x)) on a polygon sf dataframe.}
 
 \item{nscol}{String; name of attribute holding number of samples needed}
 
-\item{cellcol}{String; name of attriute holding list of raster cells to sample from}
+\item{cellcol}{String; name of attriute holding list of raster cells to
+sample from}
 
 \item{t_factor}{Integer; dirichlet dampener, supplied by parent function}
 }
 \value{
-A data frame containing two columns: weighted random allocation of soil classes,
-  and cell numbers
+A data frame containing two columns: weighted random allocation of
+  soil classes, and cell numbers.
 }
 \description{
-Randomly selects n cells for sampling and assigns them a soil class based on the overlying
-map polygon's components
+Randomly selects n cells for sampling and assigns them a soil class based on
+the overlying map polygon's components
 }
 \examples{
 \dontrun{

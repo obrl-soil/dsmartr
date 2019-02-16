@@ -13,15 +13,16 @@ n_things(input = NULL, selector = NULL)
 \item{selector}{String; a column name or name stub.}
 }
 \value{
-An atomic vector of non-NA values in the selected columns, by order of occurrence.
+An atomic vector of non-NA values in the selected columns, by order
+  of occurrence.
 }
 \description{
-Returns cell values from selected columns in an attribute table as an atomic vector,
-with NA values excluded.
+Returns cell values from selected columns in an attribute table as an atomic
+vector, with NA values excluded.
 }
 \note{
-This is a helper function and not widely applicable. It is expected to be
-  used by-row on wide-formatted spatial attribute data.
+This is a helper function and not widely applicable. It is expected to
+  be used by-row on wide-formatted spatial attribute data.
 }
 \examples{
 \dontrun{

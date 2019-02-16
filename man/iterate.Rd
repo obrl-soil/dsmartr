@@ -10,37 +10,44 @@ iterate(prepped_map = NULL, covariates = NULL, prepped_points = NULL,
   write_samples = FALSE, resume_from = NULL)
 }
 \arguments{
-\item{prepped_map}{Data Frame; Returned by \code{\link{prep_polygons}}.}
+\item{prepped_map}{Data Frame; Returned by
+\code{\link[dsmartr:prep_polygons]{dsmartr::prep_polygons()}}.}
 
-\item{covariates}{RasterStack or RasterBrick; environmental covariate datasets.}
+\item{covariates}{RasterStack or RasterBrick; environmental covariate
+datasets.}
 
-\item{prepped_points}{Data Frame; Returned by \code{\link{prep_points}}; optional.}
+\item{prepped_points}{Data Frame; Returned by
+\code{\link[dsmartr:prep_points]{dsmartr::prep_points()}}; optional.}
 
 \item{id_field}{String; name of unique polygon identifier field.}
 
 \item{n_iterations}{Integer; desired number of model runs.}
 
-\item{t_factor}{Integer; dirichlet distribution modifier. Where map units have >1 soil class
-component, larger values of \code{t_factor} dampen variation away from the input proportions.}
+\item{t_factor}{Integer; dirichlet distribution modifier. Where map units
+have >1 soil class component, larger values of \code{t_factor} dampen
+variation away from the input proportions.}
 
 \item{c5_ctrl}{List; output of \code{\link[C50]{C5.0Control}}; optional.}
 
 \item{cpus}{Integer; number of processors to use in parallel.}
 
-\item{write_files}{String; choose 'native' to write outputs in GeoTIFF, GPKG, or csv as
-appropriate, or 'rds' for outputs in RDS format. Note that map rasters are always
-written as GeoTIFF.}
+\item{write_files}{String; choose 'native' to write outputs in GeoTIFF, GPKG,
+or csv as appropriate, or 'rds' for outputs in RDS format. Note that map
+rasters are always written as GeoTIFF.}
 
-\item{write_samples}{Logical; whether to retain the covariate samples taken during each
-iteration. If \code{TRUE}, each set of samples is written to disk as GPKG or RDS.}
+\item{write_samples}{Logical; whether to retain the covariate samples taken
+during each iteration. If \code{TRUE}, each set of samples is written to
+disk as GPKG or RDS.}
 
-\item{resume_from}{Integer; If this function is interrupted, it can be resumed from a specified
-iteration number (prevents overwriting existing model iterations in output directory).}
+\item{resume_from}{Integer; If this function is interrupted, it can be
+resumed from a specified iteration number (prevents overwriting existing
+model iterations in output directory).}
 }
 \value{
-RasterStack; \code{n_iterations} layers. As a side effect, for each model run, outputs
-  written to disk include the predicted soils map, the C5.0 model summary, and optionally, the
-  covariate sample points in spatial data format.
+RasterStack; \code{n_iterations} layers. As a side effect, for each
+  model run, outputs written to disk include the predicted soils map, the
+  C5.0 model summary, and optionally, the covariate sample points in spatial
+  data format.
 }
 \description{
 Disaggregates an input soil map a given number of times.
@@ -52,19 +59,27 @@ This function writes a large number of files to disk.
 \dontrun{
 # Polygons only:
 # run prep_polygons() example code, then
-iteration_maps <- iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
- id_field = 'POLY_NO', n_iterations = 20,
- cpus = max(1, (parallel::detectCores() - 1)), write_files = 'native', write_samples = TRUE)
+iteration_maps <- iterate(prepped_map = pr_ap,
+                          covariates = heronvale_covariates,
+                          id_field = 'POLY_NO', n_iterations = 20,
+                          cpus = max(1, (parallel::detectCores() - 1)),
+                          write_files = 'native', write_samples = TRUE)
 
  # Polygons, points and a C50 model tweak, no samples, rds output:
  win_on <- C50::C5.0Control(winnow = TRUE)
- iteration_maps <- iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
- id_field = 'POLY_NO', prepped_points = pr_pts, n_iterations = 20, c5_ctrl = win_on,
- cpus = max(1, (parallel::detectCores() - 1)), write_files = 'rds')
+ iteration_maps <- iterate(prepped_map = pr_ap,
+                           covariates = heronvale_covariates,
+                           id_field = 'POLY_NO', prepped_points = pr_pts,
+                           n_iterations = 20, c5_ctrl = win_on,
+                           cpus = max(1, (parallel::detectCores() - 1)),
+                           write_files = 'rds')
 
 ## Oh no, there was a blackout halfway through my model run:
-iteration_maps_2 <- iterate(prepped_map = pr_ap, covariates = heronvale_covariates,
-id_field = 'POLY_NO', n_iterations = 6, cpus = max(1, (parallel::detectCores() - 1)),
-write_files = 'all', write_samples = TRUE, resume_from = 14)
+iteration_maps_2 <- iterate(prepped_map = pr_ap,
+                            covariates = heronvale_covariates,
+                            id_field = 'POLY_NO', n_iterations = 6,
+                            cpus = max(1, (parallel::detectCores() - 1)),
+                            write_files = 'all', write_samples = TRUE,
+                            resume_from = 14)
 }
 }

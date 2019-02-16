@@ -7,32 +7,33 @@
 tie_finder(input = NULL)
 }
 \arguments{
-\item{input}{A vector of integers n soil classes long, where the integers refer to the number of
-times a soil class was predicted.}
+\item{input}{A vector of integers n soil classes long, where the integers
+refer to the number of times a soil class was predicted.}
 
 \item{n_iterations}{Integer; the total number of model runs.}
 
-\item{noise_cutoff}{Decimal; proportion of predictions to be considered 'noise' and ignored.
-Allowable values range between 0 and 1.}
+\item{noise_cutoff}{Decimal; proportion of predictions to be considered
+'noise' and ignored. Allowable values range between 0 and 1.}
 }
 \value{
-Integer; the number of distinct soil classes predicted on the pixel (optionally, above
- a supplied threshold).
+Integer; the number of distinct soil classes predicted on the pixel
+  (optionally, above a supplied threshold).
 }
 \description{
-Checks existence of ties for most-probable soil and reports how many classes are tied on a given
-pixel.
+Checks existence of ties for most-probable soil and reports how many classes
+are tied on a given pixel.
 }
 \note{
-This is a helper function and not widely applicable. It is expected to be used in concert
-with \code{\link[raster:calc]{calc}}, applied to a stack of tallied soil class predictions
-produced by \code{\link[dsmartr:eval_npred]{eval_npred}}.
+This is a helper function and not widely applicable. It is expected to
+  be used in concert with \code{\link[raster:calc]{rasteR::calc()}}, applied
+  to a stack of tallied soil class predictions produced by
+  \code{\link[dsmartr:eval_npred]{dsmartr::eval_npred()}}.
 }
 \examples{
 \dontrun{
 # a set of tallies from the heronvale demo data
-counts_19291 <- as.integer(c(0, 1, 3, 0,  0, 0, 17,  0, 8, 0, 0, 6, 0, 0, 12, 1, 0, 0, 0, 0, 12,
-0, 0, 8, 0,  0, 0,  0, 12, 1, 3, 5, 2, 9, 0,  0, 0, 0))
+counts_19291 <- as.integer(c(0, 1, 3, 0,  0, 0, 17,  0, 8, 0, 0, 6, 0, 0, 12,
+1, 0, 0, 0, 0, 12, 0, 0, 8, 0,  0, 0,  0, 12, 1, 3, 5, 2, 9, 0,  0, 0, 0))
 ties <- tie_finder(counts_19291) # ties exist, but not for most-probable
 }
 

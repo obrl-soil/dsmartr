@@ -13,12 +13,13 @@ eval_ties(tallied_preds = NULL, cpus = 1)
 \item{cpus}{Integer; number of processors to use in parallel.}
 }
 \value{
-\code{n_classes_predicted}: RasterLayer depicting the number of soils tied for
-  most-probable per pixel. Written to disk as GeoTIFF.
+\code{n_classes_predicted}: RasterLayer depicting the number of soils
+  tied for most-probable per pixel. Written to disk as GeoTIFF.
 }
 \description{
-Calculates and maps out locations where the most-probable soil is a tie between two or more
-classes. Requires output from \code{\link{collate}}.
+Calculates and maps out locations where the most-probable soil is a tie
+between two or more classes. Requires output from
+\code{\link[dsmartr:collate]{dsmartr::collate()}}.
 }
 \examples{
 \dontrun{

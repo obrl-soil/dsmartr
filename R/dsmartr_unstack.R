@@ -1,22 +1,27 @@
 #' Extract most-likely-soil maps
 #'
-#' This function takes the outputs of \code{\link{collate}} and extracts the top \code{n}
-#' most-likely soil maps. Optionally, their respective probability surfaces are also extracted.
+#' This function takes the outputs of \code{\link{collate}} and extracts the top
+#' \code{n} most-likely soil maps. Optionally, their respective probability
+#' surfaces are also extracted.
 #' @param dsmart_preds RasterBrick; output \code{dsmartr_predictions} from
-#'   \code{\link{collate}}.
+#'   \code{\link[dsmartr:collate]{dsmartr::collate()}}.
 #' @param dsmart_probs RasterBrick; output \code{dsmartr_probabilities} from
-#'   \code{\link{collate}}; optional.
+#'   \code{\link[dsmartr:collate]{dsmartr::collate()}}; optional.
 #' @param n_maps integer; the number of most-probable maps desired.
-#' @return A list containing \code{n_maps} most-likely-soils maps, from most to least
-#'   probable. Optionally; \code{n_maps} probability surfaces associated with
-#'   \code{most_likely_maps} follow.
+#' @return A list containing \code{n_maps} most-likely-soils maps, from most to
+#'   least probable. Optionally; \code{n_maps} probability surfaces associated
+#'   with \code{most_likely_maps} follow.
 #' All outputs are written to disk as GeoTIFFs.
 #' @examples \dontrun{
 #' # run collate() example code, then:
-#' most_likely_soil <- most_likely(dsmart_preds = collated[['dsmartr_predictions']],
-#' dsmart_probs = collated[['dsmartr_probabilities']], n_maps = 2)}
+#' most_likely_soil <-
+#'  most_likely(dsmart_preds = collated[['dsmartr_predictions']],
+#'              dsmart_probs = collated[['dsmartr_probabilities']],
+#'              n_maps = 2)
+#' }
 #' @importFrom raster unstack ratify writeRaster
 #' @export
+#'
 most_likely <- function(dsmart_preds = NULL,
                         dsmart_probs = NULL,
                         n_maps       = 2L) {
@@ -87,13 +92,15 @@ most_likely <- function(dsmart_preds = NULL,
 
 #' Produce soil class probability surfaces
 #'
-#' Generates a soil class probability map for any or all input soil classes. Requires output of
+#' Generates a soil class probability map for any or all input soil classes.
+#' Requires output of
 #' \code{\link{collate}}.
 #' @param tallied_probs RasterBrick; \code{tallied_probabilities} output by
 #'   \code{\link{collate}}.
-#' @param soil_class String; Soil class(es) of interest, if only particular maps are desired.
-#' @return \code{class_maps}: List of RasterLayers; probability surfaces for each soil class. All
-#'   outputs are written to disk as GeoTIFF.
+#' @param soil_class String; Soil class(es) of interest, if only particular maps
+#'   are desired.
+#' @return \code{class_maps}: List of RasterLayers; probability surfaces for
+#'   each soil class. All outputs are written to disk as GeoTIFF.
 #' @examples \dontrun{
 #' # run collate() example code, then
 #'

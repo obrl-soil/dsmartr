@@ -1,8 +1,8 @@
 Package: dsmartr
 Type: Package
 Title: dsmartr: An R implementation of the DSMART algorithm
-Version: 1.0.1
-Date: 2018-03-18
+Version: 1.0.2
+Date: 2019-02-16
 Authors@R: c(
     person("Lauren", "O'Brien", email = "obrlsoilau@gmail.com",         role = c('aut', 'cre')),
     person("Nathan", "Odgers",  email = "nathan.odgers@sydney.edu.au",  role = 'ctb'),
@@ -38,5 +38,6 @@ Suggests:
     testthat
 License: GPL-2
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+Encoding: UTF-8
 VignetteBuilder: knitr

@@ -26,12 +26,14 @@
 heronvale_soilmap
 }
 \description{
-A dataset containing an extract of 1:100,000 scale soils mapping from the Whitsunday coast area.
-The complete dataset can be viewed in the \href{https://qldglobe.information.qld.gov.au/}{Queensland
- Globe.} Data was extracted from the Queensland Soil and Land Information (SALI) database in 2017
- and formatted for dsmartr in R 3.4.2.
+A dataset containing an extract of 1:100,000 scale soils mapping from the
+Whitsunday coast area. The complete dataset can be viewed in the
+\href{https://qldglobe.information.qld.gov.au/}{Queensland Globe.} Data was
+extracted from the Queensland Soil and Land Information (SALI) database in
+2017 and formatted for dsmartr in R 3.4.2.
 }
 \note{
-This object's geometry has its precision attribute set to one decimal place (approx 10cm on the ground).
+This object's geometry has its precision attribute set to one decimal
+  place (approx. 10cm on the ground).
 }
 \keyword{datasets}

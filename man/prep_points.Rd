@@ -8,31 +8,34 @@ prep_points(known_points = NULL, soil_id = NULL, x_coords = NULL,
   y_coords = NULL, covariates = NULL)
 }
 \arguments{
-\item{known_points}{sfc_POINT, SpatialPointsDataFrame or Data Frame object; represents locations
-where the soil class has been directly observed. Supply with spatial location (spatial data or
-x and y attributes), unique numeric ID, and soil class.}
+\item{known_points}{sfc_POINT, SpatialPointsDataFrame or Data Frame object;
+represents locations where the soil class has been directly observed.
+Supply with spatial location (spatial data or x and y attributes), unique
+numeric ID, and soil class.}
 
-\item{soil_id}{String; name of column in \code{known_points} holding soil class data.}
+\item{soil_id}{String; name of column in \code{known_points} holding soil
+class data.}
 
-\item{x_coords}{String; name of column in \code{known_points} holding x-coordinate data.
-Only needed for non-spatial inputs.}
+\item{x_coords}{String; name of column in \code{known_points} holding
+x-coordinate data. Only needed for non-spatial inputs.}
 
-\item{y_coords}{String; name of column holding y-coordinate data. Only needed for non-spatial
-inputs.}
+\item{y_coords}{String; name of column holding y-coordinate data. Only needed
+for non-spatial inputs.}
 
 \item{covariates}{RasterStack or RasterBrick; environmental covariate data.}
 }
 \value{
-A data frame with two attributes: soil class code and corresponding raster cell index
-  number.
+A data frame with two attributes: soil class code and corresponding
+  raster cell index number.
 }
 \description{
-Prepares dsmartr point inputs for use in \code{\link{iterate}}.
+Prepares dsmartr point inputs for use in
+\code{\link[dsmartr:iterate]{dsmartr::iterate()}}.
 }
 \note{
-The output of this function is an optional input for \code{\link{iterate}}. If
-  \code{known_points} is supplied as a data frame, the x and y coordinates must match the
-  covariate crs.
+The output of this function is an optional input for
+  \code{\link{iterate}}. If \code{known_points} is supplied as a data frame,
+  the x and y coordinates must match the covariate crs.
 }
 \examples{
 \dontrun{

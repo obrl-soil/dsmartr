@@ -16,26 +16,30 @@ eval_npred(tallied_preds = NULL, cpus = 1, n_iterations = NULL,
 \item{n_iterations}{Optional Integer; the number of iterations supplied to
 \code{\link[dsmartr:iterate]{iterate}}.}
 
-\item{noise_cutoff}{Optional Decimal; proportion of predictions to be considered 'noise' and
-ignored. Acceptable values range between 0 and 1 inclusive. Defaults to 0.}
+\item{noise_cutoff}{Optional Decimal; proportion of predictions to be
+considered 'noise' and ignored. Acceptable values range between 0 and 1
+inclusive. Defaults to 0.}
 }
 \value{
-\code{n_classes_predicted}: RasterLayer depicting the number of distinct soils predicted
-  per pixel more than \code{n_iterations * noise_cutoff} times. Written to disk as GeoTIFF.
+\code{n_classes_predicted}: RasterLayer depicting the number of
+  distinct soils predicted per pixel more than \code{n_iterations *
+  noise_cutoff} times. Written to disk as GeoTIFF.
 }
 \description{
-Calculates and maps the number of distinct soil classes predicted. Requires outputs of
+Calculates and maps the number of distinct soil classes predicted. Requires
+outputs of
 \code{\link[dsmartr:collate]{collate}}.
 }
 \note{
-Fewer classes predicted on a pixel generally indicates higher internal model confidence at
-  that location.
+Fewer classes predicted on a pixel generally indicates higher internal
+  model confidence at that location.
 }
 \examples{
 \dontrun{
 # run iterate() and collate() with the example data then:
 nxpred <- eval_npred(tallied_preds = collated[['tallied_predictions']],
                      cpus = max(1, (parallel::detectCores() - 1)),
-                     n_iterations = nlayers(iteration_maps), noise_cutoff = 0.1)
+                     n_iterations = nlayers(iteration_maps),
+                     noise_cutoff = 0.1)
 }
 }

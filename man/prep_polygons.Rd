@@ -5,62 +5,72 @@
 \title{Prepare dsmartr polygons}
 \usage{
 prep_polygons(src_map = NULL, covariates = NULL, id_field = NULL,
-  sample_method = c("flat", "area_p"), flat_rate = NULL, area_rate = NULL,
-  samp_floor = NULL, samp_ceiling = NULL)
+  sample_method = c("flat", "area_p"), flat_rate = NULL,
+  area_rate = NULL, samp_floor = NULL, samp_ceiling = NULL)
 }
 \arguments{
-\item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object representing
-  the soil map to be disaggregated. Format requirements:
+\item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object
+  representing the soil map to be disaggregated. Format requirements:
 \itemize{
 \item{one row per polygon (data is wide-formatted)}
 \item{A numeric unique ID field for polygons}
 \item{1-n character columns for soil classes named CLASS_1 to CLASS_n}
-\item{1-n numeric columns for soil class percentages named PERC_1 to PERC_n. PERC_1 must relate
-  to CLASS_1, etc.}}
+\item{1-n numeric columns for soil class percentages named PERC_1 to PERC_n.
+PERC_1 must relate to CLASS_1, etc.}}
 
 Other columns may exist in the object; they will be ignored.}
 
-\item{covariates}{RasterStack or RasterBrick; environmental covariate datasets.}
+\item{covariates}{RasterStack or RasterBrick; environmental covariate
+datasets.}
 
 \item{id_field}{String; name of unique identifier field in \code{src_map}.}
 
-\item{sample_method}{String; choice of flat rate per polygon or area-proportional rate.}
+\item{sample_method}{String; choice of flat rate per polygon or
+area-proportional rate.}
 
-\item{flat_rate}{Integer; Number of samples per polygon; use with \code{sample_method = 'flat'}.}
+\item{flat_rate}{Integer; Number of samples per polygon; use with
+\code{sample_method = 'flat'}.}
 
-\item{area_rate}{Integer; desired number of samples per square kilometre; use with
-\code{sample_method = 'area_p'}.}
+\item{area_rate}{Integer; desired number of samples per square kilometre; use
+with \code{sample_method = 'area_p'}.}
 
-\item{samp_floor}{Integer; desired minimum number of samples per polygon. Optional; use with
-\code{sample_method = 'area_p'}. Defaults to 2x the number of soil classes on a polygon, switch off with samp_floor = 0 (not recommended).}
+\item{samp_floor}{Integer; desired minimum number of samples per polygon.
+Optional; use with \code{sample_method = 'area_p'}. Defaults to 2x the
+number of soil classes on a polygon, switch off with samp_floor = 0 (not
+recommended).}
 
-\item{samp_ceiling}{Integer; desired maximum number of samples per polygon. Optional; use with
-\code{sample_method = 'area_p'}. Only applies to polygons with a single class component and
-(effectively) a large area.}
+\item{samp_ceiling}{Integer; desired maximum number of samples per polygon.
+Optional; use with \code{sample_method = 'area_p'}. Only applies to
+polygons with a single class component and (effectively) a large area.}
 }
 \value{
-A data frame holding polygon input attributes and four new attribute columns:
+A data frame holding polygon input attributes and four new attribute
+  columns:
 \itemize{
-  \item{\code{area_sqkm}: Polygon area in square kilometers, by \code{\link[sf:geos_measures]{st_area}}.}
+  \item{\code{area_sqkm}: Polygon area in square kilometers, by
+  \code{\link[sf:geos_measures]{sf::st_area()}}.}
   \item{\code{n_soils}: The number of soil classes within the map unit.}
-  \item{\code{n_samples}: The number of environmental covariate point samples that will be taken
-  on each model iteration.}
-  \item{\code{intersecting_cells}: Raster cell index numbers for any cell whose center falls
-  within the polygon boundary.}
+  \item{\code{n_samples}: The number of environmental covariate point samples
+  that will be taken on each model iteration.}
+  \item{\code{intersecting_cells}: Raster cell index numbers for any cell
+  whose center falls within the polygon boundary.}
   }
 Outputs are also written to disk.
 }
 \description{
-Prepares soil map inputs for use in \code{\link{iterate}}.
+Prepares soil map inputs for use in
+\code{\link[dsmartr:iterate]{dsmartr::iterate()}}.
 }
 \note{
 \itemize{
-  \item{The output of this function is a required input for \code{\link[dsmartr]{iterate}}}.
-  \item{Covariate data should be in a projected CRS with defined units. While the function will
-    run with lat/long data, polygon area calculations may be dangerously inaccurate. Vector
-    inputs will be transformed to match the covariate CRS.}
-  \item{The \code{intersecting_cells} attribute field is a list-column, so the returned object
-    cannot be written to e.g. csv format.}
+  \item{The output of this function is a required input for
+  \code{\link[dsmartr:iterate]{dsmartr::iterate()}}}.
+  \item{Covariate data should be in a projected CRS with defined units. While
+  the function will run with lat/long data, polygon area calculations may be
+  dangerously inaccurate. Vector inputs will be transformed to match the
+  covariate CRS.}
+  \item{The \code{intersecting_cells} attribute field is a list-column, so
+  the returned object cannot be written to e.g. csv format.}
 \item{This function runs faster with a RasterBrick than a Stack.}}
 }
 \examples{
@@ -69,11 +79,15 @@ data('heronvale_soilmap')
 data('heronvale_covariates')
 
 # flat rate
-pr_flat <- prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-id_field = 'POLY_NO', sample_method = 'flat', flat_rate = 6)
+pr_flat <- prep_polygons(src_map = heronvale_soilmap,
+                         covariates = heronvale_covariates,
+                         id_field = 'POLY_NO', sample_method = 'flat',
+                         flat_rate = 6)
 
 # area_proportional rate with floor
-pr_ap <- prep_polygons(src_map = heronvale_soilmap, covariates = heronvale_covariates,
-id_field = 'POLY_NO', sample_method = 'area_p', area_rate = 20, samp_floor = 6)
+pr_ap <- prep_polygons(src_map = heronvale_soilmap,
+                       covariates = heronvale_covariates,
+                       id_field = 'POLY_NO', sample_method = 'area_p',
+                       area_rate = 20, samp_floor = 6)
 }
 }

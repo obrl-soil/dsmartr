@@ -10,14 +10,16 @@ class_maps(tallied_probs = NULL, soil_class = NULL)
 \item{tallied_probs}{RasterBrick; \code{tallied_probabilities} output by
 \code{\link{collate}}.}
 
-\item{soil_class}{String; Soil class(es) of interest, if only particular maps are desired.}
+\item{soil_class}{String; Soil class(es) of interest, if only particular maps
+are desired.}
 }
 \value{
-\code{class_maps}: List of RasterLayers; probability surfaces for each soil class. All
-  outputs are written to disk as GeoTIFF.
+\code{class_maps}: List of RasterLayers; probability surfaces for
+  each soil class. All outputs are written to disk as GeoTIFF.
 }
 \description{
-Generates a soil class probability map for any or all input soil classes. Requires output of
+Generates a soil class probability map for any or all input soil classes.
+Requires output of
 \code{\link{collate}}.
 }
 \examples{

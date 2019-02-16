@@ -12,7 +12,7 @@
   \item{LATITUDE}{Latitude coordinate in EPSG:4283 (GDA94)}
   \item{CLASS}{Soil class identified at this site}
   \item{geom}{list-column with class 'sfc_GEOMETRY', 'sfc'}}
-Site locations are accurate to within +/-50m.}
+Site locations are considered accurate to within +/- 50 meters.}
 \source{
 \itemize{
   \item{\url{https://publications.qld.gov.au/dataset/soils-whitsunday-coast-wcs}}
@@ -22,9 +22,10 @@ Site locations are accurate to within +/-50m.}
 heronvale_known_sites
 }
 \description{
-A dataset containing the locations of described soil profiles within the Heronvale 1:10000
-topographic key map sheet. Sites are from a soil and land resource survey conducted in the early
-2000s. Full profile descriptions can be viewed in the
-\href{https://qldglobe.information.qld.gov.au/}{Queensland Globe}.
+A dataset containing the locations of described soil profiles within the
+Heronvale 1:10000 topographic key map sheet. Sites are from a soil and land
+resource survey conducted in the early 2000s. Full profile descriptions can
+be viewed in the \href{https://qldglobe.information.qld.gov.au/}{Queensland
+Globe}.
 }
 \keyword{datasets}
