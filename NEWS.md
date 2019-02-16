@@ -1,3 +1,7 @@
+## v. 1.0.2
+  * Some changes to arguments in `prep_polygons()`
+  * Removed a bunch of unneccessary dependencies
+
 ## v.1.0.1
   * documentation fixes
 
