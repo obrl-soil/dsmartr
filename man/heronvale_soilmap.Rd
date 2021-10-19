@@ -4,7 +4,8 @@
 \name{heronvale_soilmap}
 \alias{heronvale_soilmap}
 \title{Data: Broadscale soil map of the Heronvale area}
-\format{An sf data.frame of POLYGON type in EPSG:3577, with 105 rows
+\format{
+An sf data.frame of POLYGON type in EPSG:3577, with 105 rows
    and 10 variables:
  \describe{
  \item{PROJECT_CODE}{Three-letter code identifying the soil survey}
@@ -16,7 +17,8 @@
  \item{PERC_1}{Estimated percentage of the map unit occupied by CLASS_1}
  \item{PERC_2}{Estimated percentage of the map unit occupied by CLASS_2}
  \item{PERC_3}{Estimated percentage of the map unit occupied by CLASS_3}
- \item{geom}{list-column with class 'sfc_POLYGON', 'sfc'}}}
+ \item{geom}{list-column with class 'sfc_POLYGON', 'sfc'}}
+}
 \source{
 \itemize{
   \item{\url{https://publications.qld.gov.au/dataset/soils-whitsunday-coast-wcs}}

@@ -4,8 +4,13 @@
 \alias{prep_points}
 \title{Prepare dsmartr points}
 \usage{
-prep_points(known_points = NULL, soil_id = NULL, x_coords = NULL,
-  y_coords = NULL, covariates = NULL)
+prep_points(
+  known_points = NULL,
+  soil_id = NULL,
+  x_coords = NULL,
+  y_coords = NULL,
+  covariates = NULL
+)
 }
 \arguments{
 \item{known_points}{sfc_POINT, SpatialPointsDataFrame or Data Frame object;

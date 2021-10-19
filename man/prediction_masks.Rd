@@ -4,8 +4,7 @@
 \alias{prediction_masks}
 \title{generate masks from samples}
 \usage{
-prediction_masks(samples = NULL, covariates = NULL, tolerance = 0L,
-  cpus = 1)
+prediction_masks(samples = NULL, covariates = NULL, tolerance = 0L, cpus = 1)
 }
 \arguments{
 \item{samples}{List; POINT_sfc objects created by

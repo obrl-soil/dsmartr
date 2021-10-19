@@ -66,7 +66,7 @@
 #' @importFrom methods as
 #' @importFrom sf st_area st_set_geometry st_transform
 #' @importFrom raster crs
-#' @importFrom units ud_units
+#' @importFrom units as_units
 #' @export
 #'
 prep_polygons <- function(src_map       = NULL,
@@ -96,7 +96,7 @@ prep_polygons <- function(src_map       = NULL,
 
   # polygon area in sq km
   src_prepped$area_sqkm <- sf::st_area(src_prepped)
-  units(src_prepped$area_sqkm) <- with(units::ud_units, km^2)
+  units(src_prepped$area_sqkm) <- units::as_units('km^2')
 
   # number of soil classes on polygon
   src_prepped$n_soils <- apply(sf::st_set_geometry(src_prepped, NULL),

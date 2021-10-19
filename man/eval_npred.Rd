@@ -4,8 +4,12 @@
 \alias{eval_npred}
 \title{Calculate soil classes per pixel}
 \usage{
-eval_npred(tallied_preds = NULL, cpus = 1, n_iterations = NULL,
-  noise_cutoff = NULL)
+eval_npred(
+  tallied_preds = NULL,
+  cpus = 1,
+  n_iterations = NULL,
+  noise_cutoff = NULL
+)
 }
 \arguments{
 \item{tallied_preds}{RasterBrick; 'tallied_predictions' output by

@@ -4,7 +4,8 @@
 \name{heronvale_covariates}
 \alias{heronvale_covariates}
 \title{Data: Demonstration covariates for dsmartr}
-\format{A RasterBrick with dimensions 299, 285, 85215, 13  (nrow, ncol,
+\format{
+A RasterBrick with dimensions 299, 285, 85215, 13  (nrow, ncol,
   ncell, nlayers) and resolution of 26.6 m, projected in Albers Equal Area
   (EPSG:3577). The dataset is clipped to the extent of the
   \href{https://data.qld.gov.au/dataset/queensland-map-sheet-key-maps-series}{Heronvale
@@ -52,7 +53,8 @@
    Wetness Index}, calculated from DEM-H in SAGA 2.3.}}
 All covariates were processed in GRASS 7 to align with the DEM-S, reprojected
 to EPSG:3577 with appropriate resampling (bilinear for continuous data,
-nearest-neighbour for categorical).}
+nearest-neighbour for categorical).
+}
 \usage{
 heronvale_covariates
 }

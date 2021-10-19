@@ -4,7 +4,8 @@
 \name{heronvale_known_sites}
 \alias{heronvale_known_sites}
 \title{Data: Points where soil class is known}
-\format{A tbl/sf_POINT object in EPSG:3577 with 36 rows and 6 columns:
+\format{
+A tbl/sf_POINT object in EPSG:3577 with 36 rows and 6 columns:
 \describe{
   \item{PROJECT_CODE}{Three-letter code identifying the soil survey}
   \item{SITE_ID}{Within-project unique site identifier}
@@ -12,7 +13,8 @@
   \item{LATITUDE}{Latitude coordinate in EPSG:4283 (GDA94)}
   \item{CLASS}{Soil class identified at this site}
   \item{geom}{list-column with class 'sfc_GEOMETRY', 'sfc'}}
-Site locations are considered accurate to within +/- 50 meters.}
+Site locations are considered accurate to within +/- 50 meters.
+}
 \source{
 \itemize{
   \item{\url{https://publications.qld.gov.au/dataset/soils-whitsunday-coast-wcs}}

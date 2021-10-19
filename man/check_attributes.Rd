@@ -4,8 +4,7 @@
 \alias{check_attributes}
 \title{Check dsmartr input map attributes}
 \usage{
-check_attributes(src_map = NULL, id_field = NULL, cs = NULL,
-  ps = NULL)
+check_attributes(src_map = NULL, id_field = NULL, cs = NULL, ps = NULL)
 }
 \arguments{
 \item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame

@@ -4,8 +4,14 @@
 \alias{iter_sample_poly}
 \title{Sample covariates under a polygon}
 \usage{
-iter_sample_poly(pd = NULL, cs = NULL, ps = NULL, nscol = NULL,
-  cellcol = NULL, t_factor = NULL)
+iter_sample_poly(
+  pd = NULL,
+  cs = NULL,
+  ps = NULL,
+  nscol = NULL,
+  cellcol = NULL,
+  t_factor = NULL
+)
 }
 \arguments{
 \item{pd}{A single-row sf object containing soil attributes and geometry.

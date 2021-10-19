@@ -4,9 +4,15 @@
 \alias{prep_polygons}
 \title{Prepare dsmartr polygons}
 \usage{
-prep_polygons(src_map = NULL, covariates = NULL, id_field = NULL,
-  sample_method = c("flat", "area_p"), sample_rate = NULL,
-  rate_floor = NULL, rate_ceiling = NULL)
+prep_polygons(
+  src_map = NULL,
+  covariates = NULL,
+  id_field = NULL,
+  sample_method = c("flat", "area_p"),
+  sample_rate = NULL,
+  rate_floor = NULL,
+  rate_ceiling = NULL
+)
 }
 \arguments{
 \item{src_map}{An sfc_POLYGON/MULTIPOLYGON or SpatialPolygonsDataFrame object

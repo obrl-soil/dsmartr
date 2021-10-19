@@ -4,10 +4,19 @@
 \alias{iterate}
 \title{Generate disaggregated soil maps}
 \usage{
-iterate(prepped_map = NULL, covariates = NULL, prepped_points = NULL,
-  id_field = NULL, n_iterations = NULL, t_factor = 10000,
-  c5_ctrl = NULL, cpus = 1, write_files = c("native", "rds"),
-  write_samples = FALSE, resume_from = NULL)
+iterate(
+  prepped_map = NULL,
+  covariates = NULL,
+  prepped_points = NULL,
+  id_field = NULL,
+  n_iterations = NULL,
+  t_factor = 10000,
+  c5_ctrl = NULL,
+  cpus = 1,
+  write_files = c("native", "rds"),
+  write_samples = FALSE,
+  resume_from = NULL
+)
 }
 \arguments{
 \item{prepped_map}{Data Frame; Returned by

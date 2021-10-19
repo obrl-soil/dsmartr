@@ -1,3 +1,6 @@
+## v. 1.0.3
+  * update for compatibility with units package
+
 ## v. 1.0.2
   * Some changes to arguments in `prep_polygons()`
   * Removed a bunch of unneccessary dependencies
