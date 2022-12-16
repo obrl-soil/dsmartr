@@ -10,4 +10,4 @@ Install with
     devtools::install_github("obrl-soil/dsmartr")
 
 
-Note that this package is no longer regularly maintained.
+Note that this package is no longer regularly maintained. Consider using https://bitbucket.org/brendo1001/dsmart/src/master/ instead.
