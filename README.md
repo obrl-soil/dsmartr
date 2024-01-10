@@ -1,3 +1,9 @@
+# `dsmartr` has retired!
+
+DSMART for R is currently maintained [here](https://bitbucket.org/brendo1001/dsmart/src/master/). 
+
+---
+
 # dsmartr
 An R implementation of the DSMART algorithm
 
@@ -8,6 +14,3 @@ for my own needs. This implementation incorporates extensive changes to data han
 Install with  
 
     devtools::install_github("obrl-soil/dsmartr")
-
-
-Note that this package is no longer regularly maintained. Consider using https://bitbucket.org/brendo1001/dsmart/src/master/ instead.
